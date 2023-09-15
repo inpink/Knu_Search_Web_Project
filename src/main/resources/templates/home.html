@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header">
+    <title>강남대학교 웹 검색 도우미</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="col text-center mb-5">
+    <h1>강남대학교 웹 검색 도우미</h1>
+</div>
+
+<div class="container"> <!--전체 -->
+
+    <div class="jumbotron"> <!-- 회색 박스 -->
+
+        <div class="d-flex bg-skyblue p-3 border rounded"> <!-- 옵션들 선택-->
+
+            <div class="form-check m-auto">
+                <input class="form-check-input" type="checkbox" value="" id="unifiedSearchChecked1" checked>
+                <label class="form-check-label" for="unifiedSearchChecked1">통합 검색</label>
+            </div>
+
+            <div class="form-check m-auto">
+                <input class="form-check-input" type="checkbox" value="" id="InOrderChecked1" checked>
+                <label class="form-check-label" for="InOrderChecked1">정확도순</label>
+            </div>
+
+            <div class="form-check m-auto">
+                <input class="form-check-input" type="checkbox" value="" id="allTimeChecked1" checked>
+                <label class="form-check-label" for="allTimeChecked1">전체 기간</label>
+            </div>
+
+            <div class="form-check m-auto">
+                <input class="form-check-input" type="checkbox" value="" id="categoryRecommendChecked1" checked>
+                <label class="form-check-label" for="categoryRecommendChecked1">분류 추천 사용</label>
+            </div>
+
+            <!-- 버튼을 클릭하여 펼치기/접기 토글. 다른 div에 있는 것도 펼치고접을 수 있다. -->
+            <div class="m-auto">
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDiv"
+                        aria-expanded="false" aria-controls="collapseDiv">
+                    세부 옵션 설정
+                </button>
+
+            </div>
+        </div>
+
+        <!-- 펼치기/접기할 대상.  -->
+        <div class="collapse" id="collapseDiv">
+            <div class="card card-body"> <!-- 모든 옵션들 박스에 담기-->
+                <div class="d-flex"> <!--검색 사이트 d-flex: 가로 정렬-->
+
+                    <div class="form-check m-auto"> <!-- m-auto : 자동 마진-->
+                        <input class="form-check-input" type="checkbox" value="" id="unifiedSearchChecked2" checked>
+                        <label class="form-check-label" for="unifiedSearchChecked2">통합 검색</label>
+                    </div>
+
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="knuWebSiteChecked" checked>
+                        <label class="form-check-label" for="knuWebSiteChecked">강남대학교 메인 홈페이지</label>
+                    </div>
+
+                </div>
+
+                <hr class="my-4">
+
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="InOrderChecked2" checked>
+                        <label class="form-check-label" for="InOrderChecked2">정확도순</label>
+                    </div>
+
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="allTimeChecked2" checked>
+                        <label class="form-check-label" for="allTimeChecked2">전체 기간</label>
+                    </div>
+
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="categoryRecommendChecked2" checked>
+                        <label class="form-check-label" for="categoryRecommendChecked2">분류 추천 사용</label>
+                    </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <p> <!-- 검색 버튼-->
+        <a class="btn btn-lg btn-secondary" href="/search">검색</a>
+    </p>
+
+
+    <div th:replace="fragments/footer :: footer"/>
+
+</div> <!-- /container -->
+
+</body>
+
+<!-- JavaScript로 펼쳤을 때와 접혔을 때의 문구 변경 -->
+<script>
+    const collapseButton = document.querySelector('[data-bs-target="#collapseDiv"]');
+    const collapseDiv = document.querySelector('#collapseDiv');
+
+    collapseDiv.addEventListener('show.bs.collapse', function () {
+        collapseButton.textContent = '접기';
+    });
+
+    collapseDiv.addEventListener('hide.bs.collapse', function () {
+        collapseButton.textContent = '세부 옵션 설정';
+    });
+</script>
+
+
+<!-- JavaScript로 체크박스 연동 -->
+<script>
+    //모든 대표 체크박스들의 이름
+    var parentCheckboxes = ["unifiedSearchChecked", "InOrderChecked", "allTimeChecked", "categoryRecommendChecked"];
+
+    // for문으로 모든 체크박스에 대한 이벤트 리스너를 추가합니다.
+    for (var i = 0; i <= parentCheckboxes.length; i++) {
+        // 체크박스 요소를 가져옵니다.
+        //체크박스 1은 위에 있는것, 2는 밑에 있는것
+        var checkbox_1 = document.getElementById(parentCheckboxes[i] + "1");
+        var checkbox_2 = document.getElementById(parentCheckboxes[i] + "2"); // 체크박스 요소를 가져옵니다.
+
+        // 함수 내부에서 사용할 변수를 만듭니다.
+        /*
+        제공한 코드에서 문제가 발생하는 이유는 클로저(Closure)와 관련이 있습니다.
+        클로저는 JavaScript의 특성 중 하나로,
+        함수가 다른 함수 내부에서 정의된 경우 외부 함수의 변수에 접근할 수 있습니다.
+
+        for 루프 내에서 addEventListener를 사용하여 이벤트 리스너를 추가할 때,
+        이벤트 리스너 함수 내에서 checkbox_1과 checkbox_2는 외부 함수 내의 변수로 취급됩니다.
+        그러나 이러한 변수들은 for 루프의 반복마다 새로운 함수 스코프를 생성하므로 클로저에 의해 잘못된 결과가 발생합니다.
+         */
+        (function (checkbox1, checkbox2) { //=> 클로저 문제때문에 각 이벤트 리스너에 대한 변수를 만들어줘야함
+            checkIntegrate(checkbox1,checkbox2);
+            checkIntegrate(checkbox2,checkbox1);
+        })(checkbox_1, checkbox_2); // 함수에 인수로 전달하여 스코프 고정
+
+    }
+
+    function checkIntegrate(checkbox1, checkbox2){
+        // 체크박스 상태가 변경될 때 이벤트 리스너를 추가합니다.
+        checkbox1.addEventListener('change', function () {
+            if (checkbox1.checked) {
+                //alert('체크박스가 선택되었습니다.');
+                checkbox2.checked = true; // 체크박스 체크
+            } else {
+                //alert('체크박스가 선택 해제되었습니다.');
+                checkbox2.checked = false; // 체크박스 해제
+            }
+        });
+    }
+
+</script>
+
+
+</html>
