@@ -23,7 +23,7 @@
         <div class="d-flex bg-skyblue p-3 border rounded"> <!-- 옵션들 선택-->
 
             <div class="form-check m-auto">
-                <input class="form-check-input" type="checkbox" value="" id="unifiedSearchChecked1" checked>
+                <input class="form-check-input unifiedSearchChecked" type="checkbox" value="" id="unifiedSearchChecked1" checked>
                 <label class="form-check-label" for="unifiedSearchChecked1">통합 검색</label>
             </div>
 
@@ -58,42 +58,42 @@
 
                 <div class="d-flex flex-wrap"> <!--검색 사이트 d-flex: 가로 정렬-->
                     <div class="form-check m-auto"> <!-- m-auto : 자동 마진-->
-                        <input class="form-check-input" type="checkbox" value="" id="unifiedSearchChecked2" checked>
+                        <input class="form-check-input unifiedSearchChecked" type="checkbox" value="" id="unifiedSearchChecked2" checked>
                         <label class="form-check-label" for="unifiedSearchChecked2">통합 검색</label>
                     </div>
 
                     <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="knuWebSiteChecked" checked>
+                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuWebSiteChecked" checked>
                         <label class="form-check-label" for="knuWebSiteChecked">강남대학교 메인 홈페이지</label>
                     </div>
 
                     <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="knuIctSiteChecked" checked>
+                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuIctSiteChecked" checked>
                         <label class="form-check-label" for="knuIctSiteChecked">ICT 융합 공학부</label>
                     </div>
 
                     <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="knuWelfareSiteChecked" checked>
+                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuWelfareSiteChecked" checked>
                         <label class="form-check-label" for="knuWelfareSiteChecked">사회복지학부</label>
                     </div>
 
                     <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="knuSeniorSiteChecked" checked>
+                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuSeniorSiteChecked" checked>
                         <label class="form-check-label" for="knuSeniorSiteChecked">실버산업학과</label>
                     </div>
 
                     <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="knuArtSiteChecked" checked>
+                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuArtSiteChecked" checked>
                         <label class="form-check-label" for="knuArtSiteChecked">유니버설아트디자인학과</label>
                     </div>
 
                     <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="knuClasSiteChecked" checked>
+                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuClasSiteChecked" checked>
                         <label class="form-check-label" for="knuClasSiteChecked">KNU참인재대학</label>
                     </div>
 
                     <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="knuCtlSiteChecked" checked>
+                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuCtlSiteChecked" checked>
                         <label class="form-check-label" for="knuCtlSiteChecked">교수학습지원센터</label>
                     </div>
 
@@ -172,6 +172,7 @@
 
 <!-- JavaScript로 체크박스 연동 -->
 <script>
+
     //모든 대표 체크박스들의 이름
     var parentCheckboxes = ["unifiedSearchChecked", "inOrderChecked", "allTimeChecked"];
 
@@ -214,5 +215,51 @@
 
 </script>
 
+<!-- 검색 사이트 : 추가 체크박스 중 하나라도 체크가 풀리면 대표 체크박스도 체크가 풀리도록 -->
+<script>
+    var unifiedSearchCheckboxes = document.querySelectorAll(".unifiedSearchChecked");
+    var subCheckboxes = document.querySelectorAll(".SubSiteCheckbox");
+
+    // 대표 체크 박스가 체크되어있으면, 서브 사이트 체크박스들도 모두 체크됨
+    checkAllOnMasterCheck(unifiedSearchCheckboxes,subCheckboxes);
+
+    // 추가 체크박스들의 변경 이벤트를 처리합니다.
+    //추가 체크박스 중 하나라도 체크가 풀리면 대표 체크박스도 체크를 풀도록 합니다.
+    uncheckMasterOnSubUncheck(unifiedSearchCheckboxes,subCheckboxes);
+
+
+    // 대표 체크 박스가 체크되어있으면, 서브 사이트 체크박스들도 모두 체크됨
+    function checkAllOnMasterCheck(allMasterCheck, allSubCheck){
+
+        allMasterCheck.forEach(function (masterCheckbox) {
+            masterCheckbox.addEventListener("change", function (){
+                if (this.checked){
+                    allSubCheck.forEach(function (checkbox) {
+                        checkbox.checked=true;
+                    });
+                }
+            });
+        });
+
+    }
+
+
+    // 추가 체크박스 중 하나라도 체크가 풀리면 모든 대표 체크박스도 체크를 풀도록 합니다.
+    function uncheckMasterOnSubUncheck(allmasterCheck, allSubCheck){
+
+        allSubCheck.forEach(function(checkbox) {
+            checkbox.addEventListener("change", function() {
+                // 추가 체크박스 중 하나라도 체크가 풀리면 대표 체크박스도 체크를 풀도록 합니다.
+                if (!this.checked) {
+                    allmasterCheck.forEach(function (masterCheckbox) {
+                        masterCheckbox.checked=false;
+                    });
+                }
+            });
+        });
+
+    }
+
+</script>
 
 </html>
