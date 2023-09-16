@@ -141,11 +141,16 @@
                         <label for="startDate">시작일:</label>
                         <input type="date" id="startDate" name="trip-start"
                                value="2018-07-22" min="2018-01-01" max="2018-12-31"
-                               th:value="${selectedDate}" th:min="${minDate}" th:max="${selectedDate}"
-                        />
-
+                               th:value="${selectedDate}" th:min="${minDate}" th:max="${selectedDate}"/>
                     </div>
 
+                    <div class="container mt-5">
+                        <!-- datepicker, th로 일정 범위 -->
+                        <label for="endDate">종료일:</label>
+                        <input type="date" id="endDate" name="trip-start"
+                               value="2018-07-22" min="2018-01-01" max="2018-12-31"
+                               th:value="${selectedDate}" th:min="${minDate}" th:max="${selectedDate}"/>
+                    </div>
 
                 </div>
 
