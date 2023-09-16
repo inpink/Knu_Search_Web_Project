@@ -28,7 +28,7 @@
             </div>
 
             <div class="form-check m-auto">
-                <input class="form-check-input" type="checkbox" value="" id="InOrderChecked1" checked>
+                <input class="form-check-input" type="checkbox" value="" id="inOrderChecked1" checked>
                 <label class="form-check-label" for="InOrderChecked1">정확도순</label>
             </div>
 
@@ -55,8 +55,8 @@
         <!-- 펼치기/접기할 대상.  -->
         <div class="collapse" id="collapseDiv">
             <div class="card card-body"> <!-- 모든 옵션들 박스에 담기-->
-                <div class="d-flex"> <!--검색 사이트 d-flex: 가로 정렬-->
 
+                <div class="d-flex flex-wrap"> <!--검색 사이트 d-flex: 가로 정렬-->
                     <div class="form-check m-auto"> <!-- m-auto : 자동 마진-->
                         <input class="form-check-input" type="checkbox" value="" id="unifiedSearchChecked2" checked>
                         <label class="form-check-label" for="unifiedSearchChecked2">통합 검색</label>
@@ -67,34 +67,97 @@
                         <label class="form-check-label" for="knuWebSiteChecked">강남대학교 메인 홈페이지</label>
                     </div>
 
-                </div>
-
-                <hr class="my-4">
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="knuIctSiteChecked" checked>
+                        <label class="form-check-label" for="knuIctSiteChecked">ICT 융합 공학부</label>
+                    </div>
 
                     <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="InOrderChecked2" checked>
+                        <input class="form-check-input" type="checkbox" value="" id="knuWelfareSiteChecked" checked>
+                        <label class="form-check-label" for="knuWelfareSiteChecked">사회복지학부</label>
+                    </div>
+
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="knuSeniorSiteChecked" checked>
+                        <label class="form-check-label" for="knuSeniorSiteChecked">실버산업학과</label>
+                    </div>
+
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="knuArtSiteChecked" checked>
+                        <label class="form-check-label" for="knuArtSiteChecked">유니버설아트디자인학과</label>
+                    </div>
+
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="knuClasSiteChecked" checked>
+                        <label class="form-check-label" for="knuClasSiteChecked">KNU참인재대학</label>
+                    </div>
+
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="knuCtlSiteChecked" checked>
+                        <label class="form-check-label" for="knuCtlSiteChecked">교수학습지원센터</label>
+                    </div>
+
+                </div>
+
+                <hr class="my-4"> <!-- 구분선-->
+
+                <div class="d-flex"> <!--정확도순/최신순 d-flex: 가로 정렬-->
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="inOrderChecked2" checked>
                         <label class="form-check-label" for="InOrderChecked2">정확도순</label>
                     </div>
 
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="latestChecked" checked>
+                        <label class="form-check-label" for="latestChecked">최신순</label>
+                    </div>
+                </div>
+
+                <hr class="my-4"> <!-- 구분선-->
+
+                <div class="d-flex flex-wrap"> <!--기간들 d-flex: 가로 정렬  flex-wrap : 가로꽉차면 줄바꿈-->
                     <div class="form-check m-auto">
                         <input class="form-check-input" type="checkbox" value="" id="allTimeChecked2" checked>
                         <label class="form-check-label" for="allTimeChecked2">전체 기간</label>
                     </div>
 
                     <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="categoryRecommendChecked2" checked>
-                        <label class="form-check-label" for="categoryRecommendChecked2">분류 추천 사용</label>
+                        <input class="form-check-input" type="checkbox" value="" id="lastOneDayChecked" checked>
+                        <label class="form-check-label" for="lastOneDayChecked">최근 1일</label>
                     </div>
 
-            </div>
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="lastOneWeekChecked" checked>
+                        <label class="form-check-label" for="lastOneWeekChecked">최근 7일</label>
+                    </div>
 
+                    <div class="form-check m-auto">
+                        <input class="form-check-input" type="checkbox" value="" id="lastOneMonthChecked" checked>
+                        <label class="form-check-label" for="lastOneMonthChecked">최근 1달</label>
+                    </div>
+
+                    <div class="container mt-5">
+                        <!-- datepicker, th로 일정 범위 -->
+                        <label for="startDate">시작일:</label>
+                        <input type="date" id="startDate" name="trip-start"
+                               value="2018-07-22" min="2018-01-01" max="2018-12-31"
+                               th:value="${selectedDate}" th:min="${minDate}" th:max="${selectedDate}"
+                        />
+
+                    </div>
+
+
+                </div>
+
+            </div>
         </div>
     </div>
-
 
     <p> <!-- 검색 버튼-->
         <a class="btn btn-lg btn-secondary" href="/search">검색</a>
     </p>
+
+
 
 
     <div th:replace="fragments/footer :: footer"/>
@@ -104,24 +167,13 @@
 </body>
 
 <!-- JavaScript로 펼쳤을 때와 접혔을 때의 문구 변경 -->
-<script>
-    const collapseButton = document.querySelector('[data-bs-target="#collapseDiv"]');
-    const collapseDiv = document.querySelector('#collapseDiv');
-
-    collapseDiv.addEventListener('show.bs.collapse', function () {
-        collapseButton.textContent = '접기';
-    });
-
-    collapseDiv.addEventListener('hide.bs.collapse', function () {
-        collapseButton.textContent = '세부 옵션 설정';
-    });
-</script>
+<script src="homefold.js"></script>
 
 
 <!-- JavaScript로 체크박스 연동 -->
 <script>
     //모든 대표 체크박스들의 이름
-    var parentCheckboxes = ["unifiedSearchChecked", "InOrderChecked", "allTimeChecked", "categoryRecommendChecked"];
+    var parentCheckboxes = ["unifiedSearchChecked", "inOrderChecked", "allTimeChecked"];
 
     // for문으로 모든 체크박스에 대한 이벤트 리스너를 추가합니다.
     for (var i = 0; i <= parentCheckboxes.length; i++) {
@@ -141,13 +193,13 @@
         그러나 이러한 변수들은 for 루프의 반복마다 새로운 함수 스코프를 생성하므로 클로저에 의해 잘못된 결과가 발생합니다.
          */
         (function (checkbox1, checkbox2) { //=> 클로저 문제때문에 각 이벤트 리스너에 대한 변수를 만들어줘야함
-            checkIntegrate(checkbox1,checkbox2);
-            checkIntegrate(checkbox2,checkbox1);
+            checkIntegrate(checkbox1, checkbox2);
+            checkIntegrate(checkbox2, checkbox1);
         })(checkbox_1, checkbox_2); // 함수에 인수로 전달하여 스코프 고정
 
     }
 
-    function checkIntegrate(checkbox1, checkbox2){
+    function checkIntegrate(checkbox1, checkbox2) {
         // 체크박스 상태가 변경될 때 이벤트 리스너를 추가합니다.
         checkbox1.addEventListener('change', function () {
             if (checkbox1.checked) {
