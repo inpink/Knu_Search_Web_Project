@@ -3,167 +3,38 @@
 <head th:replace="fragments/header :: header">
     <title>강남대학교 웹 검색 도우미</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <style>
-        h1 {
-            text-align: center;
-        }
-    </style>
 </head>
 
 <body>
-
 <div class="col text-center mb-5">
     <h1>강남대학교 웹 검색 도우미</h1>
 </div>
 
 <div class="container"> <!--전체 -->
-
     <div class="jumbotron"> <!-- 회색 박스 -->
 
-        <div class="d-flex bg-skyblue p-3 border rounded"> <!-- 옵션들 선택-->
-
-            <div class="form-check m-auto">
-                <input class="form-check-input unifiedSearchChecked" type="checkbox" value="" id="unifiedSearchChecked1" checked>
-                <label class="form-check-label" for="unifiedSearchChecked1">통합 검색</label>
-            </div>
-
-            <div class="form-check m-auto">
-                <input class="form-check-input" type="checkbox" value="" id="inOrderChecked1" checked>
-                <label class="form-check-label" for="InOrderChecked1">정확도순</label>
-            </div>
-
-            <div class="form-check m-auto">
-                <input class="form-check-input" type="checkbox" value="" id="allTimeChecked1" checked>
-                <label class="form-check-label" for="allTimeChecked1">전체 기간</label>
-            </div>
-
-            <div class="form-check m-auto">
-                <input class="form-check-input" type="checkbox" value="" id="categoryRecommendChecked1" checked>
-                <label class="form-check-label" for="categoryRecommendChecked1">분류 추천 사용</label>
-            </div>
-
-            <!-- 버튼을 클릭하여 펼치기/접기 토글. 다른 div에 있는 것도 펼치고접을 수 있다. -->
-            <div class="m-auto">
-                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDiv"
-                        aria-expanded="false" aria-controls="collapseDiv">
-                    세부 옵션 설정
-                </button>
-
-            </div>
-        </div>
+        <div th:replace="fragments/parentOptions :: parentOptions"/>
 
         <!-- 펼치기/접기할 대상.  -->
         <div class="collapse" id="collapseDiv">
             <div class="card card-body"> <!-- 모든 옵션들 박스에 담기-->
 
-                <div class="d-flex flex-wrap"> <!--검색 사이트 d-flex: 가로 정렬-->
-                    <div class="form-check m-auto"> <!-- m-auto : 자동 마진-->
-                        <input class="form-check-input unifiedSearchChecked" type="checkbox" value="" id="unifiedSearchChecked2" checked>
-                        <label class="form-check-label" for="unifiedSearchChecked2">통합 검색</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuWebSiteChecked" checked>
-                        <label class="form-check-label" for="knuWebSiteChecked">강남대학교 메인 홈페이지</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuIctSiteChecked" checked>
-                        <label class="form-check-label" for="knuIctSiteChecked">ICT 융합 공학부</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuWelfareSiteChecked" checked>
-                        <label class="form-check-label" for="knuWelfareSiteChecked">사회복지학부</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuSeniorSiteChecked" checked>
-                        <label class="form-check-label" for="knuSeniorSiteChecked">실버산업학과</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuArtSiteChecked" checked>
-                        <label class="form-check-label" for="knuArtSiteChecked">유니버설아트디자인학과</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuClasSiteChecked" checked>
-                        <label class="form-check-label" for="knuClasSiteChecked">KNU참인재대학</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuCtlSiteChecked" checked>
-                        <label class="form-check-label" for="knuCtlSiteChecked">교수학습지원센터</label>
-                    </div>
-
-                </div>
+                <div th:replace="fragments/allSearchSites :: allSearchSites"/>
 
                 <hr class="my-4"> <!-- 구분선-->
 
-                <div class="d-flex"> <!--정확도순/최신순 d-flex: 가로 정렬-->
-                    <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="inOrderChecked2" checked>
-                        <label class="form-check-label" for="InOrderChecked2">정확도순</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="latestChecked" checked>
-                        <label class="form-check-label" for="latestChecked">최신순</label>
-                    </div>
-                </div>
+                <div th:replace="fragments/inOrderOrLatest :: inOrderOrLatest"/>
 
                 <hr class="my-4"> <!-- 구분선-->
 
-                <div class="d-flex flex-wrap"> <!--기간들 d-flex: 가로 정렬  flex-wrap : 가로꽉차면 줄바꿈-->
-                    <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="allTimeChecked2" checked>
-                        <label class="form-check-label" for="allTimeChecked2">전체 기간</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="lastOneDayChecked" checked>
-                        <label class="form-check-label" for="lastOneDayChecked">최근 1일</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="lastOneWeekChecked" checked>
-                        <label class="form-check-label" for="lastOneWeekChecked">최근 7일</label>
-                    </div>
-
-                    <div class="form-check m-auto">
-                        <input class="form-check-input" type="checkbox" value="" id="lastOneMonthChecked" checked>
-                        <label class="form-check-label" for="lastOneMonthChecked">최근 1달</label>
-                    </div>
-
-                    <div class="container mt-5">
-                        <!-- datepicker, th로 일정 범위 -->
-                        <label for="startDate">시작일:</label>
-                        <input type="date" id="startDate" name="trip-start"
-                               value="2018-07-22" min="2018-01-01" max="2018-12-31"
-                               th:value="${selectedDate}" th:min="${minDate}" th:max="${selectedDate}"/>
-                    </div>
-
-                    <div class="container mt-5">
-                        <!-- datepicker, th로 일정 범위 -->
-                        <label for="endDate">종료일:</label>
-                        <input type="date" id="endDate" name="trip-start"
-                               value="2018-07-22" min="2018-01-01" max="2018-12-31"
-                               th:value="${selectedDate}" th:min="${minDate}" th:max="${selectedDate}"/>
-                    </div>
-
-                </div>
+                <div th:replace="fragments/periodRadioButtons :: periodRadioButtons"/>
 
             </div>
         </div>
+
+        <div th:replace="fragments/searchContainer :: searchContainer"/>
+
     </div>
-
-    <p> <!-- 검색 버튼-->
-        <a class="btn btn-lg btn-secondary" href="/search">검색</a>
-    </p>
-
-
-
 
     <div th:replace="fragments/footer :: footer"/>
 
@@ -171,14 +42,25 @@
 
 </body>
 
+
 <!-- JavaScript로 펼쳤을 때와 접혔을 때의 문구 변경 -->
-<script src="homefold.js"></script>
-
-
-<!-- JavaScript로 체크박스 연동 -->
 <script>
+    const collapseButton = document.querySelector('[data-bs-target="#collapseDiv"]');
+    const collapseDiv = document.querySelector('#collapseDiv');
 
-    //모든 대표 체크박스들의 이름
+    collapseDiv.addEventListener('show.bs.collapse', function () {
+        collapseButton.textContent = '접기';
+    });
+
+    collapseDiv.addEventListener('hide.bs.collapse', function () {
+        collapseButton.textContent = '세부 옵션 설정';
+    });
+</script>
+
+
+<!-- JavaScript로 체크, 라디오 박스 연동 -->
+<script>
+    //모든 대표  체크, 라디오 박스들의 이름
     var parentCheckboxes = ["unifiedSearchChecked", "inOrderChecked", "allTimeChecked"];
 
     // for문으로 모든 체크박스에 대한 이벤트 리스너를 추가합니다.
@@ -189,31 +71,23 @@
         var checkbox_2 = document.getElementById(parentCheckboxes[i] + "2"); // 체크박스 요소를 가져옵니다.
 
         // 함수 내부에서 사용할 변수를 만듭니다.
-        /*
-        제공한 코드에서 문제가 발생하는 이유는 클로저(Closure)와 관련이 있습니다.
-        클로저는 JavaScript의 특성 중 하나로,
-        함수가 다른 함수 내부에서 정의된 경우 외부 함수의 변수에 접근할 수 있습니다.
 
-        for 루프 내에서 addEventListener를 사용하여 이벤트 리스너를 추가할 때,
-        이벤트 리스너 함수 내에서 checkbox_1과 checkbox_2는 외부 함수 내의 변수로 취급됩니다.
-        그러나 이러한 변수들은 for 루프의 반복마다 새로운 함수 스코프를 생성하므로 클로저에 의해 잘못된 결과가 발생합니다.
-         */
         (function (checkbox1, checkbox2) { //=> 클로저 문제때문에 각 이벤트 리스너에 대한 변수를 만들어줘야함
-            checkIntegrate(checkbox1, checkbox2);
-            checkIntegrate(checkbox2, checkbox1);
+            checkIntegrate(checkbox1, checkbox2, true);
+            checkIntegrate(checkbox2, checkbox1, true);
         })(checkbox_1, checkbox_2); // 함수에 인수로 전달하여 스코프 고정
 
     }
 
-    function checkIntegrate(checkbox1, checkbox2) {
+    function checkIntegrate(checkbox1, checkbox2, checkOrNot) {
         // 체크박스 상태가 변경될 때 이벤트 리스너를 추가합니다.
         checkbox1.addEventListener('change', function () {
             if (checkbox1.checked) {
                 //alert('체크박스가 선택되었습니다.');
-                checkbox2.checked = true; // 체크박스 체크
+                checkbox2.checked = checkOrNot; // 체크박스 체크
             } else {
                 //alert('체크박스가 선택 해제되었습니다.');
-                checkbox2.checked = false; // 체크박스 해제
+                checkbox2.checked = !checkOrNot; // 체크박스 해제
             }
         });
     }
@@ -226,45 +100,82 @@
     var subCheckboxes = document.querySelectorAll(".SubSiteCheckbox");
 
     // 대표 체크 박스가 체크되어있으면, 서브 사이트 체크박스들도 모두 체크됨
-    checkAllOnMasterCheck(unifiedSearchCheckboxes,subCheckboxes);
+    setAllBCheckIfAnyAIsBool(unifiedSearchCheckboxes, subCheckboxes,true);
 
-    // 추가 체크박스들의 변경 이벤트를 처리합니다.
     //추가 체크박스 중 하나라도 체크가 풀리면 대표 체크박스도 체크를 풀도록 합니다.
-    uncheckMasterOnSubUncheck(unifiedSearchCheckboxes,subCheckboxes);
+    setAllBCheckIfAnyAIsBool(subCheckboxes,unifiedSearchCheckboxes,false);
 
 
-    // 대표 체크 박스가 체크되어있으면, 서브 사이트 체크박스들도 모두 체크됨
-    function checkAllOnMasterCheck(allMasterCheck, allSubCheck){
+    // A 체크박스 중 하나라도 bool타입이면 모든 B 체크박스가  bool타입이 됩니다. TODO: bool타입도 2개로 나눠서 모든 체크박스 연동 하나로 통일하기
+    function setAllBCheckIfAnyAIsBool(allAChecks, allBChecks, bool) {
 
-        allMasterCheck.forEach(function (masterCheckbox) {
-            masterCheckbox.addEventListener("change", function (){
-                if (this.checked){
-                    allSubCheck.forEach(function (checkbox) {
-                        checkbox.checked=true;
+        allAChecks.forEach(function (ACheckbox) {
+            ACheckbox.addEventListener("change", function () {
+                if (this.checked==bool) {
+                    allBChecks.forEach(function (Bcheckbox) {
+                        Bcheckbox.checked = bool;
                     });
                 }
             });
         });
-
-    }
-
-
-    // 추가 체크박스 중 하나라도 체크가 풀리면 모든 대표 체크박스도 체크를 풀도록 합니다.
-    function uncheckMasterOnSubUncheck(allmasterCheck, allSubCheck){
-
-        allSubCheck.forEach(function(checkbox) {
-            checkbox.addEventListener("change", function() {
-                // 추가 체크박스 중 하나라도 체크가 풀리면 대표 체크박스도 체크를 풀도록 합니다.
-                if (!this.checked) {
-                    allmasterCheck.forEach(function (masterCheckbox) {
-                        masterCheckbox.checked=false;
-                    });
-                }
-            });
-        });
-
     }
 
 </script>
+
+<!-- 해당 라디오 버튼이 눌리면 보이고, 안눌리면 안보이게-->
+<script>
+
+    // 라디오 버튼 요소를 가져옵니다.
+    var directPeriodRadioButton = document.getElementById("directPeriodSelectChecked");
+
+    // hiddenDateDiv 요소를 가져옵니다.
+    var dateDiv = document.getElementById("hiddenDateDiv");
+
+    // 페이지 로드 시 체크 여부에 따라 div를 초기 숨깁니다.
+    if (!directPeriodRadioButton.checked) {
+        dateDiv.style.visibility = "hidden"; // 숨김
+    }
+
+    // 라디오 버튼의 변경 이벤트를 처리합니다.
+    directPeriodRadioButton.addEventListener("change", function () {
+        if (this.checked) {
+            dateDiv.style.visibility = "visible"; // 선택되면 div를 보이게 함
+        } else {
+            alert("다른라디오버튼눌림");
+            dateDiv.style.visibility = "hidden"; // 선택되지 않으면 div를 숨김 (미완)
+        }
+    });
+</script>
+
+
+<!--검색어 추천 비동기식-->
+<script>
+    $(document).ready(function () {
+        $('#searchInput').on('input', function () {
+            var query = $(this).val();
+            $.ajax({
+                url: '/searchRecommend',
+                method: 'POST',
+                data: { query: query },
+                success: function (response) {
+                    // 서버에서 받은 결과를 처리하고 div 요소를 추가합니다.
+                    var resultsDiv = $('#searchResults');
+                    resultsDiv.empty();
+                    response.forEach(function (item) {
+                        var resultDiv = $('<div class="card result-item mt-2"></div>');
+                        var link = $('<a class="text-decoration-none" href="/"></a>');
+                        var text = $('<p class="fs-5">' + item + '</p>'); // item 변수를 사용하여 텍스트를 설정합니다.
+
+                        link.append(text);
+                        resultDiv.append(link);
+                        resultsDiv.append(resultDiv);
+
+                    });
+                }
+            });
+        });
+    });
+</script>
+
 
 </html>

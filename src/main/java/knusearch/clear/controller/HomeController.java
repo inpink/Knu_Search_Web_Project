@@ -5,8 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,6 +30,37 @@ public class HomeController {
         model.addAttribute("minDate", minDate);
 
         return "home";
+    }
+
+    @PostMapping("/search")
+    public String searchResult(){
+        return "hello";
+    }
+
+    @GetMapping("/test")
+    public String test(){
+        return "recommendSearchQuery";
+    }
+
+    @PostMapping("/searchRecommend")
+    @ResponseBody
+    public List<String> search(@RequestBody String query) {
+
+        // 랜덤 객체 생성
+        Random random = new Random();
+
+        // 원하는 범위 내에서 랜덤 정수 생성 (예: 1부터 100까지의 범위)
+        int min = 1;
+        int max = 100;
+        int randomNumber = random.nextInt(min,max);
+
+        // 검색 로직을 수행하고 결과를 반환합니다.
+        List<String> results = new ArrayList<>();
+        results.add("검색 결과"+randomNumber);
+        results.add("검색 결과"+randomNumber);
+        results.add("검색 결과"+randomNumber);
+
+        return results;
     }
 
     // PostMapping에서 파라미터로 xxxx-xx-xx형식으로 오는 데이터를 MemberDTO memberDTO에 받을 때,

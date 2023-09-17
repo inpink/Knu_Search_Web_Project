@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="d-flex flex-wrap periodRadioButtons" th:fragment="periodRadioButtons"> <!--기간들 d-flex: 가로 정렬  flex-wrap : 가로꽉차면 줄바꿈-->
+    <div class="form-check m-auto">
+        <input class="form-check-input" type="radio" name="searchPeriodRadio" value="" id="allTimeChecked2" checked>
+        <label class="form-check-label" for="allTimeChecked2">전체 기간</label>
+    </div>
+
+    <div class="form-check m-auto">
+        <input class="form-check-input" type="radio" name="searchPeriodRadio" value="" id="lastOneDayChecked" >
+        <label class="form-check-label" for="lastOneDayChecked">최근 1일</label>
+    </div>
+
+    <div class="form-check m-auto">
+        <input class="form-check-input" type="radio" name="searchPeriodRadio" value="" id="lastOneWeekChecked" >
+        <label class="form-check-label" for="lastOneWeekChecked">최근 7일</label>
+    </div>
+
+    <div class="form-check m-auto">
+        <input class="form-check-input" type="radio" name="searchPeriodRadio" value="" id="lastOneMonthChecked" >
+        <label class="form-check-label" for="lastOneMonthChecked">최근 1달</label>
+    </div>
+
+    <div class="form-check m-auto"> <!-- 시작일, 종료일 -->
+        <input class="form-check-input" type="radio" name="searchPeriodRadio" value="" id="directPeriodSelectChecked" >
+        <label class="form-check-label" for="directPeriodSelectChecked">기간 직접 선택</label>
+
+        <div class="d-flex flex-wrap hiddenDateDiv" id="hiddenDateDiv">
+            <div class="m-auto">
+                <!-- datepicker, th로 일정 범위 -->
+                <label for="startDate">시작일:</label>
+                <input type="date" id="startDate" name="trip-start"
+                       value="2018-07-22" min="2018-01-01" max="2018-12-31"
+                       th:value="${selectedDate}" th:min="${minDate}" th:max="${selectedDate}"/>
+            </div>
+
+            <div class="m-auto">
+                <!-- datepicker, th로 일정 범위 -->
+                <label for="endDate">종료일:</label>
+                <input type="date" id="endDate" name="trip-start"
+                       value="2018-07-22" min="2018-01-01" max="2018-12-31"
+                       th:value="${selectedDate}" th:min="${minDate}" th:max="${selectedDate}"/>
+            </div>
+        </div>
+    </div>
+
+</div>
+
