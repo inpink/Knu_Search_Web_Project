@@ -11,7 +11,7 @@ public class SearchSite { //Entity : 실제 DB의 테이블과 매칭되는 클�
     //Entity에서 구현한 메소드는 주로 Service에서 사용한다
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "search_site_id")
     private Long id;
 

@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/knusearch?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: guestsearch
+    password: ghdwn1009G@
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+      hbm2ddl:
+        auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        #        show_sql: true
+        format_sql: true
+
+
+logging.level:
+  org.hibernate.SQL: debug
+#  org.hibernate.type: trace

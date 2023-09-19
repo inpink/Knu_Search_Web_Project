@@ -9,7 +9,8 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class MemberRepository {
+public class MemberRepository { //DAO(Data Access Object) : 실제로 DB에 접근.
+    // https://haem-jsp.tistory.com/57 <- 여기 정리 잘 돼있음
 
     private final EntityManager em; //JPA
 
