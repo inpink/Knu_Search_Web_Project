@@ -11,7 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberRepository {
 
-    private final EntityManager em;
+    private final EntityManager em; //JPA
 
     public void save(Member member) {
         em.persist(member);

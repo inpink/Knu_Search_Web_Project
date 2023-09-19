@@ -11,29 +11,37 @@
 </div>
 
 <div class="container"> <!--전체 -->
-    <div class="jumbotron"> <!-- 회색 박스 -->
+    <div class="jumbotron bg-light"> <!-- 회색 박스 -->
+        <!--  <form> 요소는 데이터를 서버로 전송하기 위한 표준적인 방법을 제공하며,
+        체크박스와 같은 입력 요소들을 쉽게 그룹화하고 데이터를 수집하여 서버로 보낼 수 있습니다.
+        추후 Memberform처럼  form에 타임리프 th:object="${memberForm}를 써줘야 함.
+        th:object를 사용하면 타임리프는 해당 객체의 필드와 값을 폼 컨트롤과 바인딩하며,
+        검증 실패 시 입력한 데이터가 그대로 유지됩니다.
+        이 memberForm 객체는 컨트롤러에서 만들어 옴.
+        -->
 
-        <div th:replace="fragments/parentOptions :: parentOptions"/>
+        <form id="searchForm" method="POST" action="/search">
+            <div th:replace="fragments/parentOptions :: parentOptions"/>
 
-        <!-- 펼치기/접기할 대상.  -->
-        <div class="collapse" id="collapseDiv">
-            <div class="card card-body"> <!-- 모든 옵션들 박스에 담기-->
+            <!-- 펼치기/접기할 대상.  -->
+            <div class="collapse" id="collapseDiv">
+                <div class="card card-body"> <!-- 모든 옵션들 박스에 담기-->
 
-                <div th:replace="fragments/allSearchSites :: allSearchSites"/>
+                    <div th:replace="fragments/allSearchSites :: allSearchSites"/>
 
-                <hr class="my-4"> <!-- 구분선-->
+                    <hr class="my-4"> <!-- 구분선-->
 
-                <div th:replace="fragments/inOrderOrLatest :: inOrderOrLatest"/>
+                    <div th:replace="fragments/inOrderOrLatest :: inOrderOrLatest"/>
 
-                <hr class="my-4"> <!-- 구분선-->
+                    <hr class="my-4"> <!-- 구분선-->
 
-                <div th:replace="fragments/periodRadioButtons :: periodRadioButtons"/>
+                    <div th:replace="fragments/periodRadioButtons :: periodRadioButtons"/>
 
+                </div>
             </div>
-        </div>
 
-        <div th:replace="fragments/searchContainer :: searchContainer"/>
-
+            <div th:replace="fragments/searchContainer :: searchContainer"/>
+        </form>
     </div>
 
     <div th:replace="fragments/footer :: footer"/>
@@ -100,10 +108,10 @@
     var subCheckboxes = document.querySelectorAll(".SubSiteCheckbox");
 
     // 대표 체크 박스가 체크되어있으면, 서브 사이트 체크박스들도 모두 체크됨
-    setAllBCheckIfAnyAIsBool(unifiedSearchCheckboxes, subCheckboxes,true);
+    setAllBCheckIfAnyAIsBool(unifiedSearchCheckboxes, subCheckboxes, true);
 
     //추가 체크박스 중 하나라도 체크가 풀리면 대표 체크박스도 체크를 풀도록 합니다.
-    setAllBCheckIfAnyAIsBool(subCheckboxes,unifiedSearchCheckboxes,false);
+    setAllBCheckIfAnyAIsBool(subCheckboxes, unifiedSearchCheckboxes, false);
 
 
     // A 체크박스 중 하나라도 bool타입이면 모든 B 체크박스가  bool타입이 됩니다. TODO: bool타입도 2개로 나눠서 모든 체크박스 연동 하나로 통일하기
@@ -111,7 +119,7 @@
 
         allAChecks.forEach(function (ACheckbox) {
             ACheckbox.addEventListener("change", function () {
-                if (this.checked==bool) {
+                if (this.checked == bool) {
                     allBChecks.forEach(function (Bcheckbox) {
                         Bcheckbox.checked = bool;
                     });
@@ -156,7 +164,7 @@
             $.ajax({
                 url: '/searchRecommend',
                 method: 'POST',
-                data: { query: query },
+                data: {query: query},
                 success: function (response) {
                     // 서버에서 받은 결과를 처리하고 div 요소를 추가합니다.
                     var resultsDiv = $('#searchResults');

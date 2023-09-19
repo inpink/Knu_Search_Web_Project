@@ -3,42 +3,51 @@
 
 <div class="d-flex flex-wrap allSearchSites" th:fragment="allSearchSites"> <!--검색 사이트 d-flex: 가로 정렬-->
     <div class="form-check m-auto"> <!-- m-auto : 자동 마진-->
-        <input class="form-check-input unifiedSearchChecked" type="checkbox" value="" id="unifiedSearchChecked2" checked>
+        <!--form에 있는 같은 name은 제출 시 list로 보내짐. 이름은 value값으로-->
+        <input class="form-check-input unifiedSearchChecked" type="checkbox"
+               name="selectedSites" value="unifiedSearchChecked" id="unifiedSearchChecked2" checked>
         <label class="form-check-label" for="unifiedSearchChecked2">통합 검색</label>
     </div>
 
     <div class="form-check m-auto">
-        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuWebSiteChecked" checked>
+        <input class="form-check-input SubSiteCheckbox" type="checkbox"
+               name="selectedSites" value="knuWebSiteChecked" id="knuWebSiteChecked" checked>
         <label class="form-check-label" for="knuWebSiteChecked">강남대학교 메인 홈페이지</label>
     </div>
 
     <div class="form-check m-auto">
-        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuIctSiteChecked" checked>
+        <input class="form-check-input SubSiteCheckbox" type="checkbox"
+               name="selectedSites" value="knuIctSiteChecked" id="knuIctSiteChecked" checked>
         <label class="form-check-label" for="knuIctSiteChecked">ICT 융합 공학부</label>
     </div>
 
     <div class="form-check m-auto">
-        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuWelfareSiteChecked" checked>
+        <input class="form-check-input SubSiteCheckbox" type="checkbox"
+               name="selectedSites" value="knuWelfareSiteChecked" id="knuWelfareSiteChecked" checked>
         <label class="form-check-label" for="knuWelfareSiteChecked">사회복지학부</label>
     </div>
 
     <div class="form-check m-auto">
-        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuSeniorSiteChecked" checked>
+        <input class="form-check-input SubSiteCheckbox" type="checkbox"
+               name="selectedSites" value="knuSeniorSiteChecked" id="knuSeniorSiteChecked" checked>
         <label class="form-check-label" for="knuSeniorSiteChecked">실버산업학과</label>
     </div>
 
     <div class="form-check m-auto">
-        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuArtSiteChecked" checked>
+        <input class="form-check-input SubSiteCheckbox" type="checkbox"
+               name="selectedSites" value="knuArtSiteChecked" id="knuArtSiteChecked" checked>
         <label class="form-check-label" for="knuArtSiteChecked">유니버설아트디자인학과</label>
     </div>
 
     <div class="form-check m-auto">
-        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuClasSiteChecked" checked>
+        <input class="form-check-input SubSiteCheckbox" type="checkbox"
+               name="selectedSites" value="knuClasSiteChecked" id="knuClasSiteChecked" checked>
         <label class="form-check-label" for="knuClasSiteChecked">KNU참인재대학</label>
     </div>
 
     <div class="form-check m-auto">
-        <input class="form-check-input SubSiteCheckbox" type="checkbox" value="" id="knuCtlSiteChecked" checked>
+        <input class="form-check-input SubSiteCheckbox" type="checkbox"
+               name="selectedSites" value="knuCtlSiteChecked" id="knuCtlSiteChecked" checked>
         <label class="form-check-label" for="knuCtlSiteChecked">교수학습지원센터</label>
     </div>
 
