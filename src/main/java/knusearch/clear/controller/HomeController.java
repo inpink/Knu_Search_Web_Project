@@ -29,13 +29,11 @@ public class HomeController {
         model.addAttribute("selectedDate", selectedDate);
         model.addAttribute("minDate", minDate);
 
-        return "home";
+        // "/" 경로에서 "/search" 경로로 리다이렉트
+        return "redirect:/search";
     }
 
-    @PostMapping("/search")
-    public String searchResult(){
-        return "hello";
-    }
+
 
     @GetMapping("/test")
     public String test(){

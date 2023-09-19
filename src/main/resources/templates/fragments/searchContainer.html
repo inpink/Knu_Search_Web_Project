@@ -2,12 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <div class="searchContainer" th:fragment="searchContainer">
 
-    <div class="container mt-5">
-        <form class="d-flex" id="searchForm" action="/search" method="POST">
-            <input class="form-control me-2 fs-4" type="search" id="searchInput" placeholder="검색어를 입력하세요"
-                   aria-label="검색">
-            <button class="btn btn-lg btn-secondary" type="submit">검색</button>
-        </form>
+    <div class="container d-flex mt-5">
+            <input class="form-control me-2 fs-4 m-auto" name="searchQuery" type="search" id="searchInput"
+                   placeholder="검색어를 입력하세요" aria-label="검색">
+            <button class="btn btn-secondary m-auto" type="submit">검색</button>
     </div>
 
     <div class="container mt-3 " id="searchResults">
