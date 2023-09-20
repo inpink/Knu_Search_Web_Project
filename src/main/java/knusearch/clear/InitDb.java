@@ -4,6 +4,7 @@ import knusearch.clear.domain.Search;
 import knusearch.clear.domain.SearchSite;
 import knusearch.clear.domain.content.Content;
 import knusearch.clear.domain.content.ContentMain;
+import knusearch.clear.service.ContentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class InitDb {
     public void init() {
         initService.dbInit1();
         initService.dbInit2();
+        initService.crawlTest();
     }
 
     @Component
@@ -32,6 +34,8 @@ public class InitDb {
     static class InitService {
 
         private final EntityManager em;
+        private final ContentService contentService;
+
 
         public void dbInit1() {
             System.out.println("Init1" + this.getClass());
@@ -90,6 +94,10 @@ public class InitDb {
             Delivery delivery = createDelivery(member);
             Order order = Order.createOrder(member, delivery, orderItem1, orderItem2);
             em.persist(order);*/
+        }
+
+        public void crawlTest() {
+            contentService.crawlAndStoreData();
         }
     }
 }

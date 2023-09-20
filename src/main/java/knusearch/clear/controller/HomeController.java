@@ -16,18 +16,10 @@ import java.util.Random;
 @Slf4j
 public class HomeController {
 
-    private final DateService dateService;
 
     @GetMapping("/")
     public String home(Model model) {
         log.info("home controller");
-
-        String selectedDate = dateService.currentDate();
-        String minDate = dateService.minDate();
-
-        // value, min, max 값을 모델에 추가
-        model.addAttribute("selectedDate", selectedDate);
-        model.addAttribute("minDate", minDate);
 
         // "/" 경로에서 "/search" 경로로 리다이렉트
         return "redirect:/search";

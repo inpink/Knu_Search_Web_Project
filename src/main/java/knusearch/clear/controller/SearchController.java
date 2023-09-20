@@ -1,6 +1,7 @@
 package knusearch.clear.controller;
 
 import jakarta.validation.Valid;
+import knusearch.clear.service.DateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,8 +16,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SearchController {
 
+    private final DateService dateService;
+
     @GetMapping("/search")
     public String searchForm(Model model){
+
+        String selectedDate = dateService.currentDate();
+        String minDate = dateService.minDate();
+
+        // value, min, max 값을 모델에 추가
+        model.addAttribute("selectedDate", selectedDate);
+        model.addAttribute("minDate", minDate);
+
         model.addAttribute("searchForm", new SearchForm());
         return "home";
     }
