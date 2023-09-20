@@ -20,7 +20,7 @@ public class Search { //bindingResult로 받은 SearchForm객체에서 정제해
     @JsonIgnore를 붙이면 해당 필드의 값은 JSON으로 변환될 때 포함되지 않습니다.
 
     CascadeType.ALL은 모든 변경 작업(추가, 수정, 삭제 등)이 부모 엔티티에 적용될 때 자식 엔티티에도 적용되도록 설정합니다.
-     즉, Order 엔티티를 저장할 때 관련된 모든 OrderItem 엔티티도 자동으로 저장됩니다.
+     즉, search 엔티티를 저장할 때 관련된 모든 searchSite 엔티티도 자동으로 저장됩니다.
 
      mappedBy : 양방향 매핑에서, search 객체와 searchsite 객체가 모두 db의 SEARCH table에 접근할 수 있어진다.
      무결성을 해칠 수 있으므로 두 객체 중 하나의 객체만 SEARCH table에 접근할 수 있게 해주자

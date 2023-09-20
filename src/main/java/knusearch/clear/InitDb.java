@@ -2,12 +2,16 @@ package knusearch.clear;
 
 import knusearch.clear.domain.Search;
 import knusearch.clear.domain.SearchSite;
+import knusearch.clear.domain.content.Content;
+import knusearch.clear.domain.content.ContentMain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
+
+import java.util.Date;
 
 
 @Component
@@ -35,7 +39,15 @@ public class InitDb {
             SearchSite searchSite1=SearchSite.createSearchSite("searchSite1");
             SearchSite searchSite2=SearchSite.createSearchSite("searchSite2");
             Search search = Search.createSearch(searchSite1,searchSite2);
-            em.persist(search);
+            em.persist(search); //★여기는 초기 예시라 그렇고, 실제는 클라이언트에 의해 동적으로 되므로,
+            //DB는 repository를 이용해 조작한다.
+
+            ContentMain contentMain= ContentMain.createContentMain("title임","본문임 ","imageLink~~",new Date());
+            em.persist(contentMain);
+
+            Content content= Content.createContent("contentTitle","content본문",".",new Date());
+            em.persist(content);
+
 
             /*Member member = createMember("userA", "서울", "1", "1111");
             em.persist(member);

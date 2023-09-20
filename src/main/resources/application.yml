@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/knusearch?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/knusearch?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: guestsearch
     password: ghdwn1009G@
 
@@ -16,6 +16,8 @@ spring:
         #        show_sql: true
         format_sql: true
 
+  messages:
+    basename: messages, names, errors #국제화 파일들
 
 logging.level:
   org.hibernate.SQL: debug
