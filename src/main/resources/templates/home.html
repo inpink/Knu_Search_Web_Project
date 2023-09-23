@@ -19,8 +19,8 @@
         검증 실패 시 입력한 데이터가 그대로 유지됩니다.
         이 memberForm 객체는 컨트롤러에서 만들어 옴.
         -->
+        <div th:replace="~{fragments/parentOptions :: parentOptions}"/>
         <form id="searchForm" method="POST" action="/search">
-            <div th:replace="fragments/parentOptions :: parentOptions"/>
 
             <!-- 펼치기/접기할 대상.  -->
             <div class="collapse" id="collapseDiv">

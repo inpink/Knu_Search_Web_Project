@@ -23,6 +23,7 @@ public class SearchController {
 
         String selectedDate = dateService.currentDate();
         String minDate = dateService.minDate();
+        System.out.println("기간 cur, min  : "+selectedDate+minDate);
 
         // value, min, max 값을 모델에 추가
         model.addAttribute("selectedDate", selectedDate);
@@ -41,6 +42,7 @@ public class SearchController {
     public String search(@Valid SearchForm searchForm, BindingResult result, Model model){
 
         if (result.hasErrors()) {
+            System.out.println("searchForm 검증 과정에서 에러 발생"+result.getAllErrors());
             return "home";
         }
 
@@ -65,6 +67,10 @@ public class SearchController {
             System.out.println("검색어가 입력되지 않았습니다.");
         }
 
+        System.out.println("검색 정렬:"+searchForm.getSearchScopeRadio());
+        System.out.println("검색 기간:"+searchForm.getSearchPeriodRadio());
+        System.out.println("검색 기간 시작:"+searchForm.getSearchPeriod_start());
+        System.out.println("검색 기간 끝:"+searchForm.getSearchPeriod_end());
 
         return "searchResult"; //redirect 말고 바로 page로 이동시킴. 이유는 아래에
     }
