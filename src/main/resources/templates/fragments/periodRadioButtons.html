@@ -32,7 +32,7 @@
                 <label for="startDate">시작일:</label>
                 <input type="date" id="startDate" name="searchPeriod_start"
                        value="2018-07-22" min="2018-01-01" max="2018-12-31"
-                       th:value="${selectedDate}" th:min="${minDate}" th:max="${selectedDate}"/>
+                       th:value="*{searchPeriod_end}" th:min="*{searchPeriod_start}" th:max="*{searchPeriod_end}"/>
             </div>
 
             <div class="m-auto">
@@ -40,7 +40,7 @@
                 <label for="endDate">종료일:</label>
                 <input type="date" id="endDate" name="searchPeriod_end"
                        value="2018-07-22" min="2018-01-01" max="2018-12-31"
-                       th:value="${selectedDate}" th:min="${minDate}" th:max="${selectedDate}"/>
+                       th:value="*{searchPeriod_end}" th:min="*{searchPeriod_start}" th:max="*{searchPeriod_end}"/>
             </div>
         </div>
     </div>

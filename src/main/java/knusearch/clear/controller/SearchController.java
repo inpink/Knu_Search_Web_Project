@@ -2,7 +2,10 @@ package knusearch.clear.controller;
 
 import jakarta.validation.Valid;
 import knusearch.clear.service.DateService;
+import knusearch.clear.service.SearchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,6 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -18,19 +25,33 @@ import java.util.List;
 public class SearchController {
 
     private final DateService dateService;
+    private final SearchService searchService;
 
     @GetMapping("/search")
     public String searchForm(Model model){
 
-        String selectedDate = dateService.currentDate();
-        String minDate = dateService.minDate();
-        System.out.println("기간 cur, min  : "+selectedDate+minDate);
+        // searchForm에 기본값 담아서 반환할 것임
+        SearchForm searchForm = new SearchForm();
 
-        // value, min, max 값을 모델에 추가
-        model.addAttribute("selectedDate", selectedDate);
-        model.addAttribute("minDate", minDate);
+        // YAML 파일에서 모든 site명을 가져와서 ArrayList에 담기
+        List<String> selectedSites = searchService.findSites();
+        String searchScopeRadio = searchService.findOrder();
 
-        model.addAttribute("searchForm", new SearchForm());
+        //기간 값 추가
+        LocalDate searchPeriod_start = dateService.minDate();
+        LocalDate searchPeriod_end = dateService.currentDate();
+
+
+        searchForm.setSelectedSites(selectedSites);
+        searchForm.setSearchPeriod_start(searchPeriod_start);  // value, min, max 값을 모델에 추가
+        searchForm.setSearchPeriod_end(searchPeriod_end);
+        searchForm.setSearchScopeRadio(searchScopeRadio);
+
+
+        model.addAttribute("searchForm", searchForm);
+
+
+
         return "home";
     }
 

@@ -3,13 +3,12 @@
 
 
 <div class="d-flex flex-wrap allSearchSites" th:fragment="allSearchSites"> <!--검색 사이트 d-flex: 가로 정렬-->
-    <div class="field-error" th:errors="*{selectedSites}">
-        하나 이상의 사이트를 선택하세요!
-    </div>
 
     <div class="form-check m-auto"> <!-- m-auto : 자동 마진-->
         <!--form에 있는 같은 name은 제출 시 list로 보내짐. 이름은 value값으로
-        th:field는 name, id, value를 생성하는데, 덮어씌우진 않는다-->
+        th:field는 name, id, value를 생성하는데, 덮어씌우진 않는다
+        intellj에서 th 인식 못해서 그런거임 실행 잘되면 빨간줄은 괜찮다
+        -->
         <input class="form-check-input unifiedSearchChecked" type="checkbox"
                name="selectedSites" th:field="*{selectedSites}"
                value="unifiedSearchChecked" id="unifiedSearchChecked2" checked>
@@ -18,43 +17,50 @@
 
     <div class="form-check m-auto">
         <input class="form-check-input SubSiteCheckbox" type="checkbox"
-               name="selectedSites" value="knuWebSiteChecked" id="knuWebSiteChecked" checked>
-        <label class="form-check-label" for="knuWebSiteChecked">강남대학교 메인 홈페이지</label>
+               name="selectedSites" th:field="*{selectedSites}"
+               value="knuMainSiteChecked" id="knuMainSiteChecked" checked>
+        <label class="form-check-label" for="knuMainSiteChecked">강남대학교 메인 홈페이지</label>
     </div>
 
     <div class="form-check m-auto">
         <input class="form-check-input SubSiteCheckbox" type="checkbox"
-               name="selectedSites" value="knuIctSiteChecked" id="knuIctSiteChecked" checked>
+               name="selectedSites" th:field="*{selectedSites}"
+               value="knuIctSiteChecked" id="knuIctSiteChecked" checked>
         <label class="form-check-label" for="knuIctSiteChecked">ICT 융합 공학부</label>
     </div>
 
     <div class="form-check m-auto">
         <input class="form-check-input SubSiteCheckbox" type="checkbox"
-               name="selectedSites" value="knuWelfareSiteChecked" id="knuWelfareSiteChecked" checked>
+               name="selectedSites" th:field="*{selectedSites}"
+               value="knuWelfareSiteChecked" id="knuWelfareSiteChecked" checked>
         <label class="form-check-label" for="knuWelfareSiteChecked">사회복지학부</label>
     </div>
 
     <div class="form-check m-auto">
         <input class="form-check-input SubSiteCheckbox" type="checkbox"
-               name="selectedSites" value="knuSeniorSiteChecked" id="knuSeniorSiteChecked" checked>
+               name="selectedSites" th:field="*{selectedSites}"
+               value="knuSeniorSiteChecked" id="knuSeniorSiteChecked" checked>
         <label class="form-check-label" for="knuSeniorSiteChecked">실버산업학과</label>
     </div>
 
     <div class="form-check m-auto">
         <input class="form-check-input SubSiteCheckbox" type="checkbox"
-               name="selectedSites" value="knuArtSiteChecked" id="knuArtSiteChecked" checked>
+               name="selectedSites"  th:field="*{selectedSites}"
+               value="knuArtSiteChecked" id="knuArtSiteChecked" checked>
         <label class="form-check-label" for="knuArtSiteChecked">유니버설아트디자인학과</label>
     </div>
 
     <div class="form-check m-auto">
         <input class="form-check-input SubSiteCheckbox" type="checkbox"
-               name="selectedSites" value="knuClasSiteChecked" id="knuClasSiteChecked" checked>
+               name="selectedSites" th:field="*{selectedSites}"
+               value="knuClasSiteChecked" id="knuClasSiteChecked" checked>
         <label class="form-check-label" for="knuClasSiteChecked">KNU참인재대학</label>
     </div>
 
     <div class="form-check m-auto">
         <input class="form-check-input SubSiteCheckbox" type="checkbox"
-               name="selectedSites" value="knuCtlSiteChecked" id="knuCtlSiteChecked" checked>
+               name="selectedSites" th:field="*{selectedSites}"
+               value="knuCtlSiteChecked" id="knuCtlSiteChecked" checked>
         <label class="form-check-label" for="knuCtlSiteChecked">교수학습지원센터</label>
     </div>
 

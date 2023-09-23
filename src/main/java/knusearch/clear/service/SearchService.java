@@ -9,10 +9,33 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SearchService {
 
+    //나중에는 repository(DAO)에서 가져올 듯
+    public String findOrder(){
+        return "InOrderChecked";
+    }
+
+    public List<String> findSites(){
+
+        List<String> sites = new ArrayList<>(){{
+           add("unifiedSearchChecked");
+           add("knuMainSiteChecked");
+           add("knuIctSiteChecked");
+           add("knuWelfareSiteChecked");
+           add("knuSeniorSiteChecked");
+           add("knuArtSiteChecked");
+           add("knuClasSiteChecked");
+           add("knuCtlSiteChecked");
+        }};
+
+        return sites;
+    }
 
 }

@@ -4,22 +4,27 @@
 <div class="d-flex bg-skyblue p-3 border rounded parentOptions" th:fragment="parentOptions"> <!-- 옵션들 선택-->
 
   <div class="form-check m-auto">
-    <input class="form-check-input unifiedSearchChecked" type="checkbox" value="" id="unifiedSearchChecked1" checked>
+    <input class="form-check-input unifiedSearchChecked" type="checkbox"
+           value="unifiedSearchChecked" th:field="*{searchForm.selectedSites}"
+           id="unifiedSearchChecked1" checked>
     <label class="form-check-label" for="unifiedSearchChecked1">통합 검색</label>
   </div>
 
   <div class="form-check m-auto">
-    <input class="form-check-input inOrderBox" type="checkbox" value="" id="inOrderChecked1" checked>
+    <input class="form-check-input inOrderBox" type="checkbox"
+            id="inOrderChecked1" checked>
     <label class="form-check-label" for="InOrderChecked1">정확도순</label>
   </div>
 
   <div class="form-check m-auto">
-    <input class="form-check-input allTimeBox" type="checkbox" value="" id="allTimeChecked1" checked>
+    <input class="form-check-input allTimeBox" type="checkbox"
+            id="allTimeChecked1" checked>
     <label class="form-check-label" for="allTimeChecked1">전체 기간</label>
   </div>
 
   <div class="form-check m-auto">
-    <input class="form-check-input" type="checkbox" value="" id="categoryRecommendChecked1" checked>
+    <input class="form-check-input" type="checkbox"
+            id="categoryRecommendChecked1" checked>
     <label class="form-check-label" for="categoryRecommendChecked1">분류 추천 사용</label>
   </div>
 
