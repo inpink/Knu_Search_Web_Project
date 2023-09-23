@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="mt-5 homeford" th:fragment="homeford">
+    <script type="text/javascript"> <!-- module 타입으로 지연실행, document가 이 파일이 아닌 이 파일을 쓰는 곳으로 지정됨!-->
+        const collapseButton = document.querySelector('[data-bs-target="#collapseDiv"]');
+        const collapseDiv = document.querySelector('#collapseDiv');
+
+        collapseDiv.addEventListener('show.bs.collapse', function () {
+            collapseButton.textContent = '접기';
+        });
+
+        collapseDiv.addEventListener('hide.bs.collapse', function () {
+            collapseButton.textContent = '세부 옵션 설정';
+        });
+    </script>
+</div>
+<!--실행 안됨-->
