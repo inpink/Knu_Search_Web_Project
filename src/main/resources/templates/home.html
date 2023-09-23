@@ -86,7 +86,7 @@
 
     }
 
-    function checkIntegrate(checkbox1, checkbox2, checkOrNot) {
+    function checkIntegrate(checkbox1, checkbox2, checkOrNot) { //setAllBCheckIfAnyAIsBool와 다른점 : else까지 있음
         // 체크박스 상태가 변경될 때 이벤트 리스너를 추가합니다.
         checkbox1.addEventListener('change', function () {
             if (checkbox1.checked) {
@@ -103,24 +103,33 @@
 
 <!-- 검색 사이트 : 추가 체크박스 중 하나라도 체크가 풀리면 대표 체크박스도 체크가 풀리도록 -->
 <script>
-    var unifiedSearchCheckboxes = document.querySelectorAll(".unifiedSearchChecked");
-    var subCheckboxes = document.querySelectorAll(".SubSiteCheckbox");
+    var unifiedSearchCheckboxes = document.querySelectorAll(".unifiedSearchChecked"); //통합검색
+    var subCheckboxes = document.querySelectorAll(".SubSiteCheckbox"); //sub 사이트들
 
     // 대표 체크 박스가 체크되어있으면, 서브 사이트 체크박스들도 모두 체크됨
-    setAllBCheckIfAnyAIsBool(unifiedSearchCheckboxes, subCheckboxes, true);
+    setAllBCheckIfAnyAIsBool(unifiedSearchCheckboxes, subCheckboxes, true, true);
 
     //추가 체크박스 중 하나라도 체크가 풀리면 대표 체크박스도 체크를 풀도록 합니다.
-    setAllBCheckIfAnyAIsBool(subCheckboxes, unifiedSearchCheckboxes, false);
+    setAllBCheckIfAnyAIsBool(subCheckboxes, unifiedSearchCheckboxes, false, false);
 
+    //"최신순(A)" 선택하면 "정확도순 2개(B)" 모두 체크 풀기
+    var inOrderBoxes = document.querySelectorAll(".inOrderBox");
+    var latestBoxes =document.querySelectorAll(".latestBox");
+    setAllBCheckIfAnyAIsBool(latestBoxes, inOrderBoxes, true, false);
 
-    // A 체크박스 중 하나라도 bool타입이면 모든 B 체크박스가  bool타입이 됩니다. TODO: bool타입도 2개로 나눠서 모든 체크박스 연동 하나로 통일하기
-    function setAllBCheckIfAnyAIsBool(allAChecks, allBChecks, bool) {
+    //"기간 선택옵션들(A)" 선택하면 "전체 기간 2개(B)" 모두 체크 풀기
+    var allTimeBoxes=document.querySelectorAll(".allTimeBox");
+    var periodSelectableBoxes = document.querySelectorAll(".periodSelectableBox");
+    setAllBCheckIfAnyAIsBool(periodSelectableBoxes, allTimeBoxes, true, false);
+
+    // A 체크박스 중 하나라도 ifBool타입이면 모든 B 체크박스가  setBool타입이 됩니다.
+    function setAllBCheckIfAnyAIsBool(allAChecks, allBChecks, ifBool, setBool) {
 
         allAChecks.forEach(function (ACheckbox) {
             ACheckbox.addEventListener("change", function () {
-                if (this.checked == bool) {
+                if (this.checked == ifBool) {
                     allBChecks.forEach(function (Bcheckbox) {
-                        Bcheckbox.checked = bool;
+                        Bcheckbox.checked = setBool;
                     });
                 }
             });
