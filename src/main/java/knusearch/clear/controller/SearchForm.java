@@ -15,13 +15,13 @@ public class SearchForm { //form 데이터를 bindingResult로 받아올때 쓸 
     //DTO (Data Transfer Object) : Client, Service, Controller, Repsitory 사이에서 데이터를 전달하기 위해 쓰임
     //getter/setter 만
 
-    //@NotEmpty(message = "하나 이상의 검색 사이트를 선택해주세요.")
+    @NotEmpty(message = "하나 이상의 검색 사이트를 선택해주세요.")
     private List<String> selectedSites;
 
-    //@NotEmpty(message = "검색 결과 정렬 순서를 선택해주세요.")
+    @NotEmpty(message = "검색 결과 정렬 순서를 선택해주세요.")
     private String searchScopeRadio;
 
-    //@NotEmpty(message = "검색 범위를 선택해주세요.")
+    @NotEmpty(message = "검색 범위를 선택해주세요.")
     private String searchPeriodRadio;
 
     //form에서는 String형으로 보내줌. @DateTimeFormat 어노테이션을 사용하여 Date형으로 편하게 변환

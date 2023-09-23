@@ -1,10 +1,31 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Hello</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<head th:replace="fragments/header :: header">
+    <title>강남대학교 웹 검색 도우미</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
+
 <body>
+
+<div class="col text-center mb-5">
+    <h1>강남대학교 웹 검색 도우미</h1>
+</div>
+
+
+<!--
+<script>
+    $(document).ready(function () {
+        $("#header").load("/", function () {
+            //페이지 별로 다른 메뉴 css 적용도 가능
+            document.getElementById("sub_nav").classList.add("show");
+        });
+    })
+</script>
+<div id='header'></div>
+-->
+
 <p th:text="'검색결과. ' + ${searchQuery}" >안녕하세요. ㅇㅇ님</p>
+
+
 </body>
 </html>

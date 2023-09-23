@@ -46,12 +46,15 @@ body {
     text-align: center;
     border-bottom: 1px solid #e5e5e5;
     padding: 20px;
+    white-space: nowrap; /* 글자가 줄 바꿈되지 않도록 설정 */
 }
 
 .jumbotron .btn {
     font-size: 21px;
     padding: 14px 24px;
 }
+
+
 
 /* Supporting marketing content */
 .marketing {

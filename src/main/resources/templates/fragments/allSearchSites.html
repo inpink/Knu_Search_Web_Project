@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
+
 <div class="d-flex flex-wrap allSearchSites" th:fragment="allSearchSites"> <!--검색 사이트 d-flex: 가로 정렬-->
+    <div class="field-error" th:errors="*{selectedSites}">
+        하나 이상의 사이트를 선택하세요!
+    </div>
+
     <div class="form-check m-auto"> <!-- m-auto : 자동 마진-->
-        <!--form에 있는 같은 name은 제출 시 list로 보내짐. 이름은 value값으로-->
+        <!--form에 있는 같은 name은 제출 시 list로 보내짐. 이름은 value값으로
+        th:field는 name, id, value를 생성하는데, 덮어씌우진 않는다-->
         <input class="form-check-input unifiedSearchChecked" type="checkbox"
-               name="selectedSites" value="unifiedSearchChecked" id="unifiedSearchChecked2" checked>
+               name="selectedSites" th:field="*{selectedSites}"
+               value="unifiedSearchChecked" id="unifiedSearchChecked2" checked>
         <label class="form-check-label" for="unifiedSearchChecked2">통합 검색</label>
     </div>
 

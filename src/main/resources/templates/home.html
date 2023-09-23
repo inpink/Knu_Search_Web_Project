@@ -20,7 +20,7 @@
         이 memberForm 객체는 컨트롤러에서 만들어 옴.
         -->
         <div th:replace="~{fragments/parentOptions :: parentOptions}"/>
-        <form id="searchForm" method="POST" action="/search">
+        <form id="searchForm" method="GET" action="/searchResult" th:object="${searchForm}" > <!--검색 결과 URL을 공유 가능하도록 POST가 아닌 GET 이용-->
 
             <!-- 펼치기/접기할 대상.  -->
             <div class="collapse" id="collapseDiv">
@@ -106,10 +106,13 @@
     var unifiedSearchCheckboxes = document.querySelectorAll(".unifiedSearchChecked"); //통합검색
     var subCheckboxes = document.querySelectorAll(".SubSiteCheckbox"); //sub 사이트들
 
-    // 대표 체크 박스가 체크되어있으면, 서브 사이트 체크박스들도 모두 체크됨
+    // "통합검색 2개(A)" 체크 박스가 체크되어있으면, "서브 사이트 체크박스들(B)"도 모두 체크됨
     setAllBCheckIfAnyAIsBool(unifiedSearchCheckboxes, subCheckboxes, true, true);
 
-    //추가 체크박스 중 하나라도 체크가 풀리면 대표 체크박스도 체크를 풀도록 합니다.
+    // "통합검색 2개(A)" 체크 박스가 하나라도 풀리면, "서브 사이트 체크박스들(B)"도 모두 풀림
+    setAllBCheckIfAnyAIsBool(unifiedSearchCheckboxes, subCheckboxes, false, false);
+
+    //"서브 사이트 체크박스들(A)" 중 하나라도 체크가 풀리면 "통합검색 2개(B)"도 체크를 풀도록 합니다.
     setAllBCheckIfAnyAIsBool(subCheckboxes, unifiedSearchCheckboxes, false, false);
 
     //"최신순(A)" 선택하면 "정확도순 2개(B)" 모두 체크 풀기
