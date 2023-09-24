@@ -22,6 +22,8 @@ public class SearchService {
         return "InOrderChecked";
     }
 
+    public String findPeriod() { return "allTimeChecked"; }
+
     public List<String> findSites(){
 
         List<String> sites = new ArrayList<>(){{

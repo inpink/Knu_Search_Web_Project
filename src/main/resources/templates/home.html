@@ -7,11 +7,13 @@
 
 <body>
 <div class="col text-center mb-5">
-    <h1>강남대학교 웹 검색 도우미</h1>
+    <h1>
+        <a href="/">강남대학교 웹 검색 도우미</a>
+    </h1>
+
 </div>
-<div class="text-center text-danger field-error" th:errors="*{searchForm.selectedSites}">
-    하나 이상의 사이트를 선택하세요!
-</div>
+
+<!--<p th:text="*{searchForm.searchPeriod_start}"/> 잘 됨-->
 
 <div class="container"> <!--전체 -->
     <div class="jumbotron bg-light"> <!-- 회색 박스 -->

@@ -6,26 +6,208 @@
 </head>
 
 <body>
+<div class="col mb-5">
+    <h4 class="text-left ms-3">
+        <a href="/">강남대학교 웹 검색 도우미</a>
+    </h4>
 
-<div class="col text-center mb-5">
-    <h1>강남대학교 웹 검색 도우미</h1>
+    <h1 class="text-center">검색 결과</h1>
 </div>
 
+<div th:replace="~{fragments/optionsErrorsDiv :: optionsErrorsDiv}"/>
+<!--<p th:text="*{searchForm.searchPeriod_start}"/> 잘 됨-->
 
-<!--
-<script>
-    $(document).ready(function () {
-        $("#header").load("/", function () {
-            //페이지 별로 다른 메뉴 css 적용도 가능
-            document.getElementById("sub_nav").classList.add("show");
-        });
-    })
-</script>
-<div id='header'></div>
--->
+<div class="container"> <!--전체 -->
+    <div class="jumbotron bg-light"> <!-- 회색 박스 -->
+        <!--  <form> 요소는 데이터를 서버로 전송하기 위한 표준적인 방법을 제공하며,
+        체크박스와 같은 입력 요소들을 쉽게 그룹화하고 데이터를 수집하여 서버로 보낼 수 있습니다.
+        추후 Memberform처럼  form에 타임리프 th:object="${memberForm}를 써줘야 함.
+        th:object를 사용하면 타임리프는 해당 객체의 필드와 값을 폼 컨트롤과 바인딩하며,
+        검증 실패 시 입력한 데이터가 그대로 유지됩니다.
+        이 memberForm 객체는 컨트롤러에서 만들어 옴.
+        -->
+        <div th:replace="~{fragments/parentOptions :: parentOptions}"/>
+        <form id="searchForm" method="GET" action="/searchResult" th:object="${searchForm}">
+            <!--검색 결과 URL을 공유 가능하도록 POST가 아닌 GET 이용-->
 
-<p th:text="'검색결과. ' + ${searchQuery}" >안녕하세요. ㅇㅇ님</p>
+            <!-- 펼치기/접기할 대상.  -->
+            <div class="collapse" id="collapseDiv">
+                <div class="card card-body"> <!-- 모든 옵션들 박스에 담기-->
 
+                    <div th:replace="fragments/allSearchSites :: allSearchSites"/>
+
+                    <hr class="my-4"> <!-- 구분선-->
+
+                    <div th:replace="fragments/inOrderOrLatest :: inOrderOrLatest"/>
+
+                    <hr class="my-4"> <!-- 구분선-->
+
+                    <div th:replace="fragments/periodRadioButtons :: periodRadioButtons"/>
+
+                </div>
+            </div>
+
+            <div th:replace="fragments/searchContainer :: searchContainer"/>
+        </form>
+    </div>
+
+    <!-- 검색 결과 나타내는 창. 에러가 없어야만 출력됨 -->
+    <div th:if="${isSearchEnabled} == true">
+        여기에 내용을 추가하세욤
+    </div>
+
+    <div th:replace="fragments/footer :: footer"/>
+
+</div> <!-- /container -->
 
 </body>
+
+
+<!-- JavaScript로 펼쳤을 때와 접혔을 때의 문구 변경 -->
+<script>
+    const collapseButton = document.querySelector('[data-bs-target="#collapseDiv"]');
+    const collapseDiv = document.querySelector('#collapseDiv');
+
+    collapseDiv.addEventListener('show.bs.collapse', function () {
+        collapseButton.textContent = '접기';
+    });
+
+    collapseDiv.addEventListener('hide.bs.collapse', function () {
+        collapseButton.textContent = '세부 옵션 설정';
+    });
+</script>
+
+
+<!-- JavaScript로 체크, 라디오 박스 연동 -->
+<script>
+    //모든 대표  체크, 라디오 박스들의 이름
+    var parentCheckboxes = ["unifiedSearchChecked", "inOrderChecked", "allTimeChecked"];
+
+    // for문으로 모든 체크박스에 대한 이벤트 리스너를 추가합니다.
+    for (var i = 0; i <= parentCheckboxes.length; i++) {
+        // 체크박스 요소를 가져옵니다.
+        //체크박스 1은 위에 있는것, 2는 밑에 있는것
+        var checkbox_1 = document.getElementById(parentCheckboxes[i] + "1");
+        var checkbox_2 = document.getElementById(parentCheckboxes[i] + "2"); // 체크박스 요소를 가져옵니다.
+
+        // 함수 내부에서 사용할 변수를 만듭니다.
+
+        (function (checkbox1, checkbox2) { //=> 클로저 문제때문에 각 이벤트 리스너에 대한 변수를 만들어줘야함
+            checkIntegrate(checkbox1, checkbox2, true);
+            checkIntegrate(checkbox2, checkbox1, true);
+        })(checkbox_1, checkbox_2); // 함수에 인수로 전달하여 스코프 고정
+
+    }
+
+    function checkIntegrate(checkbox1, checkbox2, checkOrNot) { //setAllBCheckIfAnyAIsBool와 다른점 : else까지 있음
+        // 체크박스 상태가 변경될 때 이벤트 리스너를 추가합니다.
+        checkbox1.addEventListener('change', function () {
+            if (checkbox1.checked) {
+                //alert('체크박스가 선택되었습니다.');
+                checkbox2.checked = checkOrNot; // 체크박스 체크
+            } else {
+                //alert('체크박스가 선택 해제되었습니다.');
+                checkbox2.checked = !checkOrNot; // 체크박스 해제
+            }
+        });
+    }
+
+</script>
+
+<!-- 검색 사이트 : 추가 체크박스 중 하나라도 체크가 풀리면 대표 체크박스도 체크가 풀리도록 -->
+<script>
+    var unifiedSearchCheckboxes = document.querySelectorAll(".unifiedSearchChecked"); //통합검색
+    var subCheckboxes = document.querySelectorAll(".SubSiteCheckbox"); //sub 사이트들
+
+    // "통합검색 2개(A)" 체크 박스가 체크되어있으면, "서브 사이트 체크박스들(B)"도 모두 체크됨
+    setAllBCheckIfAnyAIsBool(unifiedSearchCheckboxes, subCheckboxes, true, true);
+
+    // "통합검색 2개(A)" 체크 박스가 하나라도 풀리면, "서브 사이트 체크박스들(B)"도 모두 풀림
+    setAllBCheckIfAnyAIsBool(unifiedSearchCheckboxes, subCheckboxes, false, false);
+
+    //"서브 사이트 체크박스들(A)" 중 하나라도 체크가 풀리면 "통합검색 2개(B)"도 체크를 풀도록 합니다.
+    setAllBCheckIfAnyAIsBool(subCheckboxes, unifiedSearchCheckboxes, false, false);
+
+    //"최신순(A)" 선택하면 "정확도순 2개(B)" 모두 체크 풀기
+    var inOrderBoxes = document.querySelectorAll(".inOrderBox");
+    var latestBoxes = document.querySelectorAll(".latestBox");
+    setAllBCheckIfAnyAIsBool(latestBoxes, inOrderBoxes, true, false);
+
+    //"기간 선택옵션들(A)" 선택하면 "전체 기간 2개(B)" 모두 체크 풀기
+    var allTimeBoxes = document.querySelectorAll(".allTimeBox");
+    var periodSelectableBoxes = document.querySelectorAll(".periodSelectableBox");
+    setAllBCheckIfAnyAIsBool(periodSelectableBoxes, allTimeBoxes, true, false);
+
+    // A 체크박스 중 하나라도 ifBool타입이면 모든 B 체크박스가  setBool타입이 됩니다.
+    function setAllBCheckIfAnyAIsBool(allAChecks, allBChecks, ifBool, setBool) {
+
+        allAChecks.forEach(function (ACheckbox) {
+            ACheckbox.addEventListener("change", function () {
+                if (this.checked == ifBool) {
+                    allBChecks.forEach(function (Bcheckbox) {
+                        Bcheckbox.checked = setBool;
+                    });
+                }
+            });
+        });
+    }
+
+</script>
+
+<!-- 해당 라디오 버튼이 눌리면 보이고, 안눌리면 안보이게-->
+<script>
+
+    // 라디오 버튼 요소를 가져옵니다.
+    var directPeriodRadioButton = document.getElementById("directPeriodSelectChecked");
+
+    // hiddenDateDiv 요소를 가져옵니다.
+    var dateDiv = document.getElementById("hiddenDateDiv");
+
+    // 페이지 로드 시 체크 여부에 따라 div를 초기 숨깁니다.
+    if (!directPeriodRadioButton.checked) {
+        dateDiv.style.visibility = "hidden"; // 숨김
+    }
+
+    // 라디오 버튼의 변경 이벤트를 처리합니다.
+    directPeriodRadioButton.addEventListener("change", function () {
+        if (this.checked) {
+            dateDiv.style.visibility = "visible"; // 선택되면 div를 보이게 함
+        } else {
+            alert("다른라디오버튼눌림");
+            dateDiv.style.visibility = "hidden"; // 선택되지 않으면 div를 숨김 (미완)
+        }
+    });
+</script>
+
+
+<!--검색어 추천 비동기식-->
+<script>
+    $(document).ready(function () {
+        $('#searchInput').on('input', function () {
+            var query = $(this).val();
+            $.ajax({
+                url: '/searchRecommend',
+                method: 'POST',
+                data: {query: query},
+                success: function (response) {
+                    // 서버에서 받은 결과를 처리하고 div 요소를 추가합니다.
+                    var resultsDiv = $('#searchResults');
+                    resultsDiv.empty();
+                    response.forEach(function (item) {
+                        var resultDiv = $('<div class="card result-item mt-2"></div>');
+                        var link = $('<a class="text-decoration-none" href="/"></a>');
+                        var text = $('<p class="fs-5">' + item + '</p>'); // item 변수를 사용하여 텍스트를 설정합니다.
+
+                        link.append(text);
+                        resultDiv.append(link);
+                        resultsDiv.append(resultDiv);
+
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+
 </html>

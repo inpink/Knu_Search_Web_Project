@@ -12,18 +12,21 @@
 
   <div class="form-check m-auto">
     <input class="form-check-input inOrderBox" type="checkbox"
+           value="InOrderChecked" th:field="*{searchForm.searchScopeRadio}"
             id="inOrderChecked1" checked>
-    <label class="form-check-label" for="InOrderChecked1">정확도순</label>
+    <label class="form-check-label" for="inOrderChecked1">정확도순</label>
   </div>
 
   <div class="form-check m-auto">
     <input class="form-check-input allTimeBox" type="checkbox"
+           value="allTimeChecked" th:field="*{searchForm.searchPeriodRadio}"
             id="allTimeChecked1" checked>
     <label class="form-check-label" for="allTimeChecked1">전체 기간</label>
   </div>
 
   <div class="form-check m-auto">
     <input class="form-check-input" type="checkbox"
+           value="categoryRecommendChecked"
             id="categoryRecommendChecked1" checked>
     <label class="form-check-label" for="categoryRecommendChecked1">분류 추천 사용</label>
   </div>

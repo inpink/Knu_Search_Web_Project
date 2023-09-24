@@ -22,7 +22,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class SearchController {
+public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용한 툴 모두 적고 모든 툴 사용한 이유 정리하여 작성, 발표
 
     private final DateService dateService;
     private final SearchService searchService;
@@ -38,11 +38,13 @@ public class SearchController {
         String searchScopeRadio = searchService.findOrder();
 
         //기간 값 추가
+        String searchPeriodRadio = searchService.findPeriod();
         LocalDate searchPeriod_start = dateService.minDate();
         LocalDate searchPeriod_end = dateService.currentDate();
 
 
         searchForm.setSelectedSites(selectedSites);
+        searchForm.setSearchPeriodRadio(searchPeriodRadio);
         searchForm.setSearchPeriod_start(searchPeriod_start);  // value, min, max 값을 모델에 추가
         searchForm.setSearchPeriod_end(searchPeriod_end);
         searchForm.setSearchScopeRadio(searchScopeRadio);
@@ -65,34 +67,33 @@ public class SearchController {
     public String searchResult(@Valid SearchForm searchForm, BindingResult result, Model model){
 
         //에러 처리
-        if (searchForm.getSelectedSites().isEmpty()){
+        if (searchForm.getSelectedSites().isEmpty()){ //사이트 미선택 (List라 isEmpty)
             result.rejectValue("selectedSites","required");
         }
 
-        if (result.hasErrors()) {
-            System.out.println("searchForm 검증 과정에서 에러 발생"+result.getAllErrors());
-            return "home"; //앞에서 addError 다 해준 뒤 보내주자
+        if (searchForm.getSearchScopeRadio()==null){ //정렬 순서 미선택 (String이라 null)
+            result.rejectValue("searchScopeRadio","required");
         }
 
-
-       /* if (searchForm.getSelectedSites() != null && !searchForm.getSelectedSites().isEmpty()) {
-
-            //return "success"; // 처리 완료 페이지로 이동
-        } else {
-            System.out.println("선택된 사이트 없음");
-            //return "error"; // 에러 페이지로 이동
+        if (searchForm.getSearchPeriodRadio()==null){ //기간 미선택
+            result.rejectValue("searchPeriodRadio","required");
         }
 
+        //ObjectError. date에 대해 필요하면 넣기.
+        /*
+        <div th:if="${#fields.hasGlobalErrors()}">
+          <p class="field-error" th:each="err : ${#fields.globalErrors()}"
+             th:text="${err}">전체 오류 메시지</p>
+        </div>
 
-        if (searchForm.getSearchQuery() != null && !searchForm.getSearchQuery().isEmpty()) {
-            // 검색어(searchText)를 처리
-        } else {
-            System.out.println("검색어가 입력되지 않았습니다.");
-        }
-*/
+        if (searchForm.getSearchScopeRadio().equals("directPeriodSelectChecked") &&
+         searchForm.getSearchPeriod_start())
+        {
 
-        //성공 로직
-        // 선택된 사이트들의 값을 처리
+        }*/
+
+
+        // 매핑된것 출력해서 확인
         for (String site : searchForm.getSelectedSites()) {
             System.out.println("선택된 사이트: " + site);
         }
@@ -102,9 +103,18 @@ public class SearchController {
         System.out.println("검색 기간 시작:"+searchForm.getSearchPeriod_start());
         System.out.println("검색 기간 끝:"+searchForm.getSearchPeriod_end());
 
+
         //객체 자체를 담아 보내줌! 타임리프에서 꺼내쓸 수 있다
         model.addAttribute("searchForm",searchForm);
 
+        if (result.hasErrors()) {
+            System.out.println("searchForm 검증 과정에서 에러 발생"+result.getAllErrors());
+            model.addAttribute("isSearchEnabled",false);
+            return "searchResult"; //앞에서 addError 다 해준 뒤 보내주는 것
+            //에러 뜨든 안뜨든 searchResult로 보냄. 거기서 다시 검색 옵션 선택하게 함.
+        }
+
+        model.addAttribute("isSearchEnabled",true);
         return "searchResult"; //redirect 말고 바로 page로 이동시킴. 이유는 아래에
     }
 
