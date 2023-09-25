@@ -5,6 +5,7 @@ import knusearch.clear.domain.SearchSite;
 import knusearch.clear.domain.content.Content;
 import knusearch.clear.domain.content.ContentMain;
 import knusearch.clear.service.CrawlService;
+import knusearch.clear.service.content.ContentMainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,6 @@ public class InitDb {
     public void init() {
         initService.dbInit1();
         initService.dbInit2();
-        initService.crawlTest();
     }
 
     @Component
@@ -98,23 +98,7 @@ public class InitDb {
             em.persist(order);*/
         }
 
-        public void crawlTest() {
 
-
-            String noticeBaseUrl="https://web.kangnam.ac.kr/menu/f19069e6134f8f8aa7f689a4a675e66f.do?paginationInfo.currentPageNo=";
-            // 웹 페이지의 URL (아래는 공지사항 첫페이지. currentPageNo만 바뀌면 됨)
-            String firsNoticetUrl = noticeBaseUrl+1;
-
-            int totalPageIdx= crawlService.totalPageIdx(firsNoticetUrl);
-
-            for (int i=1; i<=totalPageIdx; i++){
-                System.out.println(i+"번째 페이지에 있는 모든 게시글 크롤링");
-                crawlService.scrapeWebPage(noticeBaseUrl+i);
-            }
-
-            System.out.println("공지사항 게시판 - 크롤링 업데이트 완료!"); //2023-09-25기준 00분 소요
-
-        }
     }
 }
 

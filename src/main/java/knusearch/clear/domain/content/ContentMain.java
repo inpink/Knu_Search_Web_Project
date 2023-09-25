@@ -25,6 +25,9 @@ public class ContentMain extends BaseContent {
                                                 String title, String text, String image, Date dateTime){
         ContentMain contentMain = new ContentMain();
 
+        contentMain.setScrtWrtiYn(scrtWrtiYn);
+        contentMain.setEncMenuSeq(encMenuSeq);
+        contentMain.setEncMenuBoardSeq(encMenuBoardSeq);
         contentMain.setTitle(title);
         contentMain.setText(text);
         contentMain.setImage(image);

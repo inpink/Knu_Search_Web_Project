@@ -1,6 +1,9 @@
 package knusearch.clear.service;
 
 
+import knusearch.clear.domain.content.BaseContent;
+import knusearch.clear.domain.content.ContentMain;
+import knusearch.clear.repository.content.ContentMainRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -18,11 +21,15 @@ import java.util.regex.Pattern;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class CrawlService {
+public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것이 아닌데 내부 내용들을 어디에 둬야할지 고민이네
 
     //public void updateCrawlData(){
 //}
+    private final ContentMainRepository contentMainRepository; //우선 ContentMain 기준으로 함.
+    // 다른 사이트들 어떻게 다룰 것인지 고민필요. 아마 사이트별로 각각 DB를 둘거면 Repo, Serivce도 각각 필요할듯.
+    //Crawling 부분은 다 여기 두고.
 
+    @Transactional
     public int totalPageIdx(String url){ //하나의 게시판에서 모든 페이지 수 구함
         try {
             Document document = Jsoup.connect(url).get();
@@ -50,7 +57,10 @@ public class CrawlService {
         return 0;
     }
 
-    public void scrapeWebPage(String url) {  //하나의 페이지에서 모든 게시물들 링크뽑아냄
+    @Transactional
+    public ContentMain scrapeWebPage(String url) {  //하나의 페이지에서 모든 게시물들 링크뽑아냄
+
+        ContentMain contentMain= new ContentMain(); //하나의 행 생성
 
         try {
             Document document = Jsoup.connect(url).get();
@@ -89,7 +99,8 @@ public class CrawlService {
                 System.out.println("encMenuBoardSeq: " + encMenuBoardSeq);
                 System.out.println("Final URL: " + finalURL); //하나의 페이지에서 모든 게시물들 링크*/
 
-                crawlAndStoreData(finalURL);
+                crawlAndStoreData(contentMain,finalURL);
+
             }
 
 
@@ -98,22 +109,23 @@ public class CrawlService {
             e.printStackTrace();
         }
 
+        return contentMain;
     }
 
 
-    public void crawlAndStoreData(String url) { //하나의 게시물에서 제목, 본문, 링크, 날짜 가져오기
+    public void crawlAndStoreData(ContentMain contentMain, String url) { //하나의 게시물에서 제목, 본문, 링크, 날짜 가져오기
         try {
             Document document = Jsoup.connect(url).get();
 
             // 데이터 추출
             // 원하는 div 요소 선택 (class가 "tbl_view"인 div를 선택)
             Element divElement = document.select(".tblw_subj").first();
-            String data = divElement.text();  // div 내용 추출
-            /*System.out.println("크롤링 제목:" + data);*/
+            String title = divElement.text();  // div 내용 추출
+            /*System.out.println("크롤링 제목:" + title);*/
 
             Element divElement2 = document.select(".tbl_view").first();
-            String data2 = divElement2.text();  // div 내용 추출
-            /*System.out.println("크롤링 본문:" + data2);*/
+            String text = divElement2.text();  // div 내용 추출
+            /*System.out.println("크롤링 본문:" + text);*/
 
             // 이미지 태그 선택
             Elements imgElements = divElement2.select("img");
@@ -140,12 +152,17 @@ public class CrawlService {
 
 
             // 추출한 데이터를 MySQL 데이터베이스에 저장하는 코드 추가
+            contentMain.setTitle(title);
+            contentMain.setText(text);
 
+
+            contentMainRepository.save(contentMain);
 
         } catch (Exception e) {
             // 예외 처리
             e.printStackTrace();
         }
     }
+
 
 }
