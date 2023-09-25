@@ -21,7 +21,8 @@ public class ContentMain extends BaseContent {
 
 
     //==생성 메서드==//
-    public static ContentMain createContentMain(String title, String text, String image, Date dateTime){
+    public static ContentMain createContentMain(boolean scrtWrtiYn, String encMenuSeq, String encMenuBoardSeq,
+                                                String title, String text, String image, Date dateTime){
         ContentMain contentMain = new ContentMain();
 
         contentMain.setTitle(title);

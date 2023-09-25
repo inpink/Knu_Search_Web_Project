@@ -1,0 +1,151 @@
+package knusearch.clear.service;
+
+
+import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+@Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
+public class CrawlService {
+
+    //public void updateCrawlData(){
+//}
+
+    public int totalPageIdx(String url){ //하나의 게시판에서 모든 페이지 수 구함
+        try {
+            Document document = Jsoup.connect(url).get();
+            Element div1 = document.select("div.total_idx").first();
+            Element spanElement = div1.select("span").first();
+
+            String spanText = spanElement.text();
+            System.out.println("spanText = " + spanText);
+
+            // "/"를 기준으로 문자열을 분할
+            String[] parts = spanText.split("/");
+
+            // 분할된 문자열 중 두 번째 부분을 추출하고 공백 제거
+            String numberPart = parts[1].trim();
+            int totalPageIdx = Integer.parseInt(numberPart);
+
+            // 결과 출력
+            System.out.println("Extracted Number: " + totalPageIdx);
+            return totalPageIdx;
+        } catch (Exception e) {
+            // 예외 처리
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public void scrapeWebPage(String url) {  //하나의 페이지에서 모든 게시물들 링크뽑아냄
+
+        try {
+            Document document = Jsoup.connect(url).get();
+
+            // 게시물 목록에서 각 게시물의 URL을 추출
+            Element div1 = document.select(".sec_inner").first();
+            Elements detailLink = div1.select(".detailLink");
+            // "data-params" 속성 값을 가져오기
+
+            /*System.out.println("div1:" + div1);
+            System.out.println("detailLink:" + detailLink);*/
+
+            // 정규표현식을 사용하여 encMenuSeq와 encMenuBoardSeq 값을 추출
+            String encMenuSeqPattern = "encMenuSeq\":\"(.*?)\"";
+            String encMenuBoardSeqPattern = "encMenuBoardSeq\":\"(.*?)\"";
+
+
+            for (Element link : detailLink) {
+                String dataParams = link.attr("data-params");
+                /*System.out.println("dataParams"+dataParams);*/
+
+                // JSON 파싱
+                JSONObject jsonObject = new JSONObject(dataParams);
+
+                // "scrtWrtiYn"와 "encMenuSeq"와 "encMenuBoardSeq" 값을 가져오기
+                Boolean scrtWrtiYn = jsonObject.getBoolean("scrtWrtiYn"); //얘는 boolean
+                String encMenuSeq = jsonObject.getString("encMenuSeq");
+                String encMenuBoardSeq = jsonObject.getString("encMenuBoardSeq");
+
+                // 최종 URL을 생성
+                String baseURL = "https://web.kangnam.ac.kr/menu/board/info/f19069e6134f8f8aa7f689a4a675e66f.do";
+                String finalURL = baseURL + "?scrtWrtiYn"+scrtWrtiYn+"&encMenuSeq=" + encMenuSeq + "&encMenuBoardSeq=" + encMenuBoardSeq;
+
+                /*// 결과 출력
+                System.out.println("encMenuSeq: " + encMenuSeq);
+                System.out.println("encMenuBoardSeq: " + encMenuBoardSeq);
+                System.out.println("Final URL: " + finalURL); //하나의 페이지에서 모든 게시물들 링크*/
+
+                crawlAndStoreData(finalURL);
+            }
+
+
+        } catch (Exception e) {
+            // 예외 처리
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void crawlAndStoreData(String url) { //하나의 게시물에서 제목, 본문, 링크, 날짜 가져오기
+        try {
+            Document document = Jsoup.connect(url).get();
+
+            // 데이터 추출
+            // 원하는 div 요소 선택 (class가 "tbl_view"인 div를 선택)
+            Element divElement = document.select(".tblw_subj").first();
+            String data = divElement.text();  // div 내용 추출
+            /*System.out.println("크롤링 제목:" + data);*/
+
+            Element divElement2 = document.select(".tbl_view").first();
+            String data2 = divElement2.text();  // div 내용 추출
+            /*System.out.println("크롤링 본문:" + data2);*/
+
+            // 이미지 태그 선택
+            Elements imgElements = divElement2.select("img");
+
+            // 이미지 소스 링크 추출
+            for (Element imgElement : imgElements) {
+                String src = imgElement.attr("src");
+                /*System.out.println("크롤링 본문의 이미지 소스 링크:" + "https://web.kangnam.ac.kr" + src);*/
+            }
+
+            //Date 추출. span으로 묶여있어서 파싱으로 Date 형식만 가져옴
+            Element divElement3 = document.select(".tblw_date").first();
+
+            // 정규 표현식 패턴 설정
+            Pattern pattern = Pattern.compile("등록날짜 (\\d{4}\\.\\d{2}\\.\\d{2} \\d{2}:\\d{2})");
+            Matcher matcher = pattern.matcher(divElement3.text());
+
+            // 정규 표현식과 일치하는 부분 찾기
+            if (matcher.find()) {
+                // 그룹 1에서 일치하는 문자열 가져오기
+                String data3 = matcher.group(1);
+                /*System.out.println("크롤링 Date: " + data3);*/
+            }
+
+
+            // 추출한 데이터를 MySQL 데이터베이스에 저장하는 코드 추가
+
+
+        } catch (Exception e) {
+            // 예외 처리
+            e.printStackTrace();
+        }
+    }
+
+}

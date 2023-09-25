@@ -1,4 +1,4 @@
-package knusearch.clear.repository;
+package knusearch.clear.repository.content;
 
 
 import jakarta.persistence.EntityManager;

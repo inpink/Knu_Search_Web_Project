@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="mt-5 posts" th:fragment="posts">
+  <div th:each="post : ${posts.content}"> <!-- model에 담긴 posts 객체의 content List -->
+    <!-- 각 글을 표시하는 코드 -->
+  </div>
+
+  <!-- 페이징 링크 표시 -->
+  <ul class="pagination">
+    <li th:if="${posts.hasPrevious()}">
+      <a th:href="@{/postResult(page=0, size=${posts.size})}">처음</a>
+    </li>
+    <li th:if="${posts.hasPrevious()}">
+      <a th:href="@{/postResult(page=${posts.previousPageable.pageNumber}, size=${posts.size})}">이전</a>
+    </li>
+    <li th:each="i : ${#numbers.sequence(0, posts.totalPages - 1)}" th:class="${i == posts.number ? 'active' : ''}">
+      <a th:href="@{/postResult(page=${i}, size=${posts.size})}" th:text="${i + 1}"></a>
+    </li>
+    <li th:if="${posts.hasNext()}">
+      <a th:href="@{/postResult(page=${posts.nextPageable.pageNumber}, size=${posts.size})}">다음</a>
+    </li>
+    <li th:if="${posts.hasNext()}">
+      <a th:href="@{/postResult(page=${posts.totalPages - 1}, size=${posts.size})}">마지막</a>
+    </li>
+  </ul>
+
+</div>
+

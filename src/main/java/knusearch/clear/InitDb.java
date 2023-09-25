@@ -4,7 +4,7 @@ import knusearch.clear.domain.Search;
 import knusearch.clear.domain.SearchSite;
 import knusearch.clear.domain.content.Content;
 import knusearch.clear.domain.content.ContentMain;
-import knusearch.clear.service.ContentService;
+import knusearch.clear.service.CrawlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +34,7 @@ public class InitDb {
     static class InitService {
 
         private final EntityManager em;
-        private final ContentService contentService;
+        private final CrawlService crawlService;
 
 
         public void dbInit1() {
@@ -46,7 +46,9 @@ public class InitDb {
             em.persist(search); //★여기는 초기 예시라 그렇고, 실제는 클라이언트에 의해 동적으로 되므로,
             //DB는 repository를 이용해 조작한다.
 
-            ContentMain contentMain= ContentMain.createContentMain("title임","본문임 ","imageLink~~",new Date());
+            ContentMain contentMain= ContentMain.createContentMain(
+                    false,"ea2c9f2a785ae43e520c322896013dfe","1e093662ef168ebe2afb304b031a0e43",
+                    "title임","본문임 ","imageLink~~",new Date());
             em.persist(contentMain);
 
             Content content= Content.createContent("contentTitle","content본문",".",new Date());
@@ -97,7 +99,21 @@ public class InitDb {
         }
 
         public void crawlTest() {
-            contentService.crawlAndStoreData();
+
+
+            String noticeBaseUrl="https://web.kangnam.ac.kr/menu/f19069e6134f8f8aa7f689a4a675e66f.do?paginationInfo.currentPageNo=";
+            // 웹 페이지의 URL (아래는 공지사항 첫페이지. currentPageNo만 바뀌면 됨)
+            String firsNoticetUrl = noticeBaseUrl+1;
+
+            int totalPageIdx= crawlService.totalPageIdx(firsNoticetUrl);
+
+            for (int i=1; i<=totalPageIdx; i++){
+                System.out.println(i+"번째 페이지에 있는 모든 게시글 크롤링");
+                crawlService.scrapeWebPage(noticeBaseUrl+i);
+            }
+
+            System.out.println("공지사항 게시판 - 크롤링 업데이트 완료!"); //2023-09-25기준 00분 소요
+
         }
     }
 }
