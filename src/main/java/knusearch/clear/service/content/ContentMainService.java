@@ -1,5 +1,6 @@
 package knusearch.clear.service.content;
 
+import knusearch.clear.domain.content.BaseContent;
 import knusearch.clear.domain.content.ContentMain;
 import knusearch.clear.repository.content.ContentMainRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ public class ContentMainService {
 
     private final ContentMainRepository contentMainRepository;
 
-    public void saveContentMain(ContentMain contentMain) {
+    public void saveContentMain(BaseContent contentMain) {
         contentMainRepository.save(contentMain);
     }
 

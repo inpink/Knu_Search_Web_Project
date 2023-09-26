@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 
@@ -24,8 +25,8 @@ public class InitDb {
 
     @PostConstruct
     public void init() {
-        initService.dbInit1();
-        initService.dbInit2();
+        /*initService.dbInit1();
+        initService.dbInit2();*/
     }
 
     @Component
@@ -46,12 +47,14 @@ public class InitDb {
             em.persist(search); //★여기는 초기 예시라 그렇고, 실제는 클라이언트에 의해 동적으로 되므로,
             //DB는 repository를 이용해 조작한다.
 
+            LocalDate localDate = LocalDate.of(2023, 9, 26);
             ContentMain contentMain= ContentMain.createContentMain(
                     false,"ea2c9f2a785ae43e520c322896013dfe","1e093662ef168ebe2afb304b031a0e43",
-                    "title임","본문임 ","imageLink~~",new Date());
+                    "title임","본문임 ","imageLink~~",localDate);
             em.persist(contentMain);
 
-            Content content= Content.createContent("contentTitle","content본문",".",new Date());
+
+            Content content = Content.createContent("contentTitle", "content본문", ".", localDate);
             em.persist(content);
 
 

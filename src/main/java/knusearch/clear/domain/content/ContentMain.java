@@ -6,6 +6,7 @@ import knusearch.clear.domain.SearchSite;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -22,7 +23,7 @@ public class ContentMain extends BaseContent {
 
     //==생성 메서드==//
     public static ContentMain createContentMain(boolean scrtWrtiYn, String encMenuSeq, String encMenuBoardSeq,
-                                                String title, String text, String image, Date dateTime){
+                                                String title, String text, String image, LocalDate dateTime){
         ContentMain contentMain = new ContentMain();
 
         contentMain.setScrtWrtiYn(scrtWrtiYn);

@@ -2,6 +2,7 @@ package knusearch.clear.service;
 
 
 import knusearch.clear.domain.content.BaseContent;
+import knusearch.clear.domain.content.Content;
 import knusearch.clear.domain.content.ContentMain;
 import knusearch.clear.repository.content.ContentMainRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +31,7 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
 
     //public void updateCrawlData(){
 //}
-    private final ContentMainRepository contentMainRepository; //우선 ContentMain 기준으로 함.
+    private final ContentMainRepository contentMainRepository; //★우선 ContentMain 기준으로 함.
     // 다른 사이트들 어떻게 다룰 것인지 고민필요. 아마 사이트별로 각각 DB를 둘거면 Repo, Serivce도 각각 필요할듯.
     //Crawling 부분은 다 여기 두고.
 
@@ -58,11 +64,13 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
     }
 
     @Transactional
-    public ContentMain scrapeWebPage(String url) {  //하나의 페이지에서 모든 게시물들 링크뽑아냄
+    public List<BaseContent> scrapeWebPage(String url) {  //하나의 페이지에서 모든 게시물들 링크뽑아냄
 
-        ContentMain contentMain= new ContentMain(); //하나의 행 생성
+        //전체를 담을 List
+        List<BaseContent> contentList = new ArrayList<>();
 
         try {
+
             Document document = Jsoup.connect(url).get();
 
             // 게시물 목록에서 각 게시물의 URL을 추출
@@ -79,6 +87,8 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
 
 
             for (Element link : detailLink) {
+                BaseContent content= new ContentMain(); //★하나의 행 생성
+
                 String dataParams = link.attr("data-params");
                 /*System.out.println("dataParams"+dataParams);*/
 
@@ -99,21 +109,26 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
                 System.out.println("encMenuBoardSeq: " + encMenuBoardSeq);
                 System.out.println("Final URL: " + finalURL); //하나의 페이지에서 모든 게시물들 링크*/
 
-                crawlAndStoreData(contentMain,finalURL);
+                content.setScrtWrtiYn(scrtWrtiYn);
+                content.setEncMenuSeq(encMenuSeq);
+                content.setEncMenuBoardSeq(encMenuBoardSeq);
+
+                crawlAndStoreData(content,finalURL);
+
+                contentMainRepository.save(content); //★
 
             }
-
 
         } catch (Exception e) {
             // 예외 처리
             e.printStackTrace();
         }
 
-        return contentMain;
+        return contentList;
     }
 
 
-    public void crawlAndStoreData(ContentMain contentMain, String url) { //하나의 게시물에서 제목, 본문, 링크, 날짜 가져오기
+    public void crawlAndStoreData(BaseContent content, String url) { //하나의 게시물에서 제목, 본문, 링크, 날짜 가져오기
         try {
             Document document = Jsoup.connect(url).get();
 
@@ -131,9 +146,10 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
             Elements imgElements = divElement2.select("img");
 
             // 이미지 소스 링크 추출
+            String imageSrc = null;
             for (Element imgElement : imgElements) {
-                String src = imgElement.attr("src");
-                /*System.out.println("크롤링 본문의 이미지 소스 링크:" + "https://web.kangnam.ac.kr" + src);*/
+                imageSrc = imgElement.attr("src");
+                /*System.out.println("크롤링 본문의 이미지 소스 링크:" + "https://web.kangnam.ac.kr" + imageSrc);*/
             }
 
             //Date 추출. span으로 묶여있어서 파싱으로 Date 형식만 가져옴
@@ -144,19 +160,21 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
             Matcher matcher = pattern.matcher(divElement3.text());
 
             // 정규 표현식과 일치하는 부분 찾기
+            String dateString = null;
             if (matcher.find()) {
                 // 그룹 1에서 일치하는 문자열 가져오기
-                String data3 = matcher.group(1);
-                /*System.out.println("크롤링 Date: " + data3);*/
+                dateString = matcher.group(1);
+                /*System.out.println("크롤링 Date: " + dateTime);*/
             }
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
+            LocalDate dateTime = LocalDate.parse(dateString, formatter);
 
             // 추출한 데이터를 MySQL 데이터베이스에 저장하는 코드 추가
-            contentMain.setTitle(title);
-            contentMain.setText(text);
-
-
-            contentMainRepository.save(contentMain);
+            content.setTitle(title);
+            content.setText(cutText(text));
+            content.setImage(imageSrc);
+            content.setDateTime(dateTime);
 
         } catch (Exception e) {
             // 예외 처리
@@ -164,5 +182,19 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
         }
     }
 
+    //글자수가 1000Byte를 초과하는 경우 cut하기. 이런 의미에서도 검색을 위해 본문은 그냥 NoSQL를 쓰는 게 좋을 듯..
+    public String cutText(String text){
+        if (text.length()>250) return text.substring(0,250);
+
+        return text;
+    }
+
+    @Transactional
+    public int findTextLen(long id){
+        BaseContent baseContent = contentMainRepository.findOne(id);
+        String text=baseContent.getText();
+
+        return text.length();
+    }
 
 }

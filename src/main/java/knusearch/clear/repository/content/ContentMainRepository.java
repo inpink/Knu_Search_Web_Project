@@ -1,6 +1,7 @@
 package knusearch.clear.repository.content;
 
 import jakarta.persistence.EntityManager;
+import knusearch.clear.domain.content.BaseContent;
 import knusearch.clear.domain.content.ContentMain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,7 @@ public class ContentMainRepository {
 
     private final EntityManager em;
 
-    public void save(ContentMain contentMain) {
+    public void save(BaseContent contentMain) {
         em.persist(contentMain);
     }
 
