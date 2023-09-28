@@ -25,9 +25,10 @@ public abstract class BaseContent { //게시글 테이블에 공통적으로 쓰
     // UTF-8 인코딩을 기준으로 255바이트로는 약 63~85글자의 한글을 담을 수 있음. 한글자에3~4byte이기 때문
     //열의 크기를 지나치게 크게 설정하면 데이터베이스 디스크 공간을 낭비하게 된다.
     // 모든 데이터를 담으려면 분할하거나, 저장공간 많이 쓰거나 고민이 필요
-    @Column(length=1000)
+    @Column(length=2000)
     private String text;
 
+    @Column(length=2000)
     private String image;  //일단 1개만 담게. 여러개 할거면 또 image 테이블 필요함. 1대 다 구조
 
     //만약 시간 정보를 함께 저장하려면 LocalDate말고 java.time.LocalDateTime을 사용하고 TemporalType.TIMESTAMP로 매핑

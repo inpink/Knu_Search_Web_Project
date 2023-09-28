@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update #프로젝트 재시작할떄마다 DB 초기화되는것이 아닌 업데이트
       hbm2ddl:
         auto: update
     properties:
@@ -20,5 +20,5 @@ spring:
     basename: messages, names, errors #국제화 파일들
 
 logging.level:
-  org.hibernate.SQL: debug
+  org.hibernate.SQL: info #trace > debug > info > warn > error
 #  org.hibernate.type: trace

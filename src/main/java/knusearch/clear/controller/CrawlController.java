@@ -36,7 +36,7 @@ public class CrawlController {
         for (int i = 1; i <= 10; i++) {
             //굳이 안받아와도 되긴할듯 필요하면 받아오고 //상속관계를 이용하여 BaseContent로 통일!
             //추상화를 통해 DIP(의존관계역전) 적용된 케이스임
-            List<BaseContent> contentList = crawlService.scrapeWebPage(noticeBaseUrl + 10); //10페이지에 있는 것 contentMain에 저장시킴?
+            List<BaseContent> contentList = crawlService.scrapeWebPage(noticeBaseUrl + i); //10페이지에 있는 것 contentMain에 저장시킴?
 
             //★모든 것이 의존관계역전(DIP)이 적용될 수 없고, 이유에 따라 tradeoff가 필요 (책 객오사)
             for (BaseContent content : contentList) {
@@ -50,7 +50,10 @@ public class CrawlController {
 
         }
 
-
+        /*
+        120게시물 담았을때 SHOW TABLE STATUS like 'content_main';로 확인해 봤을때
+        Data_length가 98304=98,304 바이트=약 96 KB
+         */
 
         System.out.println("공지사항 게시판 - 크롤링 업데이트 완료!"); //2023-09-25기준 25분 소요
 

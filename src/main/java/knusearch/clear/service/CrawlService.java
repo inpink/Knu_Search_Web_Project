@@ -112,10 +112,15 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
                 content.setScrtWrtiYn(scrtWrtiYn);
                 content.setEncMenuSeq(encMenuSeq);
                 content.setEncMenuBoardSeq(encMenuBoardSeq);
+                System.out.println("encMenuSeq = " + encMenuSeq);
+                System.out.println("encMenuBoardSeq = " + encMenuBoardSeq);
+                //DB에 없는 것만 추가!!!
+                if (findAllByEnc(encMenuSeq,encMenuBoardSeq).size()==0){
+                    crawlAndStoreData(content,finalURL);
 
-                crawlAndStoreData(content,finalURL);
-
-                contentMainRepository.save(content); //★
+                    // 추출한 데이터를 MySQL 데이터베이스에 저장하는 코드 추가
+                    contentMainRepository.save(content); //★
+                }
 
             }
 
@@ -131,7 +136,7 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
     public void crawlAndStoreData(BaseContent content, String url) { //하나의 게시물에서 제목, 본문, 링크, 날짜 가져오기
         try {
             Document document = Jsoup.connect(url).get();
-
+            System.out.println("crawlAndStoreData 호출");
             // 데이터 추출
             // 원하는 div 요소 선택 (class가 "tbl_view"인 div를 선택)
             Element divElement = document.select(".tblw_subj").first();
@@ -170,10 +175,9 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
             LocalDate dateTime = LocalDate.parse(dateString, formatter);
 
-            // 추출한 데이터를 MySQL 데이터베이스에 저장하는 코드 추가
             content.setTitle(title);
-            content.setText(cutText(text));
-            content.setImage(imageSrc);
+            content.setText(cutString(text));
+            content.setImage(cutString(imageSrc));
             content.setDateTime(dateTime);
 
         } catch (Exception e) {
@@ -182,19 +186,32 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
         }
     }
 
-    //글자수가 1000Byte를 초과하는 경우 cut하기. 이런 의미에서도 검색을 위해 본문은 그냥 NoSQL를 쓰는 게 좋을 듯..
-    public String cutText(String text){
-        if (text.length()>250) return text.substring(0,250);
+    //글자수가 2000Byte를 초과하는 경우 cut하기.
+    public String cutString(String text){
+        if (text!=null && text.length()>500) return text.substring(0,500);
 
         return text;
     }
 
     @Transactional
     public int findTextLen(long id){
-        BaseContent baseContent = contentMainRepository.findOne(id);
-        String text=baseContent.getText();
+        int len=0;
 
-        return text.length();
+        //JPA의 em.find 메서드를 사용하여 엔티티를 검색할 때, 해당 ID에 해당하는 엔티티가 데이터베이스에 없는 경우 null을 반환
+        BaseContent baseContent = contentMainRepository.findOne(id);
+        if (baseContent!=null) { //따라서 null 여부를 확인하여 NullPointerException을 방지할 수 있다
+            String text=baseContent.getText();
+            len=text.length();
+        }
+
+        return len;
+    }
+
+    //이 내용은 추후 contentMainService에 둬야할듯. 각 사이트 service마다 각각 두기
+    public List<ContentMain> findAllByEnc(String encMenuSeq, String encMenuBoardSeq){
+        System.out.println(encMenuSeq+" "+encMenuBoardSeq);
+        System.out.println("찾은 리스트"+contentMainRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq).size());
+        return contentMainRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq);
     }
 
 }
