@@ -18,4 +18,10 @@ public class ContentMainService {
         contentMainRepository.save(contentMain);
     }
 
+    public String[] getAllBaseUrl(){
+        return new String[] {"https://web.kangnam.ac.kr/menu/f19069e6134f8f8aa7f689a4a675e66f.do?paginationInfo.currentPageNo=",
+                "https://web.kangnam.ac.kr/menu/e4058249224f49ab163131ce104214fb.do?paginationInfo.currentPageNo="};
+        //공지사항,  행사/안내 등
+
+    }
 }

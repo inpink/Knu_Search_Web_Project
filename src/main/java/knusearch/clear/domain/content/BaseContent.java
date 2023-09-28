@@ -13,6 +13,8 @@ public abstract class BaseContent { //게시글 테이블에 공통적으로 쓰
     //URL3종(scrtWrtiYn, encMenuSeq,encMenuBoardSeq) 제목, 본문, 이미지 링크(여러개 할거면 또 테이블 필요함), 날짜, 사이트 번호
     //추상클래스!
 
+    private String url;
+
     private boolean scrtWrtiYn;
 
     private String encMenuSeq;

@@ -96,7 +96,8 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
                 JSONObject jsonObject = new JSONObject(dataParams);
 
                 // "scrtWrtiYn"와 "encMenuSeq"와 "encMenuBoardSeq" 값을 가져오기
-                Boolean scrtWrtiYn = jsonObject.getBoolean("scrtWrtiYn"); //얘는 boolean
+                // ↓기본값으로 false를 설정. 어떤 사이트에는 scrtWrtiYn값이 없다. scrtWrtiYn는 상위 노출되는 공지유무를 뜻함
+                Boolean scrtWrtiYn = jsonObject.optBoolean("scrtWrtiYn",false);  //얘는 boolean
                 String encMenuSeq = jsonObject.getString("encMenuSeq");
                 String encMenuBoardSeq = jsonObject.getString("encMenuBoardSeq");
 
@@ -109,6 +110,7 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
                 System.out.println("encMenuBoardSeq: " + encMenuBoardSeq);
                 System.out.println("Final URL: " + finalURL); //하나의 페이지에서 모든 게시물들 링크*/
 
+                content.setUrl(finalURL);
                 content.setScrtWrtiYn(scrtWrtiYn);
                 content.setEncMenuSeq(encMenuSeq);
                 content.setEncMenuBoardSeq(encMenuBoardSeq);
