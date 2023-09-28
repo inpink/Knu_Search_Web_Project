@@ -1,17 +1,23 @@
-package knusearch.clear.domain.content;
+package knusearch.clear.domain.post;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @MappedSuperclass
 @Getter @Setter
-public abstract class BaseContent { //게시글 테이블에 공통적으로 쓰이는 필드를 담음(추상화)  //많은 경우 추상화를 통해 의존관계 역전을 달성하는 것이 일반적
+public abstract class BasePost { //게시글 테이블에 공통적으로 쓰이는 필드를 담음(추상화)  //많은 경우 추상화를 통해 의존관계 역전을 달성하는 것이 일반적
     //URL3종(scrtWrtiYn, encMenuSeq,encMenuBoardSeq) 제목, 본문, 이미지 링크(여러개 할거면 또 테이블 필요함), 날짜, 사이트 번호
     //추상클래스!
+
+    //자바에서 abstract class와 default interface 둘 다를 쓸 수 있으면 후자를 선택하는 이유
+    // => 대표적으로 다중 상속 가능, API 디자인 가능
+    // => 생성자가 꼭 필요한 경우에는 abstract class 사용할 것
+    // => 하지만 Effective Java에서 생성자 조차 "정적 팩터리 메서드"로 대체하는 것을 추천한다고 했음
+    // => 하지만 여기서는 private field가 필요하므로 abstract class를 썼다
+    //결론 : 상황에 맞게 선택할 것
 
     private String url;
 

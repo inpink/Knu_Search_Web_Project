@@ -7,8 +7,9 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter
-public class SearchSite { //Entity : 실제 DB의 테이블과 매칭되는 클래스
-    //Entity에서 구현한 메소드는 주로 Service에서 사용한다
+public class SearchSite { //검색 옵션에서 사이트는 여러개 선택할 수 있다.
+    // 사용자가 한 번 검색할때 선택한 사이트들을 이 테이블에 담음
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

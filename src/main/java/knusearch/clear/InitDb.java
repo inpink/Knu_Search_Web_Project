@@ -2,10 +2,9 @@ package knusearch.clear;
 
 import knusearch.clear.domain.Search;
 import knusearch.clear.domain.SearchSite;
-import knusearch.clear.domain.content.Content;
-import knusearch.clear.domain.content.ContentMain;
+import knusearch.clear.domain.post.Post;
+import knusearch.clear.domain.post.PostMain;
 import knusearch.clear.service.CrawlService;
-import knusearch.clear.service.content.ContentMainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +13,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 
 @Component
@@ -48,14 +46,10 @@ public class InitDb {
             //DB는 repository를 이용해 조작한다.
 
             LocalDate localDate = LocalDate.of(2023, 9, 26);
-            ContentMain contentMain= ContentMain.createContentMain(
+            PostMain postMain= PostMain.createPostMain(
                     false,"ea2c9f2a785ae43e520c322896013dfe","1e093662ef168ebe2afb304b031a0e43",
                     "title임","본문임 ","imageLink~~",localDate);
-            em.persist(contentMain);
-
-
-            Content content = Content.createContent("contentTitle", "content본문", ".", localDate);
-            em.persist(content);
+            em.persist(postMain);
 
 
             /*Member member = createMember("userA", "서울", "1", "1111");

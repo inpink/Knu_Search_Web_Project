@@ -1,11 +1,13 @@
 package knusearch.clear.service;
 
 
-import knusearch.clear.domain.content.BaseContent;
-import knusearch.clear.domain.content.Content;
-import knusearch.clear.domain.content.ContentMain;
-import knusearch.clear.repository.content.ContentMainRepository;
+import knusearch.clear.domain.post.BasePost;
+import knusearch.clear.domain.post.PostIct;
+import knusearch.clear.domain.post.PostMain;
+import knusearch.clear.repository.post.PostIctRepository;
+import knusearch.clear.repository.post.PostMainRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,12 +15,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,13 +27,49 @@ import java.util.regex.Pattern;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것이 아닌데 내부 내용들을 어디에 둬야할지 고민이네
 
     //public void updateCrawlData(){
 //}
-    private final ContentMainRepository contentMainRepository; //★우선 ContentMain 기준으로 함.
+    private final PostMainRepository postMainRepository; //★우선 PostMain 기준으로 함.
+    private final PostIctRepository postIctRepository;
     // 다른 사이트들 어떻게 다룰 것인지 고민필요. 아마 사이트별로 각각 DB를 둘거면 Repo, Serivce도 각각 필요할듯.
     //Crawling 부분은 다 여기 두고.
+
+    @Transactional
+    public void update(String[] allMainBaseUrl){
+        for (String baseUrl : allMainBaseUrl )
+        {
+            // 웹 페이지의 URL (아래는 공지사항 첫페이지. currentPageNo만 바뀌면 됨)
+            //TODO: method로 빼기. baseUrl
+            //TODO: CrawlService가 담당하는 부분과, 중복&반복되는 부분을 각 MainPostService, POstICTService로 분리할 때, 변수에 main이라는 이름 있으면 빼버리기
+            String firsNoticetUrl = baseUrl + "?paginationInfo.currentPageNo="+1;
+            int totalPageIdx = totalPageIdx(firsNoticetUrl);
+
+            //for (int i = 1; i <= totalPageIdx; i++) { //너무 많으니까 일단 10개정도로 테스트
+            for (int i = 1; i <= 10; i++) {
+                //굳이 안받아와도 되긴할듯 필요하면 받아오고 //상속관계를 이용하여 BaseContent로 통일!
+                //추상화를 통해 DIP(의존관계역전) 적용된 케이스임
+                List<BasePost> contentList = scrapeWebPage(baseUrl,i); //10페이지에 있는 것 contentMain에 저장시킴?
+
+                //★모든 것이 의존관계역전(DIP)이 적용될 수 없고, 이유에 따라 tradeoff가 필요 (책 객오사)
+                for (BasePost content : contentList) {
+                    System.out.println("크롤링 확인:" + content.getTitle()); //잘되고
+                    // 아직 일부(제목,본문)만 저장해서 다 저장할 수 있게 추가해야 하고,
+
+                    //contentMainService.saveContentMain(content); //저장 잘 됨. 근데 저장은 service에서 해주자
+                }
+
+                System.out.println(i + "번째 페이지에 있는 모든 게시글 크롤링");
+
+            }
+        }
+
+
+
+    }
+
 
     @Transactional
     public int totalPageIdx(String url){ //하나의 게시판에서 모든 페이지 수 구함
@@ -64,14 +100,14 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
     }
 
     @Transactional
-    public List<BaseContent> scrapeWebPage(String url) {  //하나의 페이지에서 모든 게시물들 링크뽑아냄
+    public List<BasePost> scrapeWebPage(String baseUrl, int pageIdx) {  //하나의 페이지에서 모든 게시물들 링크뽑아냄
 
         //전체를 담을 List
-        List<BaseContent> contentList = new ArrayList<>();
+        List<BasePost> postList = new ArrayList<>();
 
         try {
 
-            Document document = Jsoup.connect(url).get();
+            Document document = Jsoup.connect(baseUrl+"?paginationInfo.currentPageNo="+pageIdx).get();
 
             // 게시물 목록에서 각 게시물의 URL을 추출
             Element div1 = document.select(".sec_inner").first();
@@ -87,7 +123,7 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
 
 
             for (Element link : detailLink) {
-                BaseContent content= new ContentMain(); //★하나의 행 생성
+                BasePost basePost= new PostMain(); //★하나의 행 생성
 
                 String dataParams = link.attr("data-params");
                 /*System.out.println("dataParams"+dataParams);*/
@@ -102,26 +138,22 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
                 String encMenuBoardSeq = jsonObject.getString("encMenuBoardSeq");
 
                 // 최종 URL을 생성
-                String baseURL = "https://web.kangnam.ac.kr/menu/board/info/f19069e6134f8f8aa7f689a4a675e66f.do";
-                String finalURL = baseURL + "?scrtWrtiYn"+scrtWrtiYn+"&encMenuSeq=" + encMenuSeq + "&encMenuBoardSeq=" + encMenuBoardSeq;
+                //TODO: 목록 페이지 URL과 각 post URL이 다르다 (후자가 /board/info추가됨) 이 부분 더 고민해서 수정하기
+                String finalURL = baseUrl
+                        + "?scrtWrtiYn="+scrtWrtiYn+"&encMenuSeq=" + encMenuSeq + "&encMenuBoardSeq=" + encMenuBoardSeq;
 
-                /*// 결과 출력
-                System.out.println("encMenuSeq: " + encMenuSeq);
-                System.out.println("encMenuBoardSeq: " + encMenuBoardSeq);
-                System.out.println("Final URL: " + finalURL); //하나의 페이지에서 모든 게시물들 링크*/
+                basePost.setUrl(finalURL);
+                basePost.setScrtWrtiYn(scrtWrtiYn);
+                basePost.setEncMenuSeq(encMenuSeq);
+                basePost.setEncMenuBoardSeq(encMenuBoardSeq);
+                System.out.println("finalURL = " + finalURL);
 
-                content.setUrl(finalURL);
-                content.setScrtWrtiYn(scrtWrtiYn);
-                content.setEncMenuSeq(encMenuSeq);
-                content.setEncMenuBoardSeq(encMenuBoardSeq);
-                System.out.println("encMenuSeq = " + encMenuSeq);
-                System.out.println("encMenuBoardSeq = " + encMenuBoardSeq);
                 //DB에 없는 것만 추가!!!
                 if (findAllByEnc(encMenuSeq,encMenuBoardSeq).size()==0){
-                    crawlAndStoreData(content,finalURL);
+                    crawlAndStoreData(basePost,finalURL);
 
                     // 추출한 데이터를 MySQL 데이터베이스에 저장하는 코드 추가
-                    contentMainRepository.save(content); //★
+                    postMainRepository.save(basePost); //★
                 }
 
             }
@@ -131,14 +163,14 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
             e.printStackTrace();
         }
 
-        return contentList;
+        return postList;
     }
 
 
-    public void crawlAndStoreData(BaseContent content, String url) { //하나의 게시물에서 제목, 본문, 링크, 날짜 가져오기
+    public void crawlAndStoreData(BasePost basePost, String url) { //하나의 게시물에서 제목, 본문, 링크, 날짜 가져오기
         try {
             Document document = Jsoup.connect(url).get();
-            System.out.println("crawlAndStoreData 호출");
+
             // 데이터 추출
             // 원하는 div 요소 선택 (class가 "tbl_view"인 div를 선택)
             Element divElement = document.select(".tblw_subj").first();
@@ -177,10 +209,10 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
             LocalDate dateTime = LocalDate.parse(dateString, formatter);
 
-            content.setTitle(title);
-            content.setText(cutString(text));
-            content.setImage(cutString(imageSrc));
-            content.setDateTime(dateTime);
+            basePost.setTitle(title);
+            basePost.setText(cutString(text));
+            basePost.setImage(cutString(imageSrc));
+            basePost.setDateTime(dateTime);
 
         } catch (Exception e) {
             // 예외 처리
@@ -190,7 +222,10 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
 
     //글자수가 2000Byte를 초과하는 경우 cut하기.
     public String cutString(String text){
-        if (text!=null && text.length()>500) return text.substring(0,500);
+        if (text!=null && text.length()>500) {
+            log.info("글자수가 2000Byte를 초과하는 경우 cut되었습니다"+text.length());
+            return text.substring(0,500);
+        }
 
         return text;
     }
@@ -200,20 +235,22 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
         int len=0;
 
         //JPA의 em.find 메서드를 사용하여 엔티티를 검색할 때, 해당 ID에 해당하는 엔티티가 데이터베이스에 없는 경우 null을 반환
-        BaseContent baseContent = contentMainRepository.findOne(id);
-        if (baseContent!=null) { //따라서 null 여부를 확인하여 NullPointerException을 방지할 수 있다
-            String text=baseContent.getText();
+        BasePost basePost = postMainRepository.findOne(id);
+        if (basePost !=null) { //따라서 null 여부를 확인하여 NullPointerException을 방지할 수 있다
+            String text= basePost.getText();
             len=text.length();
         }
 
         return len;
     }
 
-    //이 내용은 추후 contentMainService에 둬야할듯. 각 사이트 service마다 각각 두기
-    public List<ContentMain> findAllByEnc(String encMenuSeq, String encMenuBoardSeq){
+    //이 내용은 추후 postMainService에 둬야할듯. 각 사이트 service마다 각각 두기
+    public List<PostIct> findAllByEnc(String encMenuSeq, String encMenuBoardSeq){
         System.out.println(encMenuSeq+" "+encMenuBoardSeq);
-        System.out.println("찾은 리스트"+contentMainRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq).size());
-        return contentMainRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq);
+        System.out.println("찾은 리스트"+ postMainRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq).size());
+        //return postMainRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq);
+        return postIctRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq);
+        //TODO: 이 부분, List 반환 형식때문에 제네릭써서 BasePostService만들고 각각 둬야함! 일단 주석처리해서 테스트만 했음
     }
 
 }

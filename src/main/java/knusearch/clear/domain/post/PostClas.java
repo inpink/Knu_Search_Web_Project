@@ -1,4 +1,4 @@
-package knusearch.clear.domain.content;
+package knusearch.clear.domain.post;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,10 +7,10 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class ContentCtl extends BaseContent {
+public class PostClas extends BasePost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "content_ctl_id")
+    @Column(name = "post_clas_id")
     private Long id;
 }

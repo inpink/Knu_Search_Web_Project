@@ -10,7 +10,9 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-public class Search { //bindingResult로 받은 SearchForm객체에서 정제해서
+public class Search { //bindingResult로 받은 SearchForm객체에서 정제해서 이 테이블에 저장
+    //Entity : 실제 DB의 테이블과 매칭되는 클래스
+    //Entity에서 구현한 메소드는 주로 Service에서 사용한다
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "search_id")

@@ -1,4 +1,4 @@
-package knusearch.clear.domain.content;
+package knusearch.clear.domain.post;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,10 +7,10 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class ContentArt extends BaseContent {
+public class PostWelfare extends BasePost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "content_art_id")
+    @Column(name = "post_welfare_id")
     private Long id;
 }
