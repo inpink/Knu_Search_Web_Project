@@ -24,9 +24,10 @@ public class CrawlController {
 
     @GetMapping("/ictCrawlUpdate")
     public String ictCrawlUpdate(){
-        String[] allIctBaseUrl = postIctService.getAllBaseUrl();
+        String baseUrl =postIctService.getBaseUrl();
+        String[] allIctPostUrl = postIctService.getAllPostUrl();
 
-        crawlService.update(allIctBaseUrl);
+        crawlService.update(baseUrl, allIctPostUrl);
         log.info("KNU ICT POST - 크롤링 업데이트 완료!");
 
         return "crawlTest";
@@ -34,9 +35,10 @@ public class CrawlController {
 
     @GetMapping("/mainCrawlUpdate")
     public String mainCrawlUpdate() {
-        String[] allMainBaseUrl = postMainService.getAllBaseUrl();
+        String baseUrl= postMainService.getBaseUrl();
+        String[] allMainPostUrl = postMainService.getAllPostUrl();
 
-        crawlService.update(allMainBaseUrl);
+        crawlService.update(baseUrl, allMainPostUrl);
         log.info("KNU MAIN POST - 크롤링 업데이트 완료!");
         /*
         2023-09-25기준 25분 소요

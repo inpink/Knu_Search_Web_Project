@@ -19,6 +19,9 @@ public abstract class BasePost { //게시글 테이블에 공통적으로 쓰이
     // => 하지만 여기서는 private field가 필요하므로 abstract class를 썼다
     //결론 : 상황에 맞게 선택할 것
 
+    public static final int TEXT_COLUMN_LENGTH = 40000;
+    public static final int IMAGE_COLUMN_LENGTH = 8000; //외부에서도 사용하고 쉽게 뜻을 알 수 있게 static final
+
     private String url;
 
     private boolean scrtWrtiYn;
@@ -33,10 +36,10 @@ public abstract class BasePost { //게시글 테이블에 공통적으로 쓰이
     // UTF-8 인코딩을 기준으로 255바이트로는 약 63~85글자의 한글을 담을 수 있음. 한글자에3~4byte이기 때문
     //열의 크기를 지나치게 크게 설정하면 데이터베이스 디스크 공간을 낭비하게 된다.
     // 모든 데이터를 담으려면 분할하거나, 저장공간 많이 쓰거나 고민이 필요
-    @Column(length=2000)
+    @Column(length=TEXT_COLUMN_LENGTH)
     private String text;
 
-    @Column(length=2000)
+    @Column(length=IMAGE_COLUMN_LENGTH)
     private String image;  //일단 1개만 담게. 여러개 할거면 또 image 테이블 필요함. 1대 다 구조
 
     //만약 시간 정보를 함께 저장하려면 LocalDate말고 java.time.LocalDateTime을 사용하고 TemporalType.TIMESTAMP로 매핑

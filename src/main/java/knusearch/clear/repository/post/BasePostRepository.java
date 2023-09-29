@@ -18,7 +18,7 @@ public interface BasePostRepository<T extends BasePost> {
     //각 상속받는 곳에서 쓰는 타입이 다르기 때문에 제네릭T 사용함! BasePost의 자식만 T가 될 수 있음!
 
     //interface에는 모두 public임
-    void save(BasePost postMain);
+    void save(BasePost basePost);
 
     T findOne(Long id);
 

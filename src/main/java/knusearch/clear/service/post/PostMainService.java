@@ -19,9 +19,11 @@ public class PostMainService {
         postMainRepository.save(postMain);
     }
 
-    public String[] getAllBaseUrl(){
-        return new String[] {"https://web.kangnam.ac.kr/menu/f19069e6134f8f8aa7f689a4a675e66f.do",
-                "https://web.kangnam.ac.kr/menu/e4058249224f49ab163131ce104214fb.do"};
+    public String getBaseUrl() { return "https://web.kangnam.ac.kr/menu/"; }
+
+    public String[] getAllPostUrl(){
+        return new String[] {"f19069e6134f8f8aa7f689a4a675e66f.do",
+                "e4058249224f49ab163131ce104214fb.do"};
         //공지사항,  행사/안내 등
 
     }

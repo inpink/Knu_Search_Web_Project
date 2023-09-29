@@ -38,20 +38,19 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
     //Crawling 부분은 다 여기 두고.
 
     @Transactional
-    public void update(String[] allMainBaseUrl){
-        for (String baseUrl : allMainBaseUrl )
+    public void update(String baseUrl, String[] allPostUrl){
+        for (String postUrl : allPostUrl )
         {
             // 웹 페이지의 URL (아래는 공지사항 첫페이지. currentPageNo만 바뀌면 됨)
-            //TODO: method로 빼기. baseUrl
             //TODO: CrawlService가 담당하는 부분과, 중복&반복되는 부분을 각 MainPostService, POstICTService로 분리할 때, 변수에 main이라는 이름 있으면 빼버리기
-            String firsNoticetUrl = baseUrl + "?paginationInfo.currentPageNo="+1;
+            String firsNoticetUrl = makeFinalPostListUrl(baseUrl,postUrl,1);
             int totalPageIdx = totalPageIdx(firsNoticetUrl);
 
             //for (int i = 1; i <= totalPageIdx; i++) { //너무 많으니까 일단 10개정도로 테스트
             for (int i = 1; i <= 10; i++) {
                 //굳이 안받아와도 되긴할듯 필요하면 받아오고 //상속관계를 이용하여 BaseContent로 통일!
                 //추상화를 통해 DIP(의존관계역전) 적용된 케이스임
-                List<BasePost> contentList = scrapeWebPage(baseUrl,i); //10페이지에 있는 것 contentMain에 저장시킴?
+                List<BasePost> contentList = scrapeWebPage(baseUrl, postUrl ,i); //10페이지에 있는 것 contentMain에 저장시킴?
 
                 //★모든 것이 의존관계역전(DIP)이 적용될 수 없고, 이유에 따라 tradeoff가 필요 (책 객오사)
                 for (BasePost content : contentList) {
@@ -65,11 +64,18 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
 
             }
         }
-
-
-
     }
 
+    public String makeFinalPostListUrl(String baseUrl, String postUrl, int pageIdx){
+        return baseUrl + postUrl + "?paginationInfo.currentPageNo=" + pageIdx;
+    }
+
+    public String makeFinalPostUrl(String baseUrl, String postUrl,
+                                   boolean scrtWrtiYn, String encMenuSeq, String encMenuBoardSeq ){
+        return baseUrl + "board/info/" + postUrl
+                + "?scrtWrtiYn="+scrtWrtiYn+"&encMenuSeq="
+                + encMenuSeq + "&encMenuBoardSeq=" + encMenuBoardSeq;
+    }
 
     @Transactional
     public int totalPageIdx(String url){ //하나의 게시판에서 모든 페이지 수 구함
@@ -100,14 +106,15 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
     }
 
     @Transactional
-    public List<BasePost> scrapeWebPage(String baseUrl, int pageIdx) {  //하나의 페이지에서 모든 게시물들 링크뽑아냄
+    public List<BasePost> scrapeWebPage(String baseUrl, String postUrl, int pageIdx) {  //하나의 페이지에서 모든 게시물들 링크뽑아냄
 
         //전체를 담을 List
         List<BasePost> postList = new ArrayList<>();
 
         try {
 
-            Document document = Jsoup.connect(baseUrl+"?paginationInfo.currentPageNo="+pageIdx).get();
+            Document document = Jsoup.connect(
+                    makeFinalPostListUrl(baseUrl,postUrl,pageIdx)).get();
 
             // 게시물 목록에서 각 게시물의 URL을 추출
             Element div1 = document.select(".sec_inner").first();
@@ -123,7 +130,7 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
 
 
             for (Element link : detailLink) {
-                BasePost basePost= new PostMain(); //★하나의 행 생성
+                BasePost basePost= new PostIct(); //★하나의 행 생성
 
                 String dataParams = link.attr("data-params");
                 /*System.out.println("dataParams"+dataParams);*/
@@ -138,22 +145,20 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
                 String encMenuBoardSeq = jsonObject.getString("encMenuBoardSeq");
 
                 // 최종 URL을 생성
-                //TODO: 목록 페이지 URL과 각 post URL이 다르다 (후자가 /board/info추가됨) 이 부분 더 고민해서 수정하기
-                String finalURL = baseUrl
-                        + "?scrtWrtiYn="+scrtWrtiYn+"&encMenuSeq=" + encMenuSeq + "&encMenuBoardSeq=" + encMenuBoardSeq;
+                String finalURL = makeFinalPostUrl(baseUrl,postUrl,scrtWrtiYn,encMenuSeq,encMenuBoardSeq);
 
                 basePost.setUrl(finalURL);
                 basePost.setScrtWrtiYn(scrtWrtiYn);
                 basePost.setEncMenuSeq(encMenuSeq);
                 basePost.setEncMenuBoardSeq(encMenuBoardSeq);
-                System.out.println("finalURL = " + finalURL);
+                //System.out.println("finalURL = " + finalURL);
 
                 //DB에 없는 것만 추가!!!
                 if (findAllByEnc(encMenuSeq,encMenuBoardSeq).size()==0){
                     crawlAndStoreData(basePost,finalURL);
 
                     // 추출한 데이터를 MySQL 데이터베이스에 저장하는 코드 추가
-                    postMainRepository.save(basePost); //★
+                    postIctRepository.save(basePost); //★
                 }
 
             }
@@ -186,7 +191,7 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
 
             // 이미지 소스 링크 추출
             String imageSrc = null;
-            for (Element imgElement : imgElements) {
+            for (Element imgElement : imgElements) { //여러개면 여러개 다 뽑아냄. 일단 지금은 db에 마지막 1개만 담고있음
                 imageSrc = imgElement.attr("src");
                 /*System.out.println("크롤링 본문의 이미지 소스 링크:" + "https://web.kangnam.ac.kr" + imageSrc);*/
             }
@@ -210,8 +215,8 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
             LocalDate dateTime = LocalDate.parse(dateString, formatter);
 
             basePost.setTitle(title);
-            basePost.setText(cutString(text));
-            basePost.setImage(cutString(imageSrc));
+            basePost.setText(cutString(text,BasePost.TEXT_COLUMN_LENGTH));
+            basePost.setImage(cutString(imageSrc,BasePost.IMAGE_COLUMN_LENGTH));
             basePost.setDateTime(dateTime);
 
         } catch (Exception e) {
@@ -220,11 +225,12 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
         }
     }
 
-    //글자수가 2000Byte를 초과하는 경우 cut하기.
-    public String cutString(String text){
-        if (text!=null && text.length()>500) {
-            log.info("글자수가 2000Byte를 초과하는 경우 cut되었습니다"+text.length());
-            return text.substring(0,500);
+    //글자수가 len*4 Byte를 초과하는 경우 cut하기.
+    public String cutString(String text, int byteSize){
+        int koreanLen=byteSize/4;
+        if (text!=null && text.length()>koreanLen) {
+            log.info("글자 길이가"+koreanLen+"를 초과하는 경우 cut되었습니다"+text.length()+text);
+            return text.substring(0,koreanLen);
         }
 
         return text;
@@ -247,7 +253,7 @@ public class CrawlService { //이부분은 사용자가 MVC로 접근하는 것�
     //이 내용은 추후 postMainService에 둬야할듯. 각 사이트 service마다 각각 두기
     public List<PostIct> findAllByEnc(String encMenuSeq, String encMenuBoardSeq){
         System.out.println(encMenuSeq+" "+encMenuBoardSeq);
-        System.out.println("찾은 리스트"+ postMainRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq).size());
+        System.out.println("찾은 리스트"+ postIctRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq).size());
         //return postMainRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq);
         return postIctRepository.findAllByEnc(encMenuSeq,encMenuBoardSeq);
         //TODO: 이 부분, List 반환 형식때문에 제네릭써서 BasePostService만들고 각각 둬야함! 일단 주석처리해서 테스트만 했음

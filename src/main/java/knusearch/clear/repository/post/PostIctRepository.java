@@ -16,8 +16,8 @@ public class PostIctRepository implements BasePostRepository<PostIct>{
     private final EntityManager em;
 
     @Override
-    public void save(BasePost postMain) {
-        em.persist(postMain);
+    public void save(BasePost postIct) {
+        em.persist(postIct);
     }
 
     @Override
