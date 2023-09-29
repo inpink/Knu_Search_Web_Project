@@ -25,7 +25,7 @@ public class CrawlController {
     @GetMapping("/ictCrawlUpdate")
     public String ictCrawlUpdate(){
 
-        postIctService.crawlUpdate();
+        postIctService.crawlUpdate();  //이 메소드 성공적으로 완료되는 시점에서 DB에 Commit됨(자세한 내용은 BasePostService참고)
         log.info("KNU ICT POST - 크롤링 업데이트 완료!");
 
         return "crawlTest";
@@ -34,7 +34,7 @@ public class CrawlController {
     @GetMapping("/mainCrawlUpdate")
     public String mainCrawlUpdate() {
 
-        postMainService.crwalUpdate();
+        postMainService.crawlUpdate();
         log.info("KNU MAIN POST - 크롤링 업데이트 완료!");
         /*
         2023-09-25기준 25분 소요
@@ -48,7 +48,7 @@ public class CrawlController {
     @GetMapping("/findTextLen/{id}")
     public String findTextLen(@PathVariable long id, Model model){
 
-        int textLen=postIctService.findTextLen(id);
+        int textLen=postIctService.findPostTextLen(id);
 
         model.addAttribute("textLen",textLen);
         return "crawlTest";

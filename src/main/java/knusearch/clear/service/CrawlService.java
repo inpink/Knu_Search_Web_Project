@@ -177,7 +177,7 @@ public class CrawlService {
     public String cutString(String text, int byteSize){
         int koreanLen=byteSize/4;
         if (text!=null && text.length()>koreanLen) {
-            log.info("글자 길이가"+koreanLen+"를 초과하는 경우 cut되었습니다"+text.length()+text);
+            log.info("글자 길이가"+koreanLen+"를 초과하는 경우 cut되었습니다"+text.length());
             return text.substring(0,koreanLen);
         }
 
