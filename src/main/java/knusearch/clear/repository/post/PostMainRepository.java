@@ -10,18 +10,21 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class PostMainRepository {
+public class PostMainRepository implements BasePostRepository<PostMain> {
 
     private final EntityManager em;
 
+    @Override
     public void save(BasePost postMain) {
         em.persist(postMain);
     }
 
+    @Override
     public PostMain findOne(Long id) {
         return em.find(PostMain.class, id);
     }
 
+    @Override
     public List<PostMain> findAllByEnc(String encMenuSeq, String encMenuBoardSeq){
         return em.createQuery(
                         "SELECT cm FROM PostMain cm " +
@@ -31,11 +34,11 @@ public class PostMainRepository {
                 .getResultList();
     }
 
+    @Override
     public List<PostMain> findAll() {
         return em.createQuery("select m from PostMain m", PostMain.class)
                 .getResultList(); //RDB에서 쓰는 방식. 엘라스틱 서치는 다른 방식 써줘야 함
     }
-
 
 
 }

@@ -18,16 +18,14 @@ import java.util.List;
 @Slf4j
 public class CrawlController {
 
-    private final CrawlService crawlService;
+    //하나의 controller에서 다른 service들 불러오는건 전혀 문제없음
     private final PostMainService postMainService;
     private final PostIctService postIctService;
 
     @GetMapping("/ictCrawlUpdate")
     public String ictCrawlUpdate(){
-        String baseUrl =postIctService.getBaseUrl();
-        String[] allIctPostUrl = postIctService.getAllPostUrl();
 
-        crawlService.update(baseUrl, allIctPostUrl);
+        postIctService.crawlUpdate();
         log.info("KNU ICT POST - 크롤링 업데이트 완료!");
 
         return "crawlTest";
@@ -35,10 +33,8 @@ public class CrawlController {
 
     @GetMapping("/mainCrawlUpdate")
     public String mainCrawlUpdate() {
-        String baseUrl= postMainService.getBaseUrl();
-        String[] allMainPostUrl = postMainService.getAllPostUrl();
 
-        crawlService.update(baseUrl, allMainPostUrl);
+        postMainService.crwalUpdate();
         log.info("KNU MAIN POST - 크롤링 업데이트 완료!");
         /*
         2023-09-25기준 25분 소요
@@ -52,7 +48,7 @@ public class CrawlController {
     @GetMapping("/findTextLen/{id}")
     public String findTextLen(@PathVariable long id, Model model){
 
-        int textLen=crawlService.findTextLen(id);
+        int textLen=postIctService.findTextLen(id);
 
         model.addAttribute("textLen",textLen);
         return "crawlTest";
