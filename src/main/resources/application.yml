@@ -19,6 +19,16 @@ spring:
   messages:
     basename: messages, names, errors #국제화 파일들
 
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+        cluster-name: docker-cluster # Elasticsearch 클러스터 이름 (위에서 확인한 것과 동일해야 함)
+        cluster-nodes: localhost:9200 # Elasticsearch 호스트 및 포트 (호스트는 Elasticsearch가 실행 중인 곳으로 대체)
+
+
 logging.level:
   org.hibernate.SQL: info #trace > debug > info > warn > error
+  org.springframework.data.elasticsearch.client.WIRE: TRACE
+
 #  org.hibernate.type: trace

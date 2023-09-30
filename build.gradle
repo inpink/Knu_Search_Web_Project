@@ -30,6 +30,7 @@ dependencies {
 	implementation 'org.jsoup:jsoup:1.16.1'
 	implementation 'org.json:json:20190722'
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.13'
 
 	testImplementation 'junit:junit:4.13.1'
 	compileOnly 'org.projectlombok:lombok'

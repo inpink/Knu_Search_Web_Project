@@ -1,10 +1,9 @@
 package knusearch.clear;
 
-import knusearch.clear.domain.Search;
-import knusearch.clear.domain.SearchSite;
-import knusearch.clear.domain.post.Post;
-import knusearch.clear.domain.post.PostMain;
-import knusearch.clear.service.CrawlService;
+import knusearch.clear.jpa.domain.Search;
+import knusearch.clear.jpa.domain.SearchSite;
+import knusearch.clear.jpa.domain.post.PostMain;
+import knusearch.clear.jpa.service.CrawlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
