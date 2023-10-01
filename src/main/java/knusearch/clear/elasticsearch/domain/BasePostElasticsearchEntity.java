@@ -1,4 +1,4 @@
-package knusearch.clear.elasticsearch;
+package knusearch.clear.elasticsearch.domain;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -32,16 +32,19 @@ public class BasePostElasticsearchEntity {
     @Field(type = FieldType.Text, name = "image")
     private String image;
 
-    @Field(type = FieldType.Boolean, name = "scrtWrtiYn")
+    @Field(type = FieldType.Boolean, name = "scrt_wrti_yn")
     private boolean scrtWrtiYn;
 
-    @Field(type = FieldType.Text, name = "encMenuSeq")
+    @Field(type = FieldType.Text, name = "enc_menu_seq")
     private String encMenuSeq;
 
-    @Field(type = FieldType.Text, name = "encMenuBoardSeq")
+    @Field(type = FieldType.Text, name = "enc_menu_board_seq")
     private String encMenuBoardSeq;
 
-    @Field(type = FieldType.Date, name = "dateTime")
+    @Field(type = FieldType.Text, name = "url")
+    private String url;
+
+    @Field(type = FieldType.Date, name = "date_time")
     private LocalDate dateTime;
 
 

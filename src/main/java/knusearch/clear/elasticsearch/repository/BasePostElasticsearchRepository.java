@@ -1,7 +1,7 @@
-package knusearch.clear.elasticsearch;
+package knusearch.clear.elasticsearch.repository;
 
+import knusearch.clear.elasticsearch.domain.BasePostElasticsearchEntity;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
 

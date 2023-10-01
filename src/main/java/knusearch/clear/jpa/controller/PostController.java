@@ -1,11 +1,17 @@
 package knusearch.clear.jpa.controller;
 
 
-import knusearch.clear.elasticsearch.ElasticsearchService;
+import knusearch.clear.elasticsearch.domain.BasePostElasticsearchEntity;
+import knusearch.clear.elasticsearch.service.ElasticsearchService;
+import knusearch.clear.jpa.domain.post.BasePost;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -14,10 +20,14 @@ public class PostController {
 
     private final ElasticsearchService elasticsearchService;
 
-    @GetMapping("/esTest")
-    public String esTest() {
-        log.info("estest:" +elasticsearchService.searchPosts("리포트 주제"));
+    @GetMapping("/esTest/{query}")
+    public String esTest(@PathVariable String query, Model model) {
+        List<BasePostElasticsearchEntity> searchResult = elasticsearchService.searchPosts(query);
+        log.info("estest: " + searchResult);
 
-        return "hello";
+        model.addAttribute("query", query);
+        model.addAttribute("searchResult", searchResult);
+
+        return "elasticsearchTest";
     }
 }

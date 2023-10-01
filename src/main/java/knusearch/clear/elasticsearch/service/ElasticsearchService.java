@@ -1,7 +1,8 @@
 
-package knusearch.clear.elasticsearch;
+package knusearch.clear.elasticsearch.service;
 
-import knusearch.clear.elasticsearch.BasePostElasticsearchEntity;
+import knusearch.clear.elasticsearch.domain.BasePostElasticsearchEntity;
+import knusearch.clear.elasticsearch.repository.BasePostElasticsearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,7 @@ public class ElasticsearchService { //자바를 통해서 엘라스틱서치 조
 
         @Transactional
         public List<BasePostElasticsearchEntity> searchPosts(String query) {
-            return null;
-        //return elasticsearchRepository.findByTitleOrText(query, query);
+
+            return elasticsearchRepository.findByTitleOrText(query, query);
         }
 }
