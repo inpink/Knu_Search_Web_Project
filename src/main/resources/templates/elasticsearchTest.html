@@ -10,6 +10,7 @@
 <p>검색어: <span th:text="${query}"></span></p>
 
 <!-- 검색 결과 목록 출력 -->
+<p>검색 개수 : <span th:text="${searchResult.size()}"></span></p>
 <ul>
     <li th:each="post : ${searchResult}">
         <p>ID: <span th:text="${post.id}"></span></p>

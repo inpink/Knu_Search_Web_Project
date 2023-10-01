@@ -20,14 +20,27 @@ public class PostController {
 
     private final ElasticsearchService elasticsearchService;
 
-    @GetMapping("/esTest/{query}")
-    public String esTest(@PathVariable String query, Model model) {
-        List<BasePostElasticsearchEntity> searchResult = elasticsearchService.searchPosts(query);
-        log.info("estest: " + searchResult);
+    @GetMapping("/esOrTest/{query}")
+    public String esOrTest(@PathVariable String query, Model model) {
+        List<BasePostElasticsearchEntity> searchResult = elasticsearchService.searchOrPosts(query);
+        log.info("esOrTest: " + searchResult);
 
         model.addAttribute("query", query);
         model.addAttribute("searchResult", searchResult);
 
         return "elasticsearchTest";
     }
+
+    @GetMapping("/esAndTest/{query}")
+    public String esAndTest(@PathVariable String query, Model model) {
+        List<BasePostElasticsearchEntity> searchResult = elasticsearchService.searchAndPosts(query);
+        log.info("esAndTest: " + searchResult);
+
+        model.addAttribute("query", query);
+        model.addAttribute("searchResult", searchResult);
+
+        return "elasticsearchTest";
+    }
+
+
 }
