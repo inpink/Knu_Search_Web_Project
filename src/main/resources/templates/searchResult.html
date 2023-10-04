@@ -52,9 +52,12 @@
     </div>
 
     <!-- 검색 결과 나타내는 창. 에러가 없어야만 출력됨 -->
+    <br>
     <hr>
+    <br>
+
     <div th:if="${isSearchEnabled} == true">
-        <div class="jumbotron bg-light"> <!-- 회색 박스 -->
+        <div class="jumbotron bg-light" style="width: 110%;" > <!-- 회색 박스 -->
 
             <!--AI가 추천하는 분류-->
             <div>
@@ -68,8 +71,9 @@
             <!--콘텐츠 검색 결과-->
             <div>
                 <p>콘텐츠 검색 결과</p>
+                <!-- 검색 결과 목록 출력 -->
                 <div class="d-flex bg-skyblue p-3 border rounded">
-                    콘텐츠들 출력 예정
+                    <div th:replace="fragments/postElasticSearchResult :: postElasticSearchResult"/>
                 </div>
                 <a href="/contentResult?page=1">
                     <button class="btn-outline-secondary">이동</button>

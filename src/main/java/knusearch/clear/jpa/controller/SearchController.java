@@ -1,6 +1,8 @@
 package knusearch.clear.jpa.controller;
 
 import jakarta.validation.Valid;
+import knusearch.clear.elasticsearch.domain.BasePostElasticsearchEntity;
+import knusearch.clear.elasticsearch.service.ElasticsearchService;
 import knusearch.clear.jpa.service.DateService;
 import knusearch.clear.jpa.service.SearchService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
 
     private final DateService dateService;
     private final SearchService searchService;
+    private final ElasticsearchService elasticsearchService;
 
     @GetMapping("/search")
     public String searchForm(Model model){
@@ -95,6 +98,9 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         System.out.println("검색 기간 시작:"+searchForm.getSearchPeriod_start());
         System.out.println("검색 기간 끝:"+searchForm.getSearchPeriod_end());
 
+        //엘라스틱 서치에서 검색
+        List<BasePostElasticsearchEntity> searchResult = elasticsearchService.searchAndPosts(searchForm.getSearchQuery());
+        model.addAttribute("searchResult", searchResult);
 
         //객체 자체를 담아 보내줌! 타임리프에서 꺼내쓸 수 있다
         model.addAttribute("searchForm",searchForm);
