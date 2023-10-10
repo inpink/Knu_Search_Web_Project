@@ -21,3 +21,6 @@ Bootstrap: 5.0.2 　
 Thymeleaf: 3.1.2 　   
  　   
 AI Algorithm: Word2Vec, CNN-LSTM 　   
+ 　   
+ 　   
+- 참고할만한 내용 포스팅한 링크 올릴 예정!
