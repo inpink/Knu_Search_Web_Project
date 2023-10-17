@@ -162,10 +162,18 @@ public class CrawlService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
             LocalDate dateTime = LocalDate.parse(dateString, formatter);
 
+
+            // 분류 추출
+            Element divElement4 = document.select(".colum20").first();
+            String classification = divElement4.text().split(" ")[1];  // div 내용 추출
+            // div안에 다른 div가 있는 구조라, split으로 분리해서 classification명만 추출
+            //TODO: 메인페이지-행사/안내, 이외 각 세부페이지들은 classification변경 필요
+
             basePost.setTitle(title);
             basePost.setText(cutString(text,BasePost.TEXT_COLUMN_LENGTH));
             basePost.setImage(cutString(imageSrc,BasePost.IMAGE_COLUMN_LENGTH));
             basePost.setDateTime(dateTime);
+            basePost.setClassification(classification);
 
         } catch (Exception e) {
             // 예외 처리

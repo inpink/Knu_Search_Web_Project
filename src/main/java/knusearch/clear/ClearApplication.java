@@ -8,6 +8,7 @@ public class ClearApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ClearApplication.class, args);
+
 	}
 
 }

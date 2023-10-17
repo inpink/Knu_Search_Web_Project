@@ -32,6 +32,8 @@ public abstract class BasePost { //게시글 테이블에 공통적으로 쓰이
 
     private String title;
 
+    private String classification;
+
     //JPA에서 String을 주면 기본적으로 255Byte varchar이 된다.
     // UTF-8 인코딩을 기준으로 255바이트로는 약 63~85글자의 한글을 담을 수 있음. 한글자에3~4byte이기 때문
     //열의 크기를 지나치게 크게 설정하면 데이터베이스 디스크 공간을 낭비하게 된다.
