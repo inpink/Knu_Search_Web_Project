@@ -1,11 +1,14 @@
 package knusearch.clear.jpa.controller;
 
 import jakarta.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 import knusearch.clear.elasticsearch.domain.BasePostElasticsearchEntity;
 import knusearch.clear.elasticsearch.service.ElasticsearchService;
 import knusearch.clear.jpa.service.DateService;
 import knusearch.clear.jpa.service.SearchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.web.client.RestTemplate;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
     private final DateService dateService;
     private final SearchService searchService;
     private final ElasticsearchService elasticsearchService;
+    private final RestTemplate restTemplate;
 
     @GetMapping("/search")
     public String searchForm(Model model){
@@ -111,6 +116,20 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
             return "searchResult"; //앞에서 addError 다 해준 뒤 보내주는 것
             //에러 뜨든 안뜨든 searchResult로 보냄. 거기서 다시 검색 옵션 선택하게 함.
         }
+
+        // Flask 서버에 요청을 보내기 위한 데이터 구성
+        String flaskEndpoint = "http://127.0.0.1:5000/predict"; // Flask 서버의 URL
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("text", searchForm.getSearchQuery());
+
+        // Flask 서버로 POST 요청을 보내고 응답 받기
+        ResponseEntity<String> response = restTemplate.postForEntity(flaskEndpoint, requestBody, String.class);
+
+        // 응답에서 분류값 추출
+        String predictedClass = response.getBody(); // 실제 응답 구조에 따라 파싱 방법 조정 필요
+
+        // 분류값을 모델에 추가
+        model.addAttribute("predictedClass", predictedClass);
 
         model.addAttribute("isSearchEnabled",true);
         return "searchResult"; //redirect 말고 바로 page로 이동시킴. 이유는 아래에
