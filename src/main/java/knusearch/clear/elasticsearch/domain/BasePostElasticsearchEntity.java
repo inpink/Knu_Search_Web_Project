@@ -47,5 +47,7 @@ public class BasePostElasticsearchEntity {
     @Field(type = FieldType.Date, name = "date_time")
     private LocalDate dateTime;
 
+    @Field(type = FieldType.Text, name = "classification")
+    private String classification;
 
 }

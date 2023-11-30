@@ -25,7 +25,16 @@ public class ElasticsearchService { //자바를 통해서 엘라스틱서치 조
     @Transactional
     public List<BasePostElasticsearchEntity> searchAndPosts(String query) {
 
-        return elasticsearchRepository.searchByTitleOrText(query,query);
+        return elasticsearchRepository.searchByTitleOrText(query, query);
     }
 
+    @Transactional
+    public List<BasePostElasticsearchEntity> searchAndPostWithBoostClassification(String query,
+                                                                                  String classification) {
+
+        return elasticsearchRepository.searchByTitleTextAndBoostClassification(
+                query,
+                query,
+                classification);
+    }
 }

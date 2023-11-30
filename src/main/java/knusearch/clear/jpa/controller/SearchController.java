@@ -1,14 +1,12 @@
 package knusearch.clear.jpa.controller;
 
 import jakarta.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 import knusearch.clear.elasticsearch.domain.BasePostElasticsearchEntity;
 import knusearch.clear.elasticsearch.service.ElasticsearchService;
+import knusearch.clear.jpa.service.ClassificationService;
 import knusearch.clear.jpa.service.DateService;
 import knusearch.clear.jpa.service.SearchService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,10 +23,10 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
     private final DateService dateService;
     private final SearchService searchService;
     private final ElasticsearchService elasticsearchService;
-    private final RestTemplate restTemplate;
+    private final ClassificationService classificationService;
 
     @GetMapping("/search")
-    public String searchForm(Model model){
+    public String searchForm(Model model) {
 
         // searchForm에 기본값 담아서 반환할 것임
         SearchForm searchForm = new SearchForm();
@@ -42,17 +40,13 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         LocalDate searchPeriod_start = dateService.minDate();
         LocalDate searchPeriod_end = dateService.currentDate();
 
-
         searchForm.setSelectedSites(selectedSites);
         searchForm.setSearchPeriodRadio(searchPeriodRadio);
         searchForm.setSearchPeriod_start(searchPeriod_start);  // value, min, max 값을 모델에 추가
         searchForm.setSearchPeriod_end(searchPeriod_end);
         searchForm.setSearchScopeRadio(searchScopeRadio);
 
-
         model.addAttribute("searchForm", searchForm);
-
-
 
         return "home";
     }
@@ -64,19 +58,19 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
                                Model model
      */
     @GetMapping("/searchResult")
-    public String searchResult(@Valid SearchForm searchForm, BindingResult result, Model model){
+    public String searchResult(@Valid SearchForm searchForm, BindingResult result, Model model) {
 
         //에러 처리
-        if (searchForm.getSelectedSites().isEmpty()){ //사이트 미선택 (List라 isEmpty)
-            result.rejectValue("selectedSites","required");
+        if (searchForm.getSelectedSites().isEmpty()) { //사이트 미선택 (List라 isEmpty)
+            result.rejectValue("selectedSites", "required");
         }
 
-        if (searchForm.getSearchScopeRadio()==null){ //정렬 순서 미선택 (String이라 null)
-            result.rejectValue("searchScopeRadio","required");
+        if (searchForm.getSearchScopeRadio() == null) { //정렬 순서 미선택 (String이라 null)
+            result.rejectValue("searchScopeRadio", "required");
         }
 
-        if (searchForm.getSearchPeriodRadio()==null){ //기간 미선택
-            result.rejectValue("searchPeriodRadio","required");
+        if (searchForm.getSearchPeriodRadio() == null) { //기간 미선택
+            result.rejectValue("searchPeriodRadio", "required");
         }
 
         //ObjectError. date에 대해 필요하면 넣기.
@@ -92,51 +86,43 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
 
         }*/
 
-
         // 매핑된것 출력해서 확인
         for (String site : searchForm.getSelectedSites()) {
             System.out.println("선택된 사이트: " + site);
         }
         System.out.println("검색어: " + searchForm.getSearchQuery());
-        System.out.println("검색 정렬:"+searchForm.getSearchScopeRadio());
-        System.out.println("검색 기간:"+searchForm.getSearchPeriodRadio());
-        System.out.println("검색 기간 시작:"+searchForm.getSearchPeriod_start());
-        System.out.println("검색 기간 끝:"+searchForm.getSearchPeriod_end());
+        System.out.println("검색 정렬:" + searchForm.getSearchScopeRadio());
+        System.out.println("검색 기간:" + searchForm.getSearchPeriodRadio());
+        System.out.println("검색 기간 시작:" + searchForm.getSearchPeriod_start());
+        System.out.println("검색 기간 끝:" + searchForm.getSearchPeriod_end());
+
+        // 분류 메뉴 모델로부터 받아오기
+        String predictedClass = classificationService.predictClassification(searchForm.getSearchQuery());
 
         //엘라스틱 서치에서 검색
-        List<BasePostElasticsearchEntity> searchResult = elasticsearchService.searchAndPosts(searchForm.getSearchQuery());
+        //List<BasePostElasticsearchEntity> searchResult = elasticsearchService.searchAndPosts(searchForm.getSearchQuery());
+        List<BasePostElasticsearchEntity> searchResult
+                = elasticsearchService.searchAndPostWithBoostClassification(
+                searchForm.getSearchQuery(), predictedClass); //검색어의 분류정보
         model.addAttribute("searchResult", searchResult);
 
         //객체 자체를 담아 보내줌! 타임리프에서 꺼내쓸 수 있다
-        model.addAttribute("searchForm",searchForm);
+        model.addAttribute("searchForm", searchForm);
 
         if (result.hasErrors()) {
-            System.out.println("searchForm 검증 과정에서 에러 발생"+result.getAllErrors());
-            model.addAttribute("isSearchEnabled",false);
+            System.out.println("searchForm 검증 과정에서 에러 발생" + result.getAllErrors());
+            model.addAttribute("isSearchEnabled", false);
             return "searchResult"; //앞에서 addError 다 해준 뒤 보내주는 것
             //에러 뜨든 안뜨든 searchResult로 보냄. 거기서 다시 검색 옵션 선택하게 함.
         }
 
-        // Flask 서버에 요청을 보내기 위한 데이터 구성
-        String flaskEndpoint = "http://127.0.0.1:5000/predict"; // Flask 서버의 URL
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("text", searchForm.getSearchQuery());
-
-        // Flask 서버로 POST 요청을 보내고 응답 받기
-        ResponseEntity<String> response = restTemplate.postForEntity(flaskEndpoint, requestBody, String.class);
-
-        // 응답에서 분류값 추출
-        String predictedClass = response.getBody(); // 실제 응답 구조에 따라 파싱 방법 조정 필요
-
         // 분류값을 모델에 추가
         model.addAttribute("predictedClass", predictedClass);
 
-        model.addAttribute("isSearchEnabled",true);
+        model.addAttribute("isSearchEnabled", true);
         return "searchResult"; //redirect 말고 바로 page로 이동시킴. 이유는 아래에
     }
 
     //위에서 redirect해줬고, 아래 searchResult에서 html 타임리프로 값을 전달하고 싶으면
     //위에서 repository에 저장, 아래에서 repository에서 꺼내씀(service이용) 해야함
-
-
 }

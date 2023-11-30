@@ -39,4 +39,25 @@ public interface BasePostElasticsearchRepository
     List<BasePostElasticsearchEntity> searchByTitleOrText(String title, String text);
 
 
+    @Query("{\n" +
+            "  \"function_score\": {\n" +
+            "    \"query\": {\n" +
+            "      \"bool\": {\n" +
+            "        \"should\": [\n" +
+            "          {\"match\": {\"title\": \"?0\"}},\n" +
+            "          {\"match\": {\"text\": \"?0\"}}\n" +
+            "        ]\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"functions\": [\n" +
+            "      {\n" +
+            "        \"filter\": {\"term\": {\"classification\": \"?1\"}},\n" +
+            "        \"weight\": 1.5\n" + // 같은 분류일 때 줄 점수 가중치
+            "      }\n" +
+            "    ],\n" +
+            "    \"boost_mode\": \"multiply\"\n" +
+            "  }\n" +
+            "}")
+    List<BasePostElasticsearchEntity> searchByTitleTextAndBoostClassification(String title, String text, String classification);
+
 }
