@@ -1,8 +1,8 @@
 # KnuSearch [AI를 이용한 강대 홈페이지 통합 검색 성능 향상] 　   
 이 작품은 2023 강남대학교 **졸업작품전시회**에서 **우수상**을 수여한 프로젝트입니다.
 
+![K_Expo-전시회-포스터-양식_복사본-001 (4)](https://github.com/inpink/Knu_Search_Web_Project/assets/108166692/8b142fb2-2ab3-4f5f-a9d5-e421c8405529)
 
-![K_Expo-전시회-포스터-양식_복사본-001 (1)](https://github.com/inpink/Knu_Search_Web_Project/assets/108166692/2fdb3b56-5d88-4437-85fd-7a1e9d7c03e1)
 
     
 > 작품 소개
