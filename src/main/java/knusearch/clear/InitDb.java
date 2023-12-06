@@ -1,5 +1,8 @@
 package knusearch.clear;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import java.time.LocalDate;
 import knusearch.clear.jpa.domain.Search;
 import knusearch.clear.jpa.domain.SearchSite;
 import knusearch.clear.jpa.domain.post.PostMain;
@@ -7,11 +10,6 @@ import knusearch.clear.jpa.service.CrawlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
-
-import java.time.LocalDate;
 
 
 @Component
@@ -38,16 +36,16 @@ public class InitDb {
         public void dbInit1() {
             System.out.println("Init1" + this.getClass());
 
-            SearchSite searchSite1=SearchSite.createSearchSite("searchSite1");
-            SearchSite searchSite2=SearchSite.createSearchSite("searchSite2");
-            Search search = Search.createSearch(searchSite1,searchSite2);
+            SearchSite searchSite1 = SearchSite.createSearchSite("searchSite1");
+            SearchSite searchSite2 = SearchSite.createSearchSite("searchSite2");
+            Search search = Search.createSearch(searchSite1, searchSite2);
             em.persist(search); //★여기는 초기 예시라 그렇고, 실제는 클라이언트에 의해 동적으로 되므로,
             //DB는 repository를 이용해 조작한다.
 
             LocalDate localDate = LocalDate.of(2023, 9, 26);
-            PostMain postMain= PostMain.createPostMain(
-                    false,"ea2c9f2a785ae43e520c322896013dfe","1e093662ef168ebe2afb304b031a0e43",
-                    "title임","본문임 ","imageLink~~",localDate);
+            PostMain postMain = PostMain.createPostMain(
+                    false, "ea2c9f2a785ae43e520c322896013dfe", "1e093662ef168ebe2afb304b031a0e43",
+                    "title임", "본문임 ", "imageLink~~", localDate);
             em.persist(postMain);
 
 
@@ -72,9 +70,9 @@ public class InitDb {
         public void dbInit2() {
             System.out.println("Init2" + this.getClass());
 
-            SearchSite searchSite3=SearchSite.createSearchSite("searchSite3");
-            SearchSite searchSite4=SearchSite.createSearchSite("searchSite4");
-            Search search = Search.createSearch(searchSite3,searchSite4);
+            SearchSite searchSite3 = SearchSite.createSearchSite("searchSite3");
+            SearchSite searchSite4 = SearchSite.createSearchSite("searchSite4");
+            Search search = Search.createSearch(searchSite3, searchSite4);
             em.persist(search);
 
             /*Member member = createMember("userA", "서울", "1", "1111");

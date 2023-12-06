@@ -1,16 +1,15 @@
 package knusearch.clear.jpa.repository.post;
 
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.domain.post.PostIct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 @RequiredArgsConstructor
-public class PostIctRepository implements BasePostRepository<PostIct>{
+public class PostIctRepository implements BasePostRepository<PostIct> {
 
     private final EntityManager em;
 

@@ -1,6 +1,8 @@
 package knusearch.clear.jpa.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
 import knusearch.clear.elasticsearch.domain.BasePostElasticsearchEntity;
 import knusearch.clear.elasticsearch.service.ElasticsearchService;
 import knusearch.clear.jpa.service.ClassificationService;
@@ -11,10 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.time.LocalDate;
-import java.util.List;
-import org.springframework.web.client.RestTemplate;
 
 @Controller
 @RequiredArgsConstructor

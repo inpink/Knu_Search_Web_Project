@@ -1,14 +1,16 @@
 package knusearch.clear.jpa.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,9 +27,8 @@ public class HomeController {
     }
 
 
-
     @GetMapping("/test")
-    public String test(){
+    public String test() {
         return "recommendSearchQuery";
     }
 
@@ -41,13 +42,13 @@ public class HomeController {
         // 원하는 범위 내에서 랜덤 정수 생성 (예: 1부터 100까지의 범위)
         int min = 1;
         int max = 100;
-        int randomNumber = random.nextInt(min,max);
+        int randomNumber = random.nextInt(min, max);
 
         // 검색 로직을 수행하고 결과를 반환합니다.
         List<String> results = new ArrayList<>();
-        results.add("검색 결과"+randomNumber);
-        results.add("검색 결과"+randomNumber);
-        results.add("검색 결과"+randomNumber);
+        results.add("검색 결과" + randomNumber);
+        results.add("검색 결과" + randomNumber);
+        results.add("검색 결과" + randomNumber);
 
         return results;
     }

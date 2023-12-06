@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ClearApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ClearApplication.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(ClearApplication.class, args);
 
-	}
+    }
 
 }

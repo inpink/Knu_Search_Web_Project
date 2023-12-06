@@ -1,8 +1,7 @@
 package knusearch.clear.jpa.repository.post;
 
-import knusearch.clear.jpa.domain.post.BasePost;
-
 import java.util.List;
+import knusearch.clear.jpa.domain.post.BasePost;
 
 public interface BasePostRepository<T extends BasePost> {
     //새로운 사이트를 추가할 때 꼭 추가해야할 공통된 기능들을 알려주는 지표가 됨

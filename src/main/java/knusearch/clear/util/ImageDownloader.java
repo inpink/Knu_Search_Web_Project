@@ -4,11 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.core.io.Resource;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import org.springframework.web.client.RestTemplate;
 
 public class ImageDownloader {
     public static void downloadImage(String url, String filename) throws Exception {

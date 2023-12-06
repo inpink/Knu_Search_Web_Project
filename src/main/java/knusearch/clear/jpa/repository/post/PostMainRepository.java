@@ -1,12 +1,11 @@
 package knusearch.clear.jpa.repository.post;
 
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.domain.post.PostMain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class PostMainRepository implements BasePostRepository<PostMain> {
     }
 
     @Override
-    public List<PostMain> findAllByEnc(String encMenuSeq, String encMenuBoardSeq){
+    public List<PostMain> findAllByEnc(String encMenuSeq, String encMenuBoardSeq) {
         return em.createQuery(
                         "SELECT cm FROM PostMain cm " +
                                 "WHERE cm.encMenuSeq = :encMenuSeq AND cm.encMenuBoardSeq = :encMenuBoardSeq", PostMain.class)

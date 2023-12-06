@@ -5,9 +5,9 @@ import knusearch.clear.jpa.service.post.PostMainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.ui.Model;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class CrawlController {
     private final PostIctService postIctService;
 
     @GetMapping("/ictCrawlUpdate")
-    public String ictCrawlUpdate(){
+    public String ictCrawlUpdate() {
 
         postIctService.crawlUpdate();  //이 메소드 성공적으로 완료되는 시점에서 DB에 Commit됨(자세한 내용은 BasePostService참고)
         log.info("KNU ICT POST - 크롤링 업데이트 완료!");
@@ -42,11 +42,11 @@ public class CrawlController {
     }
 
     @GetMapping("/findTextLen/{id}")
-    public String findTextLen(@PathVariable long id, Model model){
+    public String findTextLen(@PathVariable long id, Model model) {
 
-        int textLen=postIctService.findPostTextLen(id);
+        int textLen = postIctService.findPostTextLen(id);
 
-        model.addAttribute("textLen",textLen);
+        model.addAttribute("textLen", textLen);
         return "crawlTest";
     }
 

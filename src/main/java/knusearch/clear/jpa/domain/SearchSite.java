@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class SearchSite { //검색 옵션에서 사이트는 여러개 선택할 수 있다.
     // 사용자가 한 번 검색할때 선택한 사이트들을 이 테이블에 담음
 
@@ -37,8 +38,8 @@ public class SearchSite { //검색 옵션에서 사이트는 여러개 선택할
 
 
     //==생성 메서드==//
-    public static SearchSite createSearchSite(String name){ //마찬가지로 SearchService에서 갖다 쓸 예정
-        SearchSite searchSite= new SearchSite();
+    public static SearchSite createSearchSite(String name) { //마찬가지로 SearchService에서 갖다 쓸 예정
+        SearchSite searchSite = new SearchSite();
         searchSite.setName(name);
 
         return searchSite;

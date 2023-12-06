@@ -1,6 +1,10 @@
 package knusearch.clear.jpa.service;
 
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.util.ImageDownloader;
 import knusearch.clear.util.OCRProcessor;
@@ -13,11 +17,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 @Service
@@ -130,7 +129,7 @@ public class CrawlService {
             // 원하는 div 요소 선택 (class가 "tbl_view"인 div를 선택)
             Element divElement = document.select(".tblw_subj").first();
             String title = divElement.text();  // div 내용 추출
-            /*System.out.println("크롤링 제목:" + title);*/
+            System.out.println("크롤링 제목:" + title);
 
             Element divElement2 = document.select(".tbl_view").first();
             String text = divElement2.text();  // div 내용 추출
@@ -196,14 +195,18 @@ public class CrawlService {
 
         // 이미지 다운로드
         System.out.println("imageUrl = " + imageUrl);
-        System.out.println("filename = " + filename);
-        ImageDownloader.downloadImage(imageUrl, filename);
+        try {
+            ImageDownloader.downloadImage(imageUrl, filename);
 
-        // OCR을 사용하여 텍스트 추출
-        String extractedText = OCRProcessor.extractTextFromImage(filename + ".jpg");
-        System.out.println("Extracted Text: " + extractedText);
+            // OCR을 사용하여 텍스트 추출
+            String extractedText = OCRProcessor.extractTextFromImage(filename + ".jpg");
+            //System.out.println("Extracted Text: " + extractedText);
 
-        return extractedText;
+            return extractedText;
+        } catch (Exception e) {
+            System.out.println(e);
+            return "";
+        }
     }
 
 

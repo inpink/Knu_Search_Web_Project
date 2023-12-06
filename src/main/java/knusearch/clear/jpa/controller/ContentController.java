@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ContentController {
 
     @GetMapping("/contentResult")
-    public String contentResult(){
+    public String contentResult() {
 
         return "contentResult";
     }

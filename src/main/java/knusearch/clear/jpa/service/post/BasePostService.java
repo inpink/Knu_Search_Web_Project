@@ -30,6 +30,7 @@ public abstract class BasePostService<T extends BasePost> {
 
         for (String postUrl : allPostUrl)
         {
+            System.out.println("postUrl = " + postUrl);
             String firsNoticetUrl = crawlService.makeFinalPostListUrl(baseUrl,postUrl,1);
             int totalPageIdx = crawlService.totalPageIdx(firsNoticetUrl); //총 페이지수 구해옴
 

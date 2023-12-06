@@ -9,12 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class Search { //bindingResult로 받은 SearchForm객체에서 정제해서 이 테이블에 저장
     //Entity : 실제 DB의 테이블과 매칭되는 클래스
     //Entity에서 구현한 메소드는 주로 Service에서 사용한다
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "search_id")
     private Long id;
 
@@ -29,21 +31,22 @@ public class Search { //bindingResult로 받은 SearchForm객체에서 정제해
      */
     @JsonIgnore
     @OneToMany(mappedBy = "search", cascade = CascadeType.ALL)  //1(search) : 다(searchsite)
-    private List<SearchSite> searchSites = new ArrayList<>();; //RDB 테이블에 list가 들어갈 수 없으므로,
+    private List<SearchSite> searchSites = new ArrayList<>();
+    ; //RDB 테이블에 list가 들어갈 수 없으므로,
 
 
     //==연관관계 메서드==//
-    public void addSearchSite(SearchSite searchSite){
+    public void addSearchSite(SearchSite searchSite) {
         searchSites.add(searchSite);
         searchSite.setSearch(this);
     }
 
 
     //==생성 메서드==//
-    public static Search createSearch(SearchSite... searchSites){ //SearchService에서 갖다 쓸 예정
+    public static Search createSearch(SearchSite... searchSites) { //SearchService에서 갖다 쓸 예정
         Search search = new Search();
 
-        for (SearchSite searchSite : searchSites){
+        for (SearchSite searchSite : searchSites) {
             search.addSearchSite(searchSite);
         }
 
