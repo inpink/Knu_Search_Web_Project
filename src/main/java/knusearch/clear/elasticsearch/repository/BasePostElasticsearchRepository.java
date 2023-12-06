@@ -58,6 +58,8 @@ public interface BasePostElasticsearchRepository
             "    \"boost_mode\": \"multiply\"\n" +
             "  }\n" +
             "}")
-    List<BasePostElasticsearchEntity> searchByTitleTextAndBoostClassification(String title, String text, String classification);
+    List<BasePostElasticsearchEntity> searchByTitleTextAndBoostClassification(String title,
+                                                                              String text,
+                                                                              String classification);
 
 }

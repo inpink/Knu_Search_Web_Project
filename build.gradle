@@ -31,6 +31,7 @@ dependencies {
 	implementation 'org.json:json:20190722'
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.13'
+	implementation 'net.sourceforge.tess4j:tess4j:4.5.4'
 
 	testImplementation 'junit:junit:4.13.1'
 	compileOnly 'org.projectlombok:lombok'

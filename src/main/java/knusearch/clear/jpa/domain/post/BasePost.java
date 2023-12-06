@@ -44,6 +44,9 @@ public abstract class BasePost { //게시글 테이블에 공통적으로 쓰이
     @Column(length=IMAGE_COLUMN_LENGTH)
     private String image;  //일단 1개만 담게. 여러개 할거면 또 image 테이블 필요함. 1대 다 구조
 
+    @Column(length=TEXT_COLUMN_LENGTH)
+    private String imageText;
+
     //만약 시간 정보를 함께 저장하려면 LocalDate말고 java.time.LocalDateTime을 사용하고 TemporalType.TIMESTAMP로 매핑
     //유형 일치 중요
     @Temporal(TemporalType.DATE)

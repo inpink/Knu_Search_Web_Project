@@ -2,6 +2,8 @@ package knusearch.clear.jpa.service;
 
 
 import knusearch.clear.jpa.domain.post.BasePost;
+import knusearch.clear.util.ImageDownloader;
+import knusearch.clear.util.OCRProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -25,15 +27,15 @@ import java.util.regex.Pattern;
 public class CrawlService {
 
     @Transactional
-    public String makeFinalPostListUrl(String baseUrl, String postUrl, int pageIdx){
+    public String makeFinalPostListUrl(String baseUrl, String postUrl, int pageIdx) {
         return baseUrl + postUrl + "?paginationInfo.currentPageNo=" + pageIdx;
     }
 
     @Transactional
     public String makeFinalPostUrl(String baseUrl, String postUrl,
-                                   boolean scrtWrtiYn, String encMenuSeq, String encMenuBoardSeq ){
+                                   boolean scrtWrtiYn, String encMenuSeq, String encMenuBoardSeq) {
         return baseUrl + "board/info/" + postUrl
-                + "?scrtWrtiYn="+scrtWrtiYn+"&encMenuSeq="
+                + "?scrtWrtiYn=" + scrtWrtiYn + "&encMenuSeq="
                 + encMenuSeq + "&encMenuBoardSeq=" + encMenuBoardSeq;
     }
 
@@ -41,7 +43,7 @@ public class CrawlService {
     //@Transactional 어노테이션이 붙은 메서드나 클래스 내부에서 실행되는 모든 데이터베이스 연산은 하나의 트랜잭션 내에서 실행됨
     //즉, 하나의 트랜잭션에서 모든 연산이 성공적으로 완료되거나 오류가 발생할 때 전체를 롤백할 수 있음.
     @Transactional
-    public int totalPageIdx(String url){ //하나의 게시판에서 모든 페이지 수 구함
+    public int totalPageIdx(String url) { //하나의 게시판에서 모든 페이지 수 구함
         try {
             Document document = Jsoup.connect(url).get();
             Element div1 = document.select("div.total_idx").first();
@@ -76,7 +78,7 @@ public class CrawlService {
 
         try {
             Document document = Jsoup.connect(
-                    makeFinalPostListUrl(baseUrl,postUrl,pageIdx)).get();
+                    makeFinalPostListUrl(baseUrl, postUrl, pageIdx)).get();
 
             // 게시물 목록에서 각 게시물의 URL을 추출
             Element div1 = document.select(".sec_inner").first();
@@ -94,7 +96,7 @@ public class CrawlService {
     }
 
     @Transactional
-    public void setURLValues(BasePost basePost, Element linkElement, String baseUrl, String postUrl){
+    public void setURLValues(BasePost basePost, Element linkElement, String baseUrl, String postUrl) {
         String dataParams = linkElement.attr("data-params");
         /*System.out.println("dataParams"+dataParams);*/
 
@@ -103,12 +105,12 @@ public class CrawlService {
 
         // "scrtWrtiYn"와 "encMenuSeq"와 "encMenuBoardSeq" 값을 가져오기
         // ↓기본값으로 false를 설정. 어떤 사이트에는 scrtWrtiYn값이 없다. scrtWrtiYn는 상위 노출되는 공지유무를 뜻함
-        Boolean scrtWrtiYn = jsonObject.optBoolean("scrtWrtiYn",false);  //얘는 boolean
+        Boolean scrtWrtiYn = jsonObject.optBoolean("scrtWrtiYn", false);  //얘는 boolean
         String encMenuSeq = jsonObject.getString("encMenuSeq");
         String encMenuBoardSeq = jsonObject.getString("encMenuBoardSeq");
 
         // 최종 URL을 생성
-        String finalURL = makeFinalPostUrl(baseUrl,postUrl,scrtWrtiYn,encMenuSeq,encMenuBoardSeq);
+        String finalURL = makeFinalPostUrl(baseUrl, postUrl, scrtWrtiYn, encMenuSeq, encMenuBoardSeq);
 
         basePost.setUrl(finalURL);
         basePost.setScrtWrtiYn(scrtWrtiYn);
@@ -140,7 +142,7 @@ public class CrawlService {
             // 이미지 소스 링크 추출
             String imageSrc = null;
             for (Element imgElement : imgElements) { //여러개면 여러개 다 뽑아냄. 일단 지금은 db에 마지막 1개만 담고있음
-                imageSrc = imgElement.attr("src");
+                imageSrc = "https://web.kangnam.ac.kr" + imgElement.attr("src");
                 /*System.out.println("크롤링 본문의 이미지 소스 링크:" + "https://web.kangnam.ac.kr" + imageSrc);*/
             }
 
@@ -162,16 +164,19 @@ public class CrawlService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
             LocalDate dateTime = LocalDate.parse(dateString, formatter);
 
-
             // 분류 추출
             Element divElement4 = document.select(".colum20").first();
             String classification = divElement4.text().split(" ")[1];  // div 내용 추출
             // div안에 다른 div가 있는 구조라, split으로 분리해서 classification명만 추출
             //TODO: 메인페이지-행사/안내, 이외 각 세부페이지들은 classification변경 필요
 
+            // 이미지에서 텍스트 추출
+            String extractedText = extractText(imageSrc);
+
             basePost.setTitle(title);
-            basePost.setText(cutString(text,BasePost.TEXT_COLUMN_LENGTH));
-            basePost.setImage(cutString(imageSrc,BasePost.IMAGE_COLUMN_LENGTH));
+            basePost.setText(cutString(text, BasePost.TEXT_COLUMN_LENGTH));
+            basePost.setImage(cutString(imageSrc, BasePost.IMAGE_COLUMN_LENGTH));
+            basePost.setImageText(cutString(extractedText, BasePost.TEXT_COLUMN_LENGTH));
             basePost.setDateTime(dateTime);
             basePost.setClassification(classification);
 
@@ -181,12 +186,34 @@ public class CrawlService {
         }
     }
 
+    private String extractText(String imageUrl) throws Exception {
+        if (imageUrl == null) {
+            return "";
+        }
+
+        // 임시 파일 이름 사용
+        String filename = "downloaded_image"; // 확장자 없음
+
+        // 이미지 다운로드
+        System.out.println("imageUrl = " + imageUrl);
+        System.out.println("filename = " + filename);
+        ImageDownloader.downloadImage(imageUrl, filename);
+
+        // OCR을 사용하여 텍스트 추출
+        String extractedText = OCRProcessor.extractTextFromImage(filename + ".jpg");
+        System.out.println("Extracted Text: " + extractedText);
+
+        return extractedText;
+    }
+
+
+
     //글자수가 len*4 Byte를 초과하는 경우 cut하기.
-    public String cutString(String text, int byteSize){
-        int koreanLen=byteSize/4;
-        if (text!=null && text.length()>koreanLen) {
-            log.info("글자 길이가"+koreanLen+"를 초과하는 경우 cut되었습니다"+text.length());
-            return text.substring(0,koreanLen);
+    public String cutString(String text, int byteSize) {
+        int koreanLen = byteSize / 4;
+        if (text != null && text.length() > koreanLen) {
+            log.info("글자 길이가" + koreanLen + "를 초과하는 경우 cut되었습니다" + text.length());
+            return text.substring(0, koreanLen);
         }
 
         return text;
