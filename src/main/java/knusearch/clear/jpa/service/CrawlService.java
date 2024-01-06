@@ -3,6 +3,9 @@ package knusearch.clear.jpa.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import knusearch.clear.jpa.domain.post.BasePost;
@@ -24,6 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class CrawlService {
+
+    private static final List<String> classifications = new ArrayList<>() {{
+        add("0"); //학사 : 학사 공지
+        add("1"); //장학 : 장학 : 장학금 주는 것
+        add("2"); //학습/상담 : 학습/상담 : 주로 교내. 학습 지원, 상담 지원
+        add("3"); //취창업 : 주로 교외. 취업, 창업 관련
+    }};
 
     @Transactional
     public String makeFinalPostListUrl(String baseUrl, String postUrl, int pageIdx) {
@@ -129,7 +139,7 @@ public class CrawlService {
             // 원하는 div 요소 선택 (class가 "tbl_view"인 div를 선택)
             Element divElement = document.select(".tblw_subj").first();
             String title = divElement.text();  // div 내용 추출
-            System.out.println("크롤링 제목:" + title);
+            //System.out.println("크롤링 제목:" + title);
 
             Element divElement2 = document.select(".tbl_view").first();
             String text = divElement2.text();  // div 내용 추출
@@ -163,26 +173,43 @@ public class CrawlService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
             LocalDate dateTime = LocalDate.parse(dateString, formatter);
 
-            // 분류 추출
+            /*// 분류 추출
             Element divElement4 = document.select(".colum20").first();
             String classification = divElement4.text().split(" ")[1];  // div 내용 추출
             // div안에 다른 div가 있는 구조라, split으로 분리해서 classification명만 추출
-            //TODO: 메인페이지-행사/안내, 이외 각 세부페이지들은 classification변경 필요
+               */
 
             // 이미지에서 텍스트 추출
             String extractedText = extractText(imageSrc);
 
+            Scanner scanner = new Scanner(System.in);
+            final String cutText = cutString(text, BasePost.TEXT_COLUMN_LENGTH);
             basePost.setTitle(title);
-            basePost.setText(cutString(text, BasePost.TEXT_COLUMN_LENGTH));
+            basePost.setText(cutText);
             basePost.setImage(cutString(imageSrc, BasePost.IMAGE_COLUMN_LENGTH));
             basePost.setImageText(cutString(extractedText, BasePost.TEXT_COLUMN_LENGTH));
             basePost.setDateTime(dateTime);
-            basePost.setClassification(classification);
+            basePost.setClassification(decideClassification(title, cutText, scanner));
 
         } catch (Exception e) {
             // 예외 처리
             e.printStackTrace();
         }
+    }
+
+    private String decideClassification(String title, String cutText, Scanner scanner) throws Exception {
+        System.out.println("title = " + title);
+        System.out.println("cutText = " + cutText);
+
+        for(int i=0; i<10; i++) { //10번 try
+            String clas = scanner.next();
+            if (classifications.contains(clas)) {
+                return clas;
+            }
+            System.out.println("없는 class를 입력하였습니다.");
+        }
+
+        throw new Exception("class를 정하지 못했습니다.");
     }
 
     private String extractText(String imageUrl) throws Exception {
@@ -194,7 +221,7 @@ public class CrawlService {
         String filename = "downloaded_image"; // 확장자 없음
 
         // 이미지 다운로드
-        System.out.println("imageUrl = " + imageUrl);
+        //System.out.println("imageUrl = " + imageUrl);
         try {
             ImageDownloader.downloadImage(imageUrl, filename);
 
@@ -208,7 +235,6 @@ public class CrawlService {
             return "";
         }
     }
-
 
 
     //글자수가 len*4 Byte를 초과하는 경우 cut하기.

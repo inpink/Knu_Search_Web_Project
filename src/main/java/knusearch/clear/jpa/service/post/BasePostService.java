@@ -35,7 +35,7 @@ public abstract class BasePostService<T extends BasePost> {
             int totalPageIdx = crawlService.totalPageIdx(firsNoticetUrl); //총 페이지수 구해옴
 
             //for (int i = 1; i <= totalPageIdx; i++) {
-            for (int i = 1; i <= 1; i++) { //너무 많으니까 일단 10개정도로 테스트
+            for (int i = 1; i <= 2; i++) { //너무 많으니까 일단 10개정도로 테스트
 
                 //굳이 안받아와도 되긴할듯 필요하면 받아오고 //상속관계를 이용하여 BaseContent로 통일!
                 //추상화를 통해 DIP(의존관계역전) 적용된 케이스임
@@ -46,6 +46,7 @@ public abstract class BasePostService<T extends BasePost> {
                     BasePost basePost= getNewPostInstance();
                     crawlService.setURLValues(basePost, linkElement, baseUrl, postUrl);
 
+                    //TODO: Transcational을 없애고, 아래 하나 완료될 때마다 바로 저장되도록
                     checkAndSave(basePost);
                 }
 
