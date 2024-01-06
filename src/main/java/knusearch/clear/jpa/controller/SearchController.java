@@ -8,6 +8,7 @@ import knusearch.clear.elasticsearch.service.ElasticsearchService;
 import knusearch.clear.jpa.service.ClassificationService;
 import knusearch.clear.jpa.service.DateService;
 import knusearch.clear.jpa.service.SearchService;
+import knusearch.clear.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -96,12 +97,13 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
 
         // 분류 메뉴 모델로부터 받아오기
         String predictedClass = classificationService.predictClassification(searchForm.getSearchQuery());
+        String refinedPredictedClass = StringUtil.deleteLineSeparator(predictedClass);
 
         //엘라스틱 서치에서 검색
         //List<BasePostElasticsearchEntity> searchResult = elasticsearchService.searchAndPosts(searchForm.getSearchQuery());
         List<BasePostElasticsearchEntity> searchResult
                 = elasticsearchService.searchAndPostWithBoostClassification(
-                searchForm.getSearchQuery(), predictedClass); //검색어의 분류정보
+                searchForm.getSearchQuery(), refinedPredictedClass); //검색어의 분류정보
         model.addAttribute("searchResult", searchResult);
 
         //객체 자체를 담아 보내줌! 타임리프에서 꺼내쓸 수 있다

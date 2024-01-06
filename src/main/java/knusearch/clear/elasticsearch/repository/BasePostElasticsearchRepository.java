@@ -44,13 +44,13 @@ public interface BasePostElasticsearchRepository
             "      \"bool\": {\n" +
             "        \"should\": [\n" +
             "          {\"match\": {\"title\": \"?0\"}},\n" +
-            "          {\"match\": {\"text\": \"?0\"}}\n" +
+            "          {\"match\": {\"text\": \"?1\"}}\n" +
             "        ]\n" +
             "      }\n" +
             "    },\n" +
             "    \"functions\": [\n" +
             "      {\n" +
-            "        \"filter\": {\"term\": {\"classification\": \"?1\"}},\n" +
+            "        \"filter\": {\"term\": {\"classification\": \"?2\"}},\n" +
             "        \"weight\": 1.5\n" + // 같은 분류일 때 줄 점수 가중치
             "      }\n" +
             "    ],\n" +
@@ -62,3 +62,6 @@ public interface BasePostElasticsearchRepository
                                                                               String classification);
 
 }
+
+// TODO: Spring Data Elasticsearch Test 참고자료 https://velog.io/@backtony/Spring-Data-Elasticsearch-%EC%97%B0%EB%8F%99-%EB%B0%8F-%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%9E%91%EC%84%B1%ED%95%98%EA%B8%B0
+// Spring Data Elasticsearch "쿼리 방법" 공식자료 https://docs.spring.io/spring-data/elasticsearch/reference/elasticsearch/repositories/elasticsearch-repository-queries.html#elasticsearch.query-methods.at-query
