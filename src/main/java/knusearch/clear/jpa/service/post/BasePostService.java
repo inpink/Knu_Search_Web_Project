@@ -97,6 +97,11 @@ public abstract class BasePostService<T extends BasePost> {
         return getRepository().findAll();
     }
 
+    @Transactional
+    public void updateClassification(BasePost basePost, String classification) {
+        basePost.setClassification(classification);
+    }
+
     //각 PostService에서 구현해줘야 할 것들
     abstract public T getNewPostInstance();
 

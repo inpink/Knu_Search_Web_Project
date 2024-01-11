@@ -3,7 +3,7 @@ package knusearch.clear.jpa.repository.post;
 import java.util.List;
 import knusearch.clear.jpa.domain.post.BasePost;
 
-public interface BasePostRepository<T extends BasePost> {
+public interface BasePostRepository<T extends BasePost> { // TODO: JPA Repository로 리팩터링
     //새로운 사이트를 추가할 때 꼭 추가해야할 공통된 기능들을 알려주는 지표가 됨
     //EntityManager까지 여기서 적어주면 private를 써줘야 하고, abstract class를 써야 하는데
     //em까지 상속된 클래스에 안적혀 있고, super(em)이런식으로 생성자 코드가 적혀있는 게
