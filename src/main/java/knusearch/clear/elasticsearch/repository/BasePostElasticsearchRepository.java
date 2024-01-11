@@ -60,7 +60,7 @@ public interface BasePostElasticsearchRepository
     List<BasePostElasticsearchEntity> searchByTitleTextAndBoostClassification(String title,
                                                                               String text,
                                                                               String classification);
-
+//TODO: 검색어 보낼 때 토큰화해서 보내는 지 확인하기
 }
 
 // TODO: Spring Data Elasticsearch Test 참고자료 https://velog.io/@backtony/Spring-Data-Elasticsearch-%EC%97%B0%EB%8F%99-%EB%B0%8F-%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%9E%91%EC%84%B1%ED%95%98%EA%B8%B0

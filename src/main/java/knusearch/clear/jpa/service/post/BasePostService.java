@@ -1,5 +1,6 @@
 package knusearch.clear.jpa.service.post;
 
+import java.util.List;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.repository.post.BasePostRepository;
 import knusearch.clear.jpa.service.CrawlService;
@@ -91,6 +92,10 @@ public abstract class BasePostService<T extends BasePost> {
         return len;
     }
 
+    @Transactional
+    public List<BasePost> findAll() {
+        return getRepository().findAll();
+    }
 
     //각 PostService에서 구현해줘야 할 것들
     abstract public T getNewPostInstance();

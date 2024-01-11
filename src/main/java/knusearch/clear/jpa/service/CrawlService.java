@@ -190,7 +190,6 @@ public class CrawlService {
             basePost.setImageText(cutString(extractedText, BasePost.TEXT_COLUMN_LENGTH));
             basePost.setDateTime(dateTime);
             basePost.setClassification(decideClassification(title, cutText, scanner));
-
         } catch (Exception e) {
             // 예외 처리
             e.printStackTrace();

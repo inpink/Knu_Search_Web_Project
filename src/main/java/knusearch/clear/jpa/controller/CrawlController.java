@@ -1,5 +1,16 @@
 package knusearch.clear.jpa.controller;
 
+import static knusearch.clear.constants.IntegerConstants.ACADEMIC_NOTIFICATION;
+import static knusearch.clear.constants.IntegerConstants.EMPLOYMENT_STARTUP;
+import static knusearch.clear.constants.IntegerConstants.LEARNING_KNOWHOW;
+import static knusearch.clear.constants.IntegerConstants.SCHOLARSHIP;
+import static knusearch.clear.constants.StringConstants.UNDETERMINED;
+
+import java.util.ArrayList;
+import java.util.List;
+import knusearch.clear.jpa.domain.post.BasePost;
+import knusearch.clear.jpa.domain.post.PostMain;
+import knusearch.clear.jpa.service.post.BasePostService;
 import knusearch.clear.jpa.service.post.PostIctService;
 import knusearch.clear.jpa.service.post.PostMainService;
 import lombok.RequiredArgsConstructor;
@@ -50,4 +61,35 @@ public class CrawlController {
         return "crawlTest";
     }
 
+    @GetMapping("/classifyMain")
+    public String classifyMain(Model model) {
+        return classifyCommon(model, postMainService, "Main");
+    }
+
+    @GetMapping("/classifyIct")
+    public String classifyIct(Model model) {
+        return classifyCommon(model, postIctService, "Ict");
+    }
+
+    private String classifyCommon(Model model, BasePostService service, String postName) {
+        List<BasePost> posts = service.findAll();
+        model.addAttribute("postName", postName);
+        model.addAttribute("posts", posts);
+
+        List<String> classifications = determineClassOptions();
+        model.addAttribute("classOptions", classifications);
+        return "classify";
+    }
+
+    private static List<String> determineClassOptions() {
+        List<String> classifications = new ArrayList<>();
+
+        classifications.add(UNDETERMINED.getDescription());
+        classifications.add(ACADEMIC_NOTIFICATION.toString());
+        classifications.add(SCHOLARSHIP.toString());
+        classifications.add(LEARNING_KNOWHOW.toString());
+        classifications.add(EMPLOYMENT_STARTUP.toString());
+
+        return classifications;
+    }
 }

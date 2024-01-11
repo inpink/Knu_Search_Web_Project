@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>clas 직접 분류하기</title>
+    <style>
+        .post-box {
+            border: 1px solid #ddd; /* 경계선 색상 및 두께 설정 */
+            padding: 10px; /* 내용과 경계선 사이의 여백 */
+            margin-bottom: 10px; /* 박스들 사이의 간격 */
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="${postName} + '직접 분류하기'">ㅇㅇ 직접 분류하기</h1>
+
+<div th:each="post : ${posts}">
+    <div class="post-box">
+        <p th:text="'Title: '+${post.getTitle()}">Post Title</p>
+        <p th:text="'Text: '+${post.getText()}">Post Text</p>
+        <p th:text="'Clas: '+${post.getClassification()}">Post Clas</p>
+
+        <!-- Dropdown menu for classification -->
+        <p>기존 Clas : </p>
+        <select name="classification">
+            <option th:each="option : ${classOptions}"
+                    th:value="${option}"
+                    th:selected="${post.getClassification()} == ${option}"
+                    th:text="${option}"></option>
+        </select>
+
+    </div>
+</div>
+
+
+<div th:replace="fragments/footer :: footer"/>
+</body>
+</html>
