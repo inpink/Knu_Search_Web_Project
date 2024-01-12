@@ -1,28 +1,23 @@
 package knusearch.clear.jpa.controller;
 
-import static knusearch.clear.constants.IntegerConstants.ACADEMIC_NOTIFICATION;
-import static knusearch.clear.constants.IntegerConstants.EMPLOYMENT_STARTUP;
-import static knusearch.clear.constants.IntegerConstants.LEARNING_KNOWHOW;
-import static knusearch.clear.constants.IntegerConstants.SCHOLARSHIP;
 import static knusearch.clear.constants.StringConstants.UNDETERMINED;
+import static knusearch.clear.jpa.domain.Classification.ACADEMIC_NOTIFICATION;
+import static knusearch.clear.jpa.domain.Classification.EMPLOYMENT_STARTUP;
+import static knusearch.clear.jpa.domain.Classification.LEARNING_KNOWHOW;
+import static knusearch.clear.jpa.domain.Classification.SCHOLARSHIP;
 
 import java.util.ArrayList;
 import java.util.List;
 import knusearch.clear.jpa.domain.post.BasePost;
-import knusearch.clear.jpa.domain.post.ClassificationUpdateRequest;
-import knusearch.clear.jpa.domain.post.PostMain;
 import knusearch.clear.jpa.service.post.BasePostService;
 import knusearch.clear.jpa.service.post.PostIctService;
 import knusearch.clear.jpa.service.post.PostMainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
