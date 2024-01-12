@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.domain.post.PostMain;
 import knusearch.clear.jpa.service.CrawlService;
-import knusearch.clear.jpa.service.post.BasePostService;
 import knusearch.clear.jpa.service.post.PostMainService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class PostMainServiceTest {
+public class PostMainServiceTest { // 추상 클래스는 테스트가 어렵기에 구현체로 테스트
 
     @Mock
     private CrawlService crawlService;

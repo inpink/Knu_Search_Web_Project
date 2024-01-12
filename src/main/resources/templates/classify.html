@@ -9,6 +9,10 @@
             padding: 10px; /* 내용과 경계선 사이의 여백 */
             margin-bottom: 10px; /* 박스들 사이의 간격 */
         }
+        .inline-label { /* New CSS class */
+            display: inline-block; /* Makes the element inline */
+            margin-right: 10px; /* Optional: Adds some space between the label and the dropdown */
+        }
     </style>
 </head>
 <body>
@@ -18,10 +22,10 @@
     <div class="post-box">
         <p th:text="'Title: '+${post.getTitle()}">Post Title</p>
         <p th:text="'Text: '+${post.getText()}">Post Text</p>
-        <p th:text="'Clas: '+${post.getClassification()}">Post Clas</p>
+        <p th:text="'기존 Clas: '+${post.getClassification()}">Post Clas</p>
 
         <!-- Dropdown menu for classification -->
-        <p>기존 Clas : </p>
+        <p class="inline-label">Clas : </p>
         <select name="classification">
             <option th:each="option : ${classOptions}"
                     th:value="${option}"
@@ -35,4 +39,25 @@
 
 <div th:replace="fragments/footer :: footer"/>
 </body>
+
+<!-- Asynchronous updates with AJAX-->
+<script>
+    function updateClassification(classification, postId) {
+        fetch('/api/updateClassification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ classification: classification, postId: postId }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+
 </html>

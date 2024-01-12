@@ -9,16 +9,20 @@ import static knusearch.clear.constants.StringConstants.UNDETERMINED;
 import java.util.ArrayList;
 import java.util.List;
 import knusearch.clear.jpa.domain.post.BasePost;
+import knusearch.clear.jpa.domain.post.ClassificationUpdateRequest;
 import knusearch.clear.jpa.domain.post.PostMain;
 import knusearch.clear.jpa.service.post.BasePostService;
 import knusearch.clear.jpa.service.post.PostIctService;
 import knusearch.clear.jpa.service.post.PostMainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -54,7 +58,6 @@ public class CrawlController {
 
     @GetMapping("/findTextLen/{id}")
     public String findTextLen(@PathVariable long id, Model model) {
-
         int textLen = postIctService.findPostTextLen(id);
 
         model.addAttribute("textLen", textLen);
@@ -92,4 +95,11 @@ public class CrawlController {
 
         return classifications;
     }
+
+/*    @PostMapping("/api/updateClassification")
+    public ResponseEntity<?> updateClassification(@RequestBody ClassificationUpdateRequest request) {
+        BasePost basePost = basePostService.findById(request.getPostId()); // TODO : BasePost로 통합하기
+        basePostService.updateClassification(basePost, request.getClassification());
+        return ResponseEntity.ok().build();
+    }*/
 }
