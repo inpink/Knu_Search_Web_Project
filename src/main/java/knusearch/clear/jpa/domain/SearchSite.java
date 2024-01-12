@@ -11,7 +11,6 @@ import lombok.Setter;
 public class SearchSite { //검색 옵션에서 사이트는 여러개 선택할 수 있다.
     // 사용자가 한 번 검색할때 선택한 사이트들을 이 테이블에 담음
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "search_site_id")

@@ -5,7 +5,7 @@ import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import knusearch.clear.jpa.domain.Search;
 import knusearch.clear.jpa.domain.SearchSite;
-import knusearch.clear.jpa.domain.post.PostMain;
+import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.service.CrawlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -43,10 +43,12 @@ public class InitDb {
             //DB는 repository를 이용해 조작한다.
 
             LocalDate localDate = LocalDate.of(2023, 9, 26);
-            PostMain postMain = PostMain.createPostMain(
-                    false, "ea2c9f2a785ae43e520c322896013dfe", "1e093662ef168ebe2afb304b031a0e43",
-                    "title임", "본문임 ", "imageLink~~", localDate);
-            em.persist(postMain);
+            BasePost basePost = BasePost.createBasePost(
+                    "MainBoard",
+                    "https://web.kangnam.ac.kr/menu/board/info/f19069e6134f8f8aa7f689a4a675e66f.do?encMenuSeq=c5dc4b1d7b4dd402e5e6a7a8471eb55c&encMenuBoardSeq=fd44199d361453b9a13e93e28ff46ac0",
+                    false, "c5dc4b1d7b4dd402e5e6a7a8471eb55c", "fd44199d361453b9a13e93e28ff46ac0",
+                    "[세무] 2024-1학기 세무학전공(주.야) 강의시간표 변경 안내", "본문임 ", "imageLink~~", localDate);
+            em.persist(basePost);
 
 
             /*Member member = createMember("userA", "서울", "1", "1111");

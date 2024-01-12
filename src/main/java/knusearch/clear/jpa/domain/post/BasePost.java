@@ -1,18 +1,23 @@
 package knusearch.clear.jpa.domain.post;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.time.LocalDate;
+import knusearch.clear.constants.StringConstants;
 import lombok.Getter;
 import lombok.Setter;
 
-@MappedSuperclass
+@Entity
 @Getter
 @Setter
-public abstract class BasePost {
-    /* TODO: 굳이 추상클래스로 두지말자(엔티티는 특정 비지니스 로직을 담고있기 때문에 조금만 달라져도 재사용이 어려움
+public class BasePost {
+    /* 굳이 추상클래스로 두지말자(엔티티는 특정 비지니스 로직을 담고있기 때문에 조금만 달라져도 재사용이 어려움
       https://www.inflearn.com/questions/63567/%EC%95%88%EB%85%95%ED%95%98%EC%8B%AD%EB%8B%88%EA%B9%8C-%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%84%A4%EA%B3%84%EC%8B%9C-%EC%9D%B8%ED%84%B0%ED%8E%98%EC%9D%B4%EC%8A%A4-%EC%B6%94%EC%83%81%ED%81%B4%EB%9E%98%EC%8A%A4-%EC%97%90-%EB%8C%80%ED%95%9C-%EC%9D%98%EA%B2%AC%EC%9D%84-%EB%93%A3%EA%B3%A0-%EC%8B%B6%EC%8A%B5%EB%8B%88%EB%8B%A4
         직접 사용해보니 굳이 PostMain이랑 PostIct의 구분을 둘만한 지점이 없었음. 오히려 이들을 분리함으로서 복잡해지기만 함.
 */
@@ -30,13 +35,20 @@ public abstract class BasePost {
     public static final int TEXT_COLUMN_LENGTH = 40000;
     public static final int IMAGE_COLUMN_LENGTH = 8000; //외부에서도 사용하고 쉽게 뜻을 알 수 있게 static final
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
+    private Long id;
+
     private String url;
 
-    private boolean scrtWrtiYn;
+    private String siteName;
 
-    private String encMenuSeq;
+    private boolean encryptedSiteName;
 
-    private String encMenuBoardSeq;
+    private String encryptedMenuSequence;
+
+    private String encryptedMenuBoardSequence;
 
     private String title;
 
@@ -61,4 +73,22 @@ public abstract class BasePost {
     private LocalDate dateTime;
 
 
+    //==생성 메서드==//
+    public static BasePost createBasePost(String site, String url,
+                                          boolean scrtWrtiYn, String encMenuSeq, String encMenuBoardSeq,
+                                          String title, String text, String image, LocalDate dateTime) {
+        BasePost basePost = new BasePost();
+
+        basePost.setSiteName(site);
+        basePost.setUrl(url);
+        basePost.setEncryptedSiteName(scrtWrtiYn);
+        basePost.setEncryptedMenuSequence(encMenuSeq);
+        basePost.setEncryptedMenuBoardSequence(encMenuBoardSeq);
+        basePost.setTitle(title);
+        basePost.setText(text);
+        basePost.setImage(image);
+        basePost.setDateTime(dateTime);
+        basePost.setClassification(StringConstants.UNDETERMINED.getDescription());
+        return basePost;
+    }
 }

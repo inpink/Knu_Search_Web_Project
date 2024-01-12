@@ -32,7 +32,7 @@ public class Search { //bindingResult로 받은 SearchForm객체에서 정제해
     @JsonIgnore
     @OneToMany(mappedBy = "search", cascade = CascadeType.ALL)  //1(search) : 다(searchsite)
     private List<SearchSite> searchSites = new ArrayList<>();
-    ; //RDB 테이블에 list가 들어갈 수 없으므로,
+    //RDB 테이블에 list가 들어갈 수 없으므로,
 
 
     //==연관관계 메서드==//

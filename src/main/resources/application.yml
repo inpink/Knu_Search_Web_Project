@@ -8,8 +8,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update #프로젝트 재시작할떄마다 DB 초기화(create)되는것이 아닌 업데이트
-      hbm2ddl:
-        auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
@@ -25,7 +23,6 @@ spring:
         enabled: true
         cluster-name: docker-cluster # Elasticsearch 클러스터 이름 (위에서 확인한 것과 동일해야 함)
         cluster-nodes: localhost:9200 # Elasticsearch 호스트 및 포트 (호스트는 Elasticsearch가 실행 중인 곳으로 대체)
-
 
 logging.level:
   org.hibernate.SQL: info #trace > debug > info > warn > error
