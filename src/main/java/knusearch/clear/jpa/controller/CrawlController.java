@@ -6,8 +6,10 @@ import static knusearch.clear.jpa.domain.Classification.EMPLOYMENT_STARTUP;
 import static knusearch.clear.jpa.domain.Classification.LEARNING_KNOWHOW;
 import static knusearch.clear.jpa.domain.Classification.SCHOLARSHIP;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.service.post.BasePostService;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +26,11 @@ public class CrawlController {
 
     //하나의 controller에서 다른 service들 불러오는건 전혀 문제없음
     private final BasePostService basePostService;
-
     @GetMapping("/testRepo")
-    public String testRepo() {
+    public String testRepo() throws SQLException {
         BasePost basePost = new BasePost();
         basePost.setClassification("1");
         basePostService.savePost(basePost);
-
         return "hello";
     }
 
