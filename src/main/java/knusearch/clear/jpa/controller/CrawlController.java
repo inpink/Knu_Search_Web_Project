@@ -9,15 +9,21 @@ import static knusearch.clear.jpa.domain.Classification.SCHOLARSHIP;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import knusearch.clear.jpa.domain.post.BasePost;
+import knusearch.clear.jpa.domain.post.ClassificationUpdateRequest;
 import knusearch.clear.jpa.service.post.BasePostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -67,17 +73,8 @@ public class CrawlController {
 
     @GetMapping("/classifyMain")
     public String classifyMain(Model model) {
-        return classifyCommon(model, basePostService, "MainBoard");
-    }
-
-    @GetMapping("/classifyIct")
-    public String classifyIct(Model model) {
-        return classifyCommon(model, basePostService, "Ict");
-    }
-
-    private String classifyCommon(Model model, BasePostService service, String postName) {
-        List<BasePost> posts = service.findAll();
-        model.addAttribute("postName", postName);
+        List<BasePost> posts = basePostService.findAll();
+        model.addAttribute("postName", "NONE");
         model.addAttribute("posts", posts);
 
         List<String> classifications = determineClassOptions();
@@ -89,18 +86,24 @@ public class CrawlController {
         List<String> classifications = new ArrayList<>();
 
         classifications.add(UNDETERMINED.getDescription());
-        classifications.add(ACADEMIC_NOTIFICATION.toString());
-        classifications.add(SCHOLARSHIP.toString());
-        classifications.add(LEARNING_KNOWHOW.toString());
-        classifications.add(EMPLOYMENT_STARTUP.toString());
+        classifications.add(ACADEMIC_NOTIFICATION.getDescription());
+        classifications.add(SCHOLARSHIP.getDescription());
+        classifications.add(LEARNING_KNOWHOW.getDescription());
+        classifications.add(EMPLOYMENT_STARTUP.getDescription());
 
         return classifications;
-    }
+    } // TODO: 드롭다운 선택 및 출력 시 학사(0) 이런식으로 보여주기. DB에 저장하는 건 숫자
 
-/*    @PostMapping("/api/updateClassification")
+    @PostMapping("/api/updateClassification")
     public ResponseEntity<?> updateClassification(@RequestBody ClassificationUpdateRequest request) {
-        BasePost basePost = basePostService.findById(request.getPostId()); // TODO : BasePost로 통합하기
-        basePostService.updateClassification(basePost, request.getClassification());
+        System.out.println("updateClassification called" + request.getPostId());
+        Optional<BasePost> basePost = basePostService.findById(request.getPostId());
+
+        if (basePost.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID의 게시물이 존재하지 않습니다.");
+        }
+
+        basePostService.updateClassification(basePost.get(), request.getClassification());
         return ResponseEntity.ok().build();
-    }*/
+    }
 }

@@ -114,4 +114,8 @@ public class BasePostService {
                 "e4058249224f49ab163131ce104214fb.do"};
         //공지사항,  행사/안내 등
     }
+
+    public Optional<BasePost> findById(Long postId) {
+        return basePostRepository.findById(postId);
+    }
 }

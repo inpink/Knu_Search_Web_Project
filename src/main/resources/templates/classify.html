@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>clas 직접 분류하기</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
         .post-box {
             border: 1px solid #ddd; /* 경계선 색상 및 두께 설정 */
@@ -26,7 +27,7 @@
 
         <!-- Dropdown menu for classification -->
         <p class="inline-label">Clas : </p>
-        <select name="classification">
+        <select class="classification-dropdown" th:data-post-id="${post.id}" th:name="${post.id}">
             <option th:each="option : ${classOptions}"
                     th:value="${option}"
                     th:selected="${post.getClassification()} == ${option}"
@@ -36,12 +37,18 @@
     </div>
 </div>
 
-
-<div th:replace="fragments/footer :: footer"/>
-</body>
-
 <!-- Asynchronous updates with AJAX-->
 <script>
+    $(document).ready(function() {
+        $('.classification-dropdown').change(function() {
+            var selectedValue = $(this).val();
+            var postId = Number($(this).data('post-id')); // 문자열에서 숫자로 변환
+            console.log('Classification Changed: ', selectedValue, 'Post ID: ', postId);
+            updateClassification(selectedValue, postId);
+        });
+    });
+
+
     function updateClassification(classification, postId) {
         fetch('/api/updateClassification', {
             method: 'POST',
@@ -59,5 +66,11 @@
             });
     }
 </script>
+
+<div th:replace="fragments/footer :: footer"/>
+</body>
+
+
+
 
 </html>
