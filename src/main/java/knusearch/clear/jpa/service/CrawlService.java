@@ -122,7 +122,7 @@ public class CrawlService {
         String finalURL = makeFinalPostUrl(baseUrl, postUrl, scrtWrtiYn, encMenuSeq, encMenuBoardSeq);
 
         basePost.setUrl(finalURL);
-        basePost.setEncryptedSiteName(scrtWrtiYn);
+        basePost.setScrtWrtiYn(scrtWrtiYn);
         basePost.setEncryptedMenuSequence(encMenuSeq);
         basePost.setEncryptedMenuBoardSequence(encMenuBoardSeq);
         //System.out.println("finalURL = " + finalURL);

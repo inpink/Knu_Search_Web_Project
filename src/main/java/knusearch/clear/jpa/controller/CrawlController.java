@@ -10,8 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.sql.DataSource;
+import java.util.stream.Collectors;
 import knusearch.clear.jpa.domain.Classification;
+import knusearch.clear.jpa.domain.dto.BasePostResponse;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.domain.post.ClassificationUpdateRequest;
 import knusearch.clear.jpa.service.post.BasePostService;
@@ -33,6 +34,7 @@ public class CrawlController {
 
     //하나의 controller에서 다른 service들 불러오는건 전혀 문제없음
     private final BasePostService basePostService;
+
     @GetMapping("/testRepo")
     public String testRepo() throws SQLException {
         BasePost basePost = new BasePost();
@@ -72,11 +74,15 @@ public class CrawlController {
         return "crawlTest";
     }
 
-    @GetMapping("/classifyMain")
-    public String classifyMain(Model model) {
+    @GetMapping("/classify")
+    public String classify(Model model) {
         List<BasePost> posts = basePostService.findAll();
-        model.addAttribute("postName", "NONE");
-        model.addAttribute("posts", posts);
+
+        List<BasePostResponse> postResponses = posts.stream()
+                .map(post -> BasePostResponse.toBasepostResponse(post))
+                .collect(Collectors.toList());
+
+        model.addAttribute("posts", postResponses);
 
         List<String> classifications = determineClassOptions();
         model.addAttribute("classOptions", classifications);
