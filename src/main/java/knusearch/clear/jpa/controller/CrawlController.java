@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
+import knusearch.clear.jpa.domain.Classification;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.domain.post.ClassificationUpdateRequest;
 import knusearch.clear.jpa.service.post.BasePostService;
@@ -92,7 +93,7 @@ public class CrawlController {
         classifications.add(EMPLOYMENT_STARTUP.getDescription());
 
         return classifications;
-    } // TODO: 드롭다운 선택 및 출력 시 학사(0) 이런식으로 보여주기. DB에 저장하는 건 숫자
+    }
 
     @PostMapping("/api/updateClassification")
     public ResponseEntity<?> updateClassification(@RequestBody ClassificationUpdateRequest request) {
@@ -103,7 +104,13 @@ public class CrawlController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID의 게시물이 존재하지 않습니다.");
         }
 
-        basePostService.updateClassification(basePost.get(), request.getClassification());
+        basePostService.updateClassification(
+                basePost.get(),
+                transformClassification(request.getClassification()));
         return ResponseEntity.ok().build();
+    }
+
+    private String transformClassification(final String description) {
+        return String.valueOf(Classification.findIndex(description));
     }
 }

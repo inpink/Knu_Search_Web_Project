@@ -3,6 +3,7 @@ package knusearch.clear.jpa.domain;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import lombok.Getter;
 
 public enum Classification {
@@ -34,9 +35,30 @@ public enum Classification {
                 .orElseThrow(() -> new NoSuchElementException("No enum constants in Classification"));
     }
 
+    public static int findIndex(String description) {
+        return Arrays.stream(Classification.values())
+                .filter(clas -> clas.description.equals(description))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("No enum constants in Classification"))
+                .getIndex();
+    }
+
+    public static String findDescription(String index) {
+        return Arrays.stream(Classification.values())
+                .filter(clas -> String.valueOf(clas.index).equals(index))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("No enum constants in Classification"))
+                .getDescription();
+    }
+
     private static IntStream getIndexes() {
         return Arrays.stream(Classification.values())
                 .mapToInt(Classification::getIndex);
+    }
+
+    private static Stream<String> getDescriptions() {
+        return Arrays.stream(Classification.values())
+                .map(Classification::getDescription);
     }
 
     public String getDescription() {
