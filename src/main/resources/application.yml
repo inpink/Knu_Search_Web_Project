@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://3.34.1.7:3306/knusearch?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://3.36.106.96:3306/knusearch?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: guestsearch
     password: ghdwn1009G@
 
@@ -28,6 +28,9 @@ spring:
   h2:
     console:
       enabled: true
+
+  port: 8080
+
 
 logging.level:
   org.hibernate.SQL: info #trace > debug > info > warn > error
