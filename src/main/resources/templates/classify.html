@@ -21,6 +21,7 @@
 
 <div th:each="post : ${posts}">
     <div class="post-box">
+        <p th:text="'Id: '+${post.getId()}">Post Id</p>
         <p th:text="'Title: '+${post.getTitle()}">Post Title</p>
         <p th:text="'Text: '+${post.getText()}">Post Text</p>
         <p th:text="'기존 Clas: '+${post.getClassification()}">Post Clas</p>
@@ -35,6 +36,18 @@
         </select>
 
     </div>
+</div>
+
+<!-- 페이지네이션 컨트롤 -->
+
+<a th:href="@{/classify(page=${currentPage + 1})}">Next Page</a>
+
+<div>
+    <ul>
+        <li th:each="i : ${#numbers.sequence(0, totalPages)}">
+            <a th:href="@{/classify(page=${i})}" th:text="${i}">1</a>
+        </li>
+    </ul>
 </div>
 
 <!-- Asynchronous updates with AJAX-->

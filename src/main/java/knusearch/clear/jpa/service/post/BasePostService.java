@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +39,8 @@ public class BasePostService {
             String firsNoticetUrl = crawlService.makeFinalPostListUrl(baseUrl, postUrl, 1);
             int totalPageIdx = crawlService.totalPageIdx(firsNoticetUrl); //총 페이지수 구해옴
 
-            //for (int i = 1; i <= totalPageIdx; i++) {
-            for (int i = 1; i <= 2; i++) { //너무 많으니까 일단 10개정도로 테스트
+            for (int i = 1; i <= totalPageIdx; i++) {
+            //for (int i = 1; i <= 2; i++) { //너무 많으니까 일단 10개정도로 테스트
 
                 //굳이 안받아와도 되긴할듯 필요하면 받아오고 //상속관계를 이용하여 BaseContent로 통일!
                 //추상화를 통해 DIP(의존관계역전) 적용된 케이스임
@@ -62,14 +64,13 @@ public class BasePostService {
     // : 전체 삭제하고 다시 업로드(자원이 많이 들긴 하겠다만). 트랜잭션에 의해 재업하는 동안에도 문제없음. "테이블 행 싹 비우는 코드 java에서 하고 -> 모두 다시 업로드" 하는 방식 이용
     @Transactional
     public void checkAndSave(BasePost basePost) {
-
         String encMenuSeq = basePost.getEncryptedMenuSequence();
         String encMenuBoardSeq = basePost.getEncryptedMenuBoardSequence();
 
         //DB에 없는 것만 추가!!!
         if (basePostRepository.findAllByEncryptedMenuSequenceAndEncryptedMenuBoardSequence(encMenuSeq, encMenuBoardSeq).size() == 0) {
             crawlService.setPostValues(basePost);
-
+            System.out.println(basePost.getTitle());
             // 추출한 데이터를 MySQL 데이터베이스에 저장하는 코드 추가
             basePostRepository.save(basePost); //★
         }
@@ -100,12 +101,22 @@ public class BasePostService {
     }
 
     @Transactional
+    public Page<BasePost> findAll(Pageable pageable) {
+        return basePostRepository.findAll(pageable);
+    }
+
+    @Transactional
+    public Optional<BasePost> findById(Long postId) {
+        return basePostRepository.findById(postId);
+    }
+
+    @Transactional
     public void updateClassification(BasePost basePost, String classification) {
         basePost.setClassification(classification);
     }
 
     public String getBaseUrl() {
-        return "https://web.kangnam.ac.kr/";
+        return "https://web.kangnam.ac.kr/menu/";
         //return Site.findBaseUrl(basePost.get);
     } // TODO:
 
@@ -113,9 +124,5 @@ public class BasePostService {
         return new String[]{"f19069e6134f8f8aa7f689a4a675e66f.do",
                 "e4058249224f49ab163131ce104214fb.do"};
         //공지사항,  행사/안내 등
-    }
-
-    public Optional<BasePost> findById(Long postId) {
-        return basePostRepository.findById(postId);
     }
 }

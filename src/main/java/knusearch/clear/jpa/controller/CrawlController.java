@@ -1,23 +1,26 @@
 package knusearch.clear.jpa.controller;
 
 import static knusearch.clear.constants.StringConstants.UNDETERMINED;
-import static knusearch.clear.jpa.domain.Classification.ACADEMIC_NOTIFICATION;
-import static knusearch.clear.jpa.domain.Classification.EMPLOYMENT_STARTUP;
-import static knusearch.clear.jpa.domain.Classification.LEARNING_KNOWHOW;
-import static knusearch.clear.jpa.domain.Classification.SCHOLARSHIP;
+import static knusearch.clear.jpa.domain.classification.Classification.ACADEMIC_NOTIFICATION;
+import static knusearch.clear.jpa.domain.classification.Classification.EMPLOYMENT_STARTUP;
+import static knusearch.clear.jpa.domain.classification.Classification.LEARNING_KNOWHOW;
+import static knusearch.clear.jpa.domain.classification.Classification.SCHOLARSHIP;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import knusearch.clear.jpa.domain.Classification;
+import knusearch.clear.jpa.domain.classification.Classification;
 import knusearch.clear.jpa.domain.dto.BasePostResponse;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.domain.post.ClassificationUpdateRequest;
 import knusearch.clear.jpa.service.post.BasePostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -75,19 +79,25 @@ public class CrawlController {
     }
 
     @GetMapping("/classify")
-    public String classify(Model model) {
-        List<BasePost> posts = basePostService.findAll();
+    public String classify(Model model, @RequestParam(defaultValue = "0") int page,
+                           @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BasePost> postPage = basePostService.findAll(pageable);
 
-        List<BasePostResponse> postResponses = posts.stream()
-                .map(post -> BasePostResponse.toBasepostResponse(post))
+        List<BasePostResponse> postResponses = postPage.getContent().stream()
+                .map(BasePostResponse::toBasepostResponse)
                 .collect(Collectors.toList());
 
         model.addAttribute("posts", postResponses);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", postPage.getTotalPages());
 
         List<String> classifications = determineClassOptions();
         model.addAttribute("classOptions", classifications);
+
         return "classify";
     }
+
 
     private static List<String> determineClassOptions() {
         List<String> classifications = new ArrayList<>();

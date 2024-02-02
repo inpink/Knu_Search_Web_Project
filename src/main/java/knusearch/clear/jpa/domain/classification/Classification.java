@@ -1,4 +1,4 @@
-package knusearch.clear.jpa.domain;
+package knusearch.clear.jpa.domain.classification;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import lombok.Getter;
 
+@Getter
 public enum Classification {
 
     ACADEMIC_NOTIFICATION("학사", 0),
@@ -13,7 +14,6 @@ public enum Classification {
     LEARNING_KNOWHOW("학습/상담", 2),
     EMPLOYMENT_STARTUP("취창업", 3);
 
-    @Getter
     private final String description;
 
     private final int index;
@@ -59,13 +59,5 @@ public enum Classification {
     private static Stream<String> getDescriptions() {
         return Arrays.stream(Classification.values())
                 .map(Classification::getDescription);
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public int getIndex() {
-        return index;
     }
 }

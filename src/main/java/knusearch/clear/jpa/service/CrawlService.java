@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import knusearch.clear.constants.StringConstants;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.util.ImageDownloader;
 import knusearch.clear.util.OCRProcessor;
@@ -189,7 +190,7 @@ public class CrawlService {
             basePost.setImage(cutString(imageSrc, BasePost.IMAGE_COLUMN_LENGTH));
             basePost.setImageText(cutString(extractedText, BasePost.TEXT_COLUMN_LENGTH));
             basePost.setDateTime(dateTime);
-            basePost.setClassification(decideClassification(title, cutText, scanner));
+            basePost.setClassification(StringConstants.UNDETERMINED.getDescription());
         } catch (Exception e) {
             // 예외 처리
             e.printStackTrace();
@@ -200,7 +201,7 @@ public class CrawlService {
         System.out.println("title = " + title);
         System.out.println("cutText = " + cutText);
 
-        for(int i=0; i<10; i++) { //10번 try
+        for (int i = 0; i < 10; i++) { //10번 try
             String clas = scanner.next();
             if (classifications.contains(clas)) {
                 return clas;
