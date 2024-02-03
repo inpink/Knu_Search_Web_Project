@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,6 +142,10 @@ public class BasePostService {
             return generateEmptyResponse();
         }
 
+        return transformToClassifyResponse(basePosts);
+    }
+
+    private static List<BasePostClassifyResponse> transformToClassifyResponse(List<BasePost> basePosts) {
         return basePosts.stream()
                 .map(basePost -> new BasePostClassifyResponse(
                         basePost.getId(),
@@ -163,9 +168,7 @@ public class BasePostService {
         List<BasePost> posts = new ArrayList<>();
         if (except.isEmpty()) {
             posts = findAllByQuery(query, option);
-        }
-
-        else {
+        } else {
             if (TITLE.getIndex() == option) {
                 posts = basePostRepository.findByTitleQueryExcept(query, except);
             }
@@ -183,6 +186,15 @@ public class BasePostService {
 
         posts.stream()
                 .forEach(post -> updateClassification(post, classification));
+    }
+
+    @Transactional
+    public List<BasePostClassifyResponse> findBasePostsNotInClassifications(List<String> classifications) {
+        List<BasePost> posts = basePostRepository.findBasePostsNotInClassifications(
+                classifications,
+                PageRequest.of(0, 5));
+
+        return transformToClassifyResponse(posts);
     }
 
     public String getBaseUrl() {

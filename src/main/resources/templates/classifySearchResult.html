@@ -7,7 +7,9 @@
 <body>
 
 <div th:replace="~{fragments/classifySearchForm :: classifySearchForm}"></div>
-<br><br><br>
+
+<br><br>
+
 <form action="/classify/update" method="post">
     <select name="classification" class="classification-dropdown">
         <option th:each="classification : ${classOptions}"
@@ -30,7 +32,28 @@
     <input type="hidden" name="option" th:value="${option}">
 </form>
 
-<br><br><br>
+<br><br>
+
+<div>
+    <h2>not classified</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Classification</th>
+            <th>Title</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="post : ${notInClasses}">
+            <td th:text="${post.id}"></td>
+            <td th:text="${post.classification}"></td>
+            <td th:text="${post.title}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
 
 <div>
     <h2>Search Results</h2>

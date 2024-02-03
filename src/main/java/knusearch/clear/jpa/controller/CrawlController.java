@@ -8,7 +8,6 @@ import static knusearch.clear.jpa.domain.classification.Classification.SCHOLARSH
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import knusearch.clear.jpa.domain.classification.Classification;
-import knusearch.clear.jpa.domain.classification.SearchOption;
 import knusearch.clear.jpa.domain.dto.BasePostClassifyResponse;
 import knusearch.clear.jpa.domain.dto.BasePostResponse;
 import knusearch.clear.jpa.domain.post.BasePost;
@@ -117,6 +115,17 @@ public class CrawlController {
         return classifications;
     }
 
+    private static List<String> determineClassIndexes() {
+        List<String> classifications = new ArrayList<>();
+
+        classifications.add(String.valueOf(ACADEMIC_NOTIFICATION.getIndex()));
+        classifications.add(String.valueOf(SCHOLARSHIP.getIndex()));
+        classifications.add(String.valueOf(LEARNING_KNOWHOW.getIndex()));
+        classifications.add(String.valueOf(EMPLOYMENT_STARTUP.getIndex()));
+
+        return classifications;
+    }
+
     @GetMapping("/classify/search")
     public String search() {
         return "classifySearch";
@@ -135,6 +144,11 @@ public class CrawlController {
 
         List<String> classifications = determineClassOptions();
         model.addAttribute("classOptions", classifications);
+
+        List<String> classificationIndexes = determineClassIndexes();
+        final List<BasePostClassifyResponse> notInClasses
+                = basePostService.findBasePostsNotInClassifications(classificationIndexes);
+        model.addAttribute("notInClasses", notInClasses);
 
         return "classifySearchResult";
     }

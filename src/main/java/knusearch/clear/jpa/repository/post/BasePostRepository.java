@@ -2,8 +2,8 @@ package knusearch.clear.jpa.repository.post;
 
 import java.util.List;
 
-import knusearch.clear.jpa.domain.dto.BasePostClassifyResponse;
 import knusearch.clear.jpa.domain.post.BasePost;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +15,6 @@ public interface BasePostRepository extends JpaRepository<BasePost, Long> {
     List<BasePost> findAllByEncryptedMenuSequenceAndEncryptedMenuBoardSequence(
             String EncryptedMenuSequence,
             String EncryptedMenuBoardSequence);
-
 
     List<BasePost> findAllByTitleContaining(String query);
 
@@ -36,4 +35,7 @@ public interface BasePostRepository extends JpaRepository<BasePost, Long> {
                                                 @Param("except") String except);
     //메서드 이름이 너무 길어져서 @Query 사용
 
+    @Query("SELECT bp FROM BasePost bp WHERE bp.classification NOT IN (:classifications)")
+    List<BasePost> findBasePostsNotInClassifications(@Param("classifications") List<String> classifications,
+                                                     Pageable pageable);
 }
