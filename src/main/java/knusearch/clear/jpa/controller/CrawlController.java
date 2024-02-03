@@ -6,12 +6,18 @@ import static knusearch.clear.jpa.domain.classification.Classification.EMPLOYMEN
 import static knusearch.clear.jpa.domain.classification.Classification.LEARNING_KNOWHOW;
 import static knusearch.clear.jpa.domain.classification.Classification.SCHOLARSHIP;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import knusearch.clear.jpa.domain.classification.Classification;
+import knusearch.clear.jpa.domain.classification.SearchOption;
+import knusearch.clear.jpa.domain.dto.BasePostClassifyResponse;
 import knusearch.clear.jpa.domain.dto.BasePostResponse;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.domain.post.ClassificationUpdateRequest;
@@ -109,6 +115,41 @@ public class CrawlController {
         classifications.add(EMPLOYMENT_STARTUP.getDescription());
 
         return classifications;
+    }
+
+    @GetMapping("/classify/search")
+    public String search() {
+        return "classifySearch";
+    }
+
+    @GetMapping("/classify/searchResult")
+    public String searchResult(Model model,
+                               @RequestParam String query,
+                               @RequestParam int option) {
+
+        final List<BasePostClassifyResponse> searchedPosts = basePostService.findByQuery(query, option);
+
+        model.addAttribute("searchedPosts", searchedPosts);
+        model.addAttribute("query", query);
+        model.addAttribute("option", option);
+
+        List<String> classifications = determineClassOptions();
+        model.addAttribute("classOptions", classifications);
+
+        return "classifySearchResult";
+    }
+
+    @PostMapping("/classify/update")
+    public String update(@RequestParam String query,
+                         @RequestParam int option,
+                         @RequestParam String except,
+                         @RequestParam String classification) throws UnsupportedEncodingException {
+        basePostService.updateClassification(query, option, except, transformClassification(classification));
+
+        String encodedQuery = URLEncoder.encode(query, "UTF-8");
+        System.out.println("encodedQuery = " + encodedQuery);
+
+        return "redirect:/classify/searchResult?query=" + encodedQuery + "&option=" + option;
     }
 
     @PostMapping("/api/updateClassification")

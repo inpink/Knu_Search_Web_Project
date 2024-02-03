@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hello</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+
+<div th:replace="~{fragments/classifySearchForm :: classifySearchForm}"></div>
+<br><br><br>
+<form action="/classify/update" method="post">
+    <select name="classification" class="classification-dropdown">
+        <option th:each="classification : ${classOptions}"
+                th:value="${classification}"
+                th:text="${classification}"></option>
+    </select>
+
+    <button type="submit">바꾸기</button>
+
+    <label>
+        <input type="checkbox" name="hasException" value="true"> 제외할 단어 있음
+    </label>
+
+    <input type="text" name="except" placeholder="제외할 단어 입력">
+
+    <!-- Hidden fields for "query" -->
+    <input type="hidden" name="query" th:value="${query}">
+
+    <!-- Hidden field for "option" -->
+    <input type="hidden" name="option" th:value="${option}">
+</form>
+
+<br><br><br>
+
+<div>
+    <h2>Search Results</h2>
+    <p th:text="'Total posts found: ' + ${#lists.size(searchedPosts)}"></p>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Classification</th>
+            <th>Title</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="post : ${searchedPosts}">
+            <td th:text="${post.id}"></td>
+            <td th:text="${post.classification}"></td>
+            <td th:text="${post.title}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

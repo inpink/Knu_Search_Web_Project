@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="classifySearchForm">
+    <form action="#" th:action="@{/classify/searchResult}" method="get">
+        <div>
+            <label for="query">Search Query:</label>
+            <input type="text" id="query" name="query" th:value="${query}" required>
+        </div>
+
+        <div>
+            <input type="radio" id="title" name="option" value="0"
+                   th:checked="${option == 0 or option == null or !(option == 1 or option == 2)}" required>
+            <label for="title">Title</label>
+
+            <input type="radio" id="text" name="option" value="1" th:checked="${option == 1}">
+            <label for="text">Text</label>
+
+            <input type="radio" id="titleAndText" name="option" value="2" th:checked="${option == 2}">
+            <label for="titleAndText">Title & Text</label>
+        </div>
+
+        <button type="submit">Search</button>
+    </form>
+</div>
+</html>

@@ -1,7 +1,10 @@
 package knusearch.clear.jpa.service.post;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import knusearch.clear.jpa.domain.dto.BasePostClassifyResponse;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.repository.post.BasePostRepository;
 import knusearch.clear.jpa.service.CrawlService;
@@ -13,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static knusearch.clear.jpa.domain.classification.SearchOption.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +45,7 @@ public class BasePostService {
             int totalPageIdx = crawlService.totalPageIdx(firsNoticetUrl); //총 페이지수 구해옴
 
             for (int i = 1; i <= totalPageIdx; i++) {
-            //for (int i = 1; i <= 2; i++) { //너무 많으니까 일단 10개정도로 테스트
+                //for (int i = 1; i <= 2; i++) { //너무 많으니까 일단 10개정도로 테스트
 
                 //굳이 안받아와도 되긴할듯 필요하면 받아오고 //상속관계를 이용하여 BaseContent로 통일!
                 //추상화를 통해 DIP(의존관계역전) 적용된 케이스임
@@ -111,8 +116,73 @@ public class BasePostService {
     }
 
     @Transactional
+    public List<BasePost> findAllByQuery(String query, int option) {
+        List<BasePost> basePosts = new ArrayList<>();
+
+        if (TITLE.getIndex() == option) {
+            basePosts = basePostRepository.findAllByTitleContaining(query);
+        }
+        if (TEXT.getIndex() == option) {
+            basePosts = basePostRepository.findAllByTextContaining(query);
+        }
+        if (TITLE_AND_TEXT.getIndex() == option) {
+            basePosts = basePostRepository.findByTitleOrTextQuery(query, query);
+        }
+
+        return basePosts;
+    }
+
+    // DTO 변환을 Service에서 하되, 기존 Entity로 받아오는 코드와 변환 코드를 따로 둬서 재사용성을 높임
+    @Transactional
+    public List<BasePostClassifyResponse> findByQuery(String query, int option) {
+        List<BasePost> basePosts = findAllByQuery(query, option);
+
+        if (basePosts.isEmpty()) {
+            return generateEmptyResponse();
+        }
+
+        return basePosts.stream()
+                .map(basePost -> new BasePostClassifyResponse(
+                        basePost.getId(),
+                        basePost.getClassification(),
+                        basePost.getTitle()))
+                .toList();
+    }
+
+    private static ArrayList<BasePostClassifyResponse> generateEmptyResponse() {
+        return new ArrayList<>();
+    }
+
+    @Transactional
     public void updateClassification(BasePost basePost, String classification) {
         basePost.setClassification(classification);
+    }
+
+    @Transactional
+    public void updateClassification(String query, int option, String except, String classification) {
+        List<BasePost> posts = new ArrayList<>();
+        if (except.isEmpty()) {
+            posts = findAllByQuery(query, option);
+        }
+
+        else {
+            if (TITLE.getIndex() == option) {
+                posts = basePostRepository.findByTitleQueryExcept(query, except);
+            }
+            if (TEXT.getIndex() == option) {
+                posts = basePostRepository.findByTextQueryExcept(query, except);
+            }
+            if (TITLE_AND_TEXT.getIndex() == option) {
+                posts = basePostRepository.findByTitleOrTextQueryExcept(query, query, except);
+            }
+        }
+
+        if (posts.isEmpty()) {
+            return;
+        }
+
+        posts.stream()
+                .forEach(post -> updateClassification(post, classification));
     }
 
     public String getBaseUrl() {
