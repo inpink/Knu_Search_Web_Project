@@ -90,7 +90,7 @@ public class CrawlController {
 
         List<BasePostResponse> postResponses = postPage.getContent().stream()
                 .map(BasePostResponse::toBasepostResponse)
-                .collect(Collectors.toList());
+                .toList();
 
         model.addAttribute("posts", postResponses);
         model.addAttribute("currentPage", page);
