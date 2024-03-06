@@ -1,6 +1,7 @@
 package knusearch.clear.elasticsearch.repository;
 
 import java.util.List;
+
 import knusearch.clear.elasticsearch.domain.BasePostElasticsearchEntity;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
@@ -50,11 +51,11 @@ public interface BasePostElasticsearchRepository
             "    },\n" +
             "    \"functions\": [\n" +
             "      {\n" +
-            "        \"filter\": {\"term\": {\"classification\": \"?2\"}},\n" +
-            "        \"weight\": 1.5\n" + // 같은 분류일 때 줄 점수 가중치
+            "        \"filter\": {\"match\": {\"classification\": \"?2\"}},\n" +
+            "        \"weight\": 99999\n" + // 같은 분류일 때 줄 점수 가중치
             "      }\n" +
             "    ],\n" +
-            "    \"boost_mode\": \"multiply\"\n" +
+            "    \"boost_mode\": \"sum\"\n" +
             "  }\n" +
             "}")
     List<BasePostElasticsearchEntity> searchByTitleTextAndBoostClassification(String title,

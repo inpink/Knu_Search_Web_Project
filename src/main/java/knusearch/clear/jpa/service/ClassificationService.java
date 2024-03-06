@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +27,13 @@ public class ClassificationService {
 
         // Flask 서버로 POST 요청을 보내고 응답 받기
         ResponseEntity<String> response = restTemplate.postForEntity(flaskEndpoint, requestBody, String.class);
+        String body = response.getBody();
 
         // 응답에서 분류값 추출
-        return response.getBody(); // 실제 응답 구조에 따라 파싱 방법 조정 필요
+        JSONObject jsonResponse = new JSONObject(body);
+        String predictedClass = String.valueOf(jsonResponse.getInt("predicted_class")); // "predicted_class" 키의 값을 int로 추출
+
+        return predictedClass; // 추출된 분류값 반환
     }
 
 }

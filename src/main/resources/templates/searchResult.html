@@ -44,6 +44,15 @@
 
                     <div th:replace="fragments/periodRadioButtons :: periodRadioButtons"/>
 
+                    <hr class="my-4"> <!-- 구분선-->
+
+                    <div class="form-check m-auto">
+                        <input class="form-check-input categoryRecommendChecked" type="checkbox"
+                               value="categoryRecommendChecked" th:field="*{categoryRecommendChecked}"
+                               id="categoryRecommendChecked2" checked>
+                        <label class="form-check-label" for="categoryRecommendChecked2">분류 추천 사용</label>
+                    </div>
+
                 </div>
             </div>
 
@@ -63,7 +72,7 @@
             <div>
                 <p>AI가 추천하는 분류</p>
                 <div class="d-flex bg-skyblue p-3 border rounded">
-                    <span th:text="${predictedClass}">분류</span>
+                    <span th:text="${predictedClass} ">분류</span>
                     <span>학사:0, 장학:1, 학습,상담:2, 취창업:3</span>
                 </div>
             </div>
@@ -124,7 +133,7 @@
 <!-- JavaScript로 체크, 라디오 박스 연동 -->
 <script>
     //모든 대표  체크, 라디오 박스들의 이름
-    var parentCheckboxes = ["unifiedSearchChecked", "inOrderChecked", "allTimeChecked"];
+    var parentCheckboxes = ["unifiedSearchChecked", "inOrderChecked", "allTimeChecked", "categoryRecommendChecked"];
 
     // for문으로 모든 체크박스에 대한 이벤트 리스너를 추가합니다.
     for (var i = 0; i <= parentCheckboxes.length; i++) {

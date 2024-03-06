@@ -1,8 +1,10 @@
 package knusearch.clear.jpa.controller;
 
 import jakarta.validation.Valid;
+
 import java.time.LocalDate;
 import java.util.List;
+
 import knusearch.clear.elasticsearch.domain.BasePostElasticsearchEntity;
 import knusearch.clear.elasticsearch.service.ElasticsearchService;
 import knusearch.clear.jpa.service.ClassificationService;
@@ -94,16 +96,23 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         System.out.println("검색 기간:" + searchForm.getSearchPeriodRadio());
         System.out.println("검색 기간 시작:" + searchForm.getSearchPeriod_start());
         System.out.println("검색 기간 끝:" + searchForm.getSearchPeriod_end());
-
+        System.out.println("분류 추천 사용 여부:" + searchForm.getCategoryRecommendChecked());
         // 분류 메뉴 모델로부터 받아오기
         String predictedClass = classificationService.predictClassification(searchForm.getSearchQuery());
         String refinedPredictedClass = StringUtil.deleteLineSeparator(predictedClass);
+        System.out.println("predictedClass = " + predictedClass);
+        System.out.println("refinedPredictedClass = " + refinedPredictedClass);
 
         //엘라스틱 서치에서 검색
         //List<BasePostElasticsearchEntity> searchResult = elasticsearchService.searchAndPosts(searchForm.getSearchQuery());
-        List<BasePostElasticsearchEntity> searchResult
-                = elasticsearchService.searchAndPostWithBoostClassification(
-                searchForm.getSearchQuery(), refinedPredictedClass); //검색어의 분류정보
+        List<BasePostElasticsearchEntity> searchResult;
+        if (searchForm.getCategoryRecommendChecked() == "categoryRecommendChecked") {
+            searchResult = elasticsearchService.searchAndPostWithBoostClassification(
+                    searchForm.getSearchQuery(), refinedPredictedClass); //검색어의 분류정보
+        } else {
+            searchResult = elasticsearchService.searchAndPosts(searchForm.getSearchQuery());
+        }
+
         model.addAttribute("searchResult", searchResult);
 
         //객체 자체를 담아 보내줌! 타임리프에서 꺼내쓸 수 있다
