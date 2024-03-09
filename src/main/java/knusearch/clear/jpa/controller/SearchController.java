@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import knusearch.clear.jpa.domain.dto.BasePostRequest;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.service.ClassificationService;
 import knusearch.clear.jpa.service.DateService;
@@ -79,6 +80,10 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
             result.rejectValue("searchPeriodRadio", "required");
         }
 
+        if (searchForm.getSearchQuery() == null) { //검색어 미선택
+            result.rejectValue("searchQuery", "required");
+        }
+
         // 매핑된것 출력해서 확인
         for (String site : searchForm.getSelectedSites()) {
             System.out.println("선택된 사이트: " + site);
@@ -97,7 +102,7 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
 
         // 검색하기
         Pageable pageable = PageRequest.of(page, size);
-        Page<BasePost> searchResult = searchResults(
+        Page<BasePostRequest> searchResult = searchResults(
                 searchForm, refinedPredictedClass,
                 page, size, model);
         model.addAttribute("searchResult", searchResult);
@@ -120,39 +125,51 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         return "searchResult"; //redirect 말고 바로 page로 이동시킴. 이유는 아래에
     }
 
-    private Page<BasePost> searchResults(SearchForm searchForm,
+    private Page<BasePostRequest> searchResults(SearchForm searchForm,
                                          String refinedPredictedClass,
                                          int page,
                                          int size,
                                          Model model
     ) {
-        List<Map.Entry<BasePost, Integer>> searchResultWithCount;
+        List<Map.Entry<BasePostRequest, Integer>> searchResultWithCount;
 
-        if (searchForm.getCategoryRecommendChecked() == "categoryRecommendChecked") {
+        if (searchForm.getCategoryRecommendChecked()==null) {
+            System.out.println("분류 사용 X");
+            searchResultWithCount = searchService.searchAndPosts(searchForm.getSearchQuery());
+        } else {
+            System.out.println("분류 사용 O");
             searchResultWithCount = searchService.searchAndPostWithBoostClassification(
                     searchForm.getSearchQuery(), refinedPredictedClass); //검색어의 분류정보
-        } else {
-            searchResultWithCount = searchService.searchAndPosts(searchForm.getSearchQuery());
         }
         // count개수 담은 basepost map 보내기
         model.addAttribute("searchResultWithCount", searchResultWithCount);
-        System.out.println("searchResultWithCount = " + searchResultWithCount);
+        // searchResultWithCount 리스트를 순회하면서 각 항목의 title과 weight만 로그로 출력
+        searchResultWithCount.forEach(entry -> {
+            BasePostRequest basePostRequest = entry.getKey(); // BasePostRequest 객체
+            Integer weight = entry.getValue(); // 해당 객체의 weight
+
+            // BasePostRequest에서 id 가져오기
+            Long id = basePostRequest.id(); // record의 경우 직접 필드에 접근할 수 있습니다.
+
+            // title과 weight만 출력
+            System.out.println("Id: " + id + ", Weight: " + weight);
+        });
 
         // basepost만 따로 리스트로 추출하여 페이지로 보내기
-        List<BasePost> basePosts = searchResultWithCount.stream()
+        List<BasePostRequest> basePosts = searchResultWithCount.stream()
                 .map(Map.Entry::getKey)
                 .toList();
 
         return listToPage(basePosts, page, size);
     }
 
-    private Page<BasePost> listToPage(List<BasePost> list, int page, int size) {
+    private Page<BasePostRequest> listToPage(List<BasePostRequest> list, int page, int size) {
         // 시작 인덱스 계산
         int start = Math.min(page * size, list.size());
         // 종료 인덱스 계산
         int end = Math.min((start + size), list.size());
         // 서브리스트 생성
-        List<BasePost> subList = list.subList(start, end);
+        List<BasePostRequest> subList = list.subList(start, end);
         // PageRequest 객체 생성, 페이지 번호는 0부터 시작하므로 1을 빼줘야 한다는 점에 유의
         PageRequest pageRequest = PageRequest.of(page, size);
         // PageImpl 객체 생성 및 반환

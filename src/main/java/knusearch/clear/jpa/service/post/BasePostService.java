@@ -126,9 +126,9 @@ public class BasePostService {
         if (TEXT.getIndex() == option) {
             basePosts = basePostRepository.findAllByTextContaining(query);
         }
-        if (TITLE_AND_TEXT.getIndex() == option) {
+        /*if (TITLE_AND_TEXT.getIndex() == option) {
             basePosts = basePostRepository.findByTitleOrTextQuery(query, query);
-        }
+        }*/
 
         return basePosts;
     }

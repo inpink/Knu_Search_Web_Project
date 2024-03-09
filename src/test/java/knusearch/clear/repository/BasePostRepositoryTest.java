@@ -5,6 +5,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import java.sql.SQLException;
 import java.util.List;
 import javax.sql.DataSource;
+
+import knusearch.clear.jpa.domain.dto.BasePostRequest;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.repository.post.BasePostRepository;
 import org.junit.jupiter.api.Test;
@@ -71,14 +73,14 @@ public class BasePostRepositoryTest {
         basePostRepository.save(post);
 
         // When
-        List<BasePost> resultByTitle = basePostRepository.findByTitleOrTextQuery(title, "irrelevantTextQuery");
-        List<BasePost> resultByText = basePostRepository.findByTitleOrTextQuery("irrelevantTitleQuery", text);
+        List<BasePostRequest> resultByTitle = basePostRepository.findByTitleOrTextQuery(title, "irrelevantTextQuery");
+        List<BasePostRequest> resultByText = basePostRepository.findByTitleOrTextQuery("irrelevantTitleQuery", text);
 
         // Then
         assertThat(resultByTitle).isNotEmpty();
-        assertThat(resultByTitle.get(0).getTitle()).isEqualTo(title);
+        assertThat(resultByTitle.get(0).title()).isEqualTo(title);
 
         assertThat(resultByText).isNotEmpty();
-        assertThat(resultByText.get(0).getText()).isEqualTo(text);
+        assertThat(resultByText.get(0).text()).isEqualTo(text);
     }
 }

@@ -8,6 +8,7 @@ readOnly 속성은 해당 메서드에서 데이터베이스의 읽기 작업만
 import java.util.*;
 import java.util.stream.Collectors;
 
+import knusearch.clear.jpa.domain.dto.BasePostRequest;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.repository.SearchRepository;
 import knusearch.clear.jpa.repository.post.BasePostRepository;
@@ -47,29 +48,56 @@ public class SearchService {
         return sites;
     }
 
-    public List<Map.Entry<BasePost, Integer>> searchAndPostWithBoostClassification(String searchQuery, String refinedPredictedClass) {
-        return searchAndPosts(searchQuery); //TODO:
+    public List<Map.Entry<BasePostRequest, Integer>> searchAndPostWithBoostClassification(String searchQuery,
+                                                                                   String classification) {
+        List<BasePostRequest> allPosts = basePostRepository.findByTitleOrTextQuery(searchQuery, searchQuery);
+        Map<BasePostRequest, Integer> postWithCount = countQueryOccurrencesInTitles(allPosts, searchQuery);
+        Map<BasePostRequest, Integer> postWithCountAndClass = countClassificationWeight(
+                postWithCount,
+                classification);
+
+        return sortPosts(postWithCountAndClass);
     }
 
-    public List<Map.Entry<BasePost, Integer>> searchAndPosts(String searchQuery) {
-        List<BasePost> allPosts = basePostRepository.findByTitleOrTextQuery(searchQuery, searchQuery);
-        Map<BasePost, Integer> postWithCount = countQueryOccurrencesInTitles(allPosts, searchQuery);
+    private Map<BasePostRequest, Integer> countClassificationWeight(Map<BasePostRequest, Integer> postWithCount,
+                                                             String classification) {
+        final int weight=10;
+        Map<BasePostRequest, Integer> withClass = new HashMap<>();
+        postWithCount.forEach((post, count) -> {
+            if (classification.equals(post.classification())) {
+                withClass.put(post, count + weight);
+            }
+        });
+
+        return withClass;
+    }
+
+    public List<Map.Entry<BasePostRequest, Integer>> searchAndPosts(String searchQuery) {
+        List<BasePostRequest> allPosts = basePostRepository.findByTitleOrTextQuery(searchQuery, searchQuery);
+        Map<BasePostRequest, Integer> postWithCount = countQueryOccurrencesInTitles(allPosts, searchQuery);
 
         return sortPosts(postWithCount);
     }
 
-    private List<Map.Entry<BasePost, Integer>> sortPosts(Map<BasePost, Integer> postWithCount) {
+    private List<Map.Entry<BasePostRequest, Integer>> sortPosts(Map<BasePostRequest, Integer> postWithCount) {
         return postWithCount.entrySet().stream()
-                .sorted(Map.Entry.<BasePost, Integer>comparingByValue(Comparator.reverseOrder()))
-                .collect(Collectors.toList());
+                .sorted(Map.Entry.<BasePostRequest, Integer>comparingByValue(Comparator.reverseOrder())
+                        .thenComparing(entry -> entry.getKey().id()))
+                .toList();
     }
 
     // RDB에는 일치하는 단어 개수 세어주는 기능 제공하지 않아서 직접 구현해야 함
-    public Map<BasePost, Integer> countQueryOccurrencesInTitles(List<BasePost> allPosts, String searchQuery) {
-        final Map<BasePost, Integer> postWithCount = new HashMap<>();
-        for (BasePost post : allPosts) {
-            final String title = post.getTitle();
-            final String text = post.getText();
+    public Map<BasePostRequest, Integer> countQueryOccurrencesInTitles(List<BasePostRequest> allPosts,
+                                                                       String searchQuery) {
+        final Map<BasePostRequest, Integer> postWithCount = new HashMap<>();
+
+        if (searchQuery.length()==0) {
+            return postWithCount;
+        }
+
+        for (BasePostRequest post : allPosts) {
+            final String title = post.title();
+            final String text = post.text();
             final int titleCount = (title.length() - title.replace(searchQuery, "").length()) / searchQuery.length();
             final int textCount = (text.length() - text.replace(searchQuery, "").length()) / searchQuery.length();
             final int totalCount = titleCount + textCount;

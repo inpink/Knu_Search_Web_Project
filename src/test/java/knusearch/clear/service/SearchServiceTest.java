@@ -1,5 +1,6 @@
 package knusearch.clear.service;
 
+import knusearch.clear.jpa.domain.dto.BasePostRequest;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.repository.post.BasePostRepository;
 import knusearch.clear.jpa.service.SearchService;
@@ -34,22 +35,22 @@ public class SearchServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    void countQueryOccurrencesInTitles(String query, String title1, String text1, String title2, String text2, int expectedCount1, int expectedCount2) {
+    void countQueryOccurrencesInTitles(String query, String title1, String text1,
+                                       String title2, String text2,
+                                       int expectedCount1, int expectedCount2) {
         // Given
-        BasePost post1 = new BasePost();
-        post1.setTitle(title1);
-        post1.setText(text1);
+        BasePostRequest post1 = new BasePostRequest(1L, "", title1,text1, "",
+                LocalDate.now(), "");
 
-        BasePost post2 = new BasePost();
-        post2.setTitle(title2);
-        post2.setText(text2);
+        BasePostRequest post2 = new BasePostRequest(1L, "", title2,text2, "",
+                LocalDate.now(), "");
 
-        List<BasePost> posts = new ArrayList<>();
+        List<BasePostRequest> posts = new ArrayList<>();
         posts.add(post1);
         posts.add(post2);
 
         // When
-        Map<BasePost, Integer> result = searchService.countQueryOccurrencesInTitles(posts, query);
+        Map<BasePostRequest, Integer> result = searchService.countQueryOccurrencesInTitles(posts, query);
 
         // Then
         assertThat(result.size()).isEqualTo(2);
@@ -85,26 +86,24 @@ public class SearchServiceTest {
     public void searchAndPostsReturnsSortedMap() {
         // Given
         String searchQuery = "test";
-        BasePost post1 = new BasePost();
-        post1.setDateTime(LocalDate.now().minusDays(1));
-        post1.setTitle("test");
+        BasePostRequest post1 = new BasePostRequest(1L, "", "test","", "",
+                LocalDate.now().minusDays(1), "");
 
-        BasePost post2 = new BasePost();
-        post2.setDateTime(LocalDate.now());  // 더 최신
-        post2.setTitle("test test");
+        BasePostRequest post2 =  new BasePostRequest(1L, "", "test test","", "",
+                LocalDate.now().minusDays(1), "");
 
         when(basePostRepository.findByTitleOrTextQuery(searchQuery, searchQuery))
                 .thenReturn(Arrays.asList(post1, post2));
 
         // When
-        List<Map.Entry<BasePost, Integer>> result = searchService.searchAndPosts(searchQuery);
+        List<Map.Entry<BasePostRequest, Integer>> result = searchService.searchAndPosts(searchQuery);
 
         // Then
         assertNotNull(result);
         assertEquals(2, result.size()); // 가정: countQueryOccurrencesInTitles 로직에 따라 결과가 있음
 
         // 검증: 결과가 정렬되어 있어야 함, 가장 최신 post가 먼저 나와야 함
-        BasePost firstEntry = result.stream()
+        BasePostRequest firstEntry = result.stream()
                 .map(Map.Entry::getKey)
                 .toList().get(0);
         assertEquals(post2, firstEntry); // 가장 최신 post가 맨 처음에 오는지 확인
