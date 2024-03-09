@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="d-flex categoryRecommendChecked" th:fragment="categoryRecommendChecked"> <!--정확도순/최신순 d-flex: 가로 정렬, 라디오버튼은 name으로 같은 그룹-->
+    <div class="form-check m-auto">
+        <input class="form-check-input categoryRecommendChecked" type="checkbox"
+               value="categoryRecommendChecked" th:field="*{categoryRecommendChecked}"
+               id="categoryRecommendChecked2" checked>
+        <label class="form-check-label" for="categoryRecommendChecked2">분류 추천 사용</label>
+    </div>
+</div>

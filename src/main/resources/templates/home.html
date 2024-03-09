@@ -41,6 +41,10 @@
 
                     <div th:replace="fragments/periodRadioButtons :: periodRadioButtons"/>
 
+                    <hr class="my-4"> <!-- 구분선-->
+
+                    <div th:replace="fragments/categoryRecommendChecked :: categoryRecommendChecked"/>
+
                 </div>
             </div>
 
@@ -73,7 +77,7 @@
 <!-- JavaScript로 체크, 라디오 박스 연동 -->
 <script>
     //모든 대표  체크, 라디오 박스들의 이름
-    var parentCheckboxes = ["unifiedSearchChecked", "inOrderChecked", "allTimeChecked"];
+    var parentCheckboxes = ["unifiedSearchChecked", "inOrderChecked", "allTimeChecked","categoryRecommendChecked"];
 
     // for문으로 모든 체크박스에 대한 이벤트 리스너를 추가합니다.
     for (var i = 0; i <= parentCheckboxes.length; i++) {

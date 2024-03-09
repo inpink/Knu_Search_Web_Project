@@ -1,5 +1,6 @@
 package knusearch.clear.jpa.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import java.time.LocalDate;
@@ -11,10 +12,17 @@ import knusearch.clear.jpa.service.DateService;
 import knusearch.clear.jpa.service.SearchService;
 import knusearch.clear.util.StringUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,21 +52,20 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         searchForm.setSearchPeriod_start(searchPeriod_start);  // value, min, max 값을 모델에 추가
         searchForm.setSearchPeriod_end(searchPeriod_end);
         searchForm.setSearchScopeRadio(searchScopeRadio);
+        searchForm.setCategoryRecommendChecked("categoryRecommendChecked.html");
 
         model.addAttribute("searchForm", searchForm);
 
         return "home";
     }
 
-
-    /*
-    @RequestParam("site") List<String> selectedSites,
-                               @RequestParam("searchQuery") String searchQuery,
-                               Model model
-     */
     @GetMapping("/searchResult")
-    public String searchResult(@Valid SearchForm searchForm, BindingResult result, Model model) {
-
+    public String searchResult(@Valid SearchForm searchForm,
+                               BindingResult result,
+                               @RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "10") int size,
+                               Model model,
+                               HttpServletRequest request) {
         //에러 처리
         if (searchForm.getSelectedSites().isEmpty()) { //사이트 미선택 (List라 isEmpty)
             result.rejectValue("selectedSites", "required");
@@ -71,19 +78,6 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         if (searchForm.getSearchPeriodRadio() == null) { //기간 미선택
             result.rejectValue("searchPeriodRadio", "required");
         }
-
-        //ObjectError. date에 대해 필요하면 넣기.
-        /*
-        <div th:if="${#fields.hasGlobalErrors()}">
-          <p class="field-error" th:each="err : ${#fields.globalErrors()}"
-             th:text="${err}">전체 오류 메시지</p>
-        </div>
-
-        if (searchForm.getSearchScopeRadio().equals("directPeriodSelectChecked") &&
-         searchForm.getSearchPeriod_start())
-        {
-
-        }*/
 
         // 매핑된것 출력해서 확인
         for (String site : searchForm.getSelectedSites()) {
@@ -102,7 +96,8 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         System.out.println("refinedPredictedClass = " + refinedPredictedClass);
 
         // 검색하기
-        List<SearchResult> searchResult = searchResults(searchForm, refinedPredictedClass);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<SearchResult> searchResult = searchResults(searchForm, refinedPredictedClass, page, size);
         model.addAttribute("searchResult", searchResult);
 
         //객체 자체를 담아 보내줌! 타임리프에서 꺼내쓸 수 있다
@@ -118,20 +113,45 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         // 분류값을 모델에 추가
         model.addAttribute("predictedClass", predictedClass);
 
+        // 페이지네이션을 위해 현재 URL 전달
+        String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
+                .replaceQueryParam("page")
+                .build().toUriString();
+        model.addAttribute("baseUrl", baseUrl);
+
+        // 끝까지 왔을 때 검색 가능
         model.addAttribute("isSearchEnabled", true);
         return "searchResult"; //redirect 말고 바로 page로 이동시킴. 이유는 아래에
     }
 
-    private List<SearchResult> searchResults(SearchForm searchForm, String refinedPredictedClass) {
+    private Page<SearchResult> searchResults(SearchForm searchForm,
+                                             String refinedPredictedClass,
+                                             int page,
+                                             int size
+    ) {
         List<SearchResult> searchResult;
 
-        if (searchForm.getCategoryRecommendChecked() == "categoryRecommendChecked") {
+        if (searchForm.getCategoryRecommendChecked() == "categoryRecommendChecked.html") {
             searchResult = searchService.searchAndPostWithBoostClassification(
                     searchForm.getSearchQuery(), refinedPredictedClass); //검색어의 분류정보
         } else {
             searchResult = searchService.searchAndPosts(searchForm.getSearchQuery());
         }
-        return searchResult;
+
+        return listToPage(searchResult, page, size);
+    }
+
+    private Page<SearchResult> listToPage(List<SearchResult> list, int page, int size) {
+        // 시작 인덱스 계산
+        int start = Math.min(page * size, list.size());
+        // 종료 인덱스 계산
+        int end = Math.min((start + size), list.size());
+        // 서브리스트 생성
+        List<SearchResult> subList = list.subList(start, end);
+        // PageRequest 객체 생성, 페이지 번호는 0부터 시작하므로 1을 빼줘야 한다는 점에 유의
+        PageRequest pageRequest = PageRequest.of(page, size);
+        // PageImpl 객체 생성 및 반환
+        return new PageImpl<>(subList, pageRequest, list.size());
     }
 
     //위에서 redirect해줬고, 아래 searchResult에서 html 타임리프로 값을 전달하고 싶으면
