@@ -5,8 +5,7 @@ import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
-import knusearch.clear.elasticsearch.domain.BasePostElasticsearchEntity;
-import knusearch.clear.elasticsearch.service.ElasticsearchService;
+import knusearch.clear.jpa.domain.dto.SearchResult;
 import knusearch.clear.jpa.service.ClassificationService;
 import knusearch.clear.jpa.service.DateService;
 import knusearch.clear.jpa.service.SearchService;
@@ -23,7 +22,6 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
 
     private final DateService dateService;
     private final SearchService searchService;
-    private final ElasticsearchService elasticsearchService;
     private final ClassificationService classificationService;
 
     @GetMapping("/search")
@@ -103,16 +101,8 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         System.out.println("predictedClass = " + predictedClass);
         System.out.println("refinedPredictedClass = " + refinedPredictedClass);
 
-        //엘라스틱 서치에서 검색
-        //List<BasePostElasticsearchEntity> searchResult = elasticsearchService.searchAndPosts(searchForm.getSearchQuery());
-        List<BasePostElasticsearchEntity> searchResult;
-        if (searchForm.getCategoryRecommendChecked() == "categoryRecommendChecked") {
-            searchResult = elasticsearchService.searchAndPostWithBoostClassification(
-                    searchForm.getSearchQuery(), refinedPredictedClass); //검색어의 분류정보
-        } else {
-            searchResult = elasticsearchService.searchAndPosts(searchForm.getSearchQuery());
-        }
-
+        // 검색하기
+        List<SearchResult> searchResult = searchResults(searchForm, refinedPredictedClass);
         model.addAttribute("searchResult", searchResult);
 
         //객체 자체를 담아 보내줌! 타임리프에서 꺼내쓸 수 있다
@@ -130,6 +120,18 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
 
         model.addAttribute("isSearchEnabled", true);
         return "searchResult"; //redirect 말고 바로 page로 이동시킴. 이유는 아래에
+    }
+
+    private List<SearchResult> searchResults(SearchForm searchForm, String refinedPredictedClass) {
+        List<SearchResult> searchResult;
+
+        if (searchForm.getCategoryRecommendChecked() == "categoryRecommendChecked") {
+            searchResult = searchService.searchAndPostWithBoostClassification(
+                    searchForm.getSearchQuery(), refinedPredictedClass); //검색어의 분류정보
+        } else {
+            searchResult = searchService.searchAndPosts(searchForm.getSearchQuery());
+        }
+        return searchResult;
     }
 
     //위에서 redirect해줬고, 아래 searchResult에서 html 타임리프로 값을 전달하고 싶으면

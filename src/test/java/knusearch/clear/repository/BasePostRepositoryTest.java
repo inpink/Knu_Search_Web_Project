@@ -59,4 +59,26 @@ public class BasePostRepositoryTest {
         assertThat(foundPosts.get(0).getEncryptedMenuSequence()).isEqualTo(encryptedMenuSequence);
         assertThat(foundPosts.get(0).getEncryptedMenuBoardSequence()).isEqualTo(encryptedMenuBoardSequence);
     }
+
+    @Test
+    public void findByTitleOrTextQuery() {
+        // Given
+        String title = "Sample Title";
+        String text = "Sample text content";
+        BasePost post = new BasePost();
+        post.setTitle(title);
+        post.setText(text);
+        basePostRepository.save(post);
+
+        // When
+        List<BasePost> resultByTitle = basePostRepository.findByTitleOrTextQuery(title, "irrelevantTextQuery");
+        List<BasePost> resultByText = basePostRepository.findByTitleOrTextQuery("irrelevantTitleQuery", text);
+
+        // Then
+        assertThat(resultByTitle).isNotEmpty();
+        assertThat(resultByTitle.get(0).getTitle()).isEqualTo(title);
+
+        assertThat(resultByText).isNotEmpty();
+        assertThat(resultByText.get(0).getText()).isEqualTo(text);
+    }
 }
