@@ -66,7 +66,7 @@ public class SearchService {
 
         /*final int weight = postWithCount.values().stream()
                 .max(Integer::compare).get() / 2;*/
-        final int weight = 10;
+        final int weight = 100;
 
         postWithCount.forEach((post, count) -> {
             if (classification.equals(post.classification())) {
@@ -80,7 +80,6 @@ public class SearchService {
     }
 
     public List<Map.Entry<BasePostRequest, Integer>> searchAndPosts(List<String> words) {
-
         Map<BasePostRequest, Integer> postWithCount = calculateCount(words);
 
         return sortPosts(postWithCount);
@@ -113,22 +112,82 @@ public class SearchService {
     // RDB에는 일치하는 단어 개수 세어주는 기능 제공하지 않아서 직접 구현해야 함
     public Map<BasePostRequest, Integer> countQueryOccurrencesInTitles(Set<BasePostRequest> allPosts,
                                                                        List<String> words) {
-        final Map<BasePostRequest, Integer> postWithCount = new HashMap<>();
+        // 게시글 별 점수
+        final Map<BasePostRequest, Integer> postCount = new HashMap<>();
+
+        // 단어별 최소 및 최대 등장 횟수 설정
+        Map<String, Integer[]> wordMinMaxCounts = new HashMap<>();
+
+        for (String word : words) {
+            wordMinMaxCounts.put(word, new Integer[]{0,0});
+        }
+
+        // 게시글별 단어 등장 횟수
+        Map<BasePostRequest, Map<String, Integer>> postWordCount = new HashMap<>();
 
         for (BasePostRequest post : allPosts) {
             final String title = post.title();
             final String text = post.text();
+            Map<String, Integer> wordCount = new HashMap<>(); // 사회 :3 , 복지 : 1 ..
 
-            int totalCount = 0;
-            for (String word : words) {
+            for (String word : words) { // 사회 복지 학부 졸업
                 final int titleCount = (title.length() - title.replace(word, "").length()) / word.length();
                 final int textCount = (text.length() - text.replace(word, "").length()) / word.length();
-                totalCount += (titleCount + textCount);
-            }
+                final int currentCount = (titleCount + textCount);
 
-            postWithCount.put(post, totalCount);
+                Integer[] minMax = wordMinMaxCounts.get(word);
+                int min = Math.min(minMax[0],currentCount);
+                int max = Math.max(minMax[1],currentCount);
+
+                wordMinMaxCounts.put(word,new Integer[]{min,max});
+                wordCount.put(word,currentCount);
+            }
+            postWordCount.put(post,wordCount);
         }
 
-        return postWithCount;
+        for (Map.Entry<BasePostRequest, Map<String, Integer>> entry : postWordCount.entrySet()) {
+            BasePostRequest post = entry.getKey();
+            Map<String, Integer> wordCounts = entry.getValue();
+            double score = calculatePostScore(wordCounts,wordMinMaxCounts);
+
+            postCount.put(post, Integer.valueOf((int) (score*100))); // 소수점 둘째자리까지 100곱해서 사용
+        }
+
+        System.out.println("wordMinMaxCounts = " );
+        for (Map.Entry<String, Integer[]> entry : wordMinMaxCounts.entrySet()) {
+            System.out.println(entry.getKey()+" "+entry.getValue()[0]+" "+entry.getValue()[1]);
+        }
+
+/*        System.out.println("postCount = ");
+        for (Map.Entry<BasePostRequest, Integer> entry : postCount.entrySet()) {
+            System.out.println(entry.getKey().title() + " " + entry.getValue());
+        }*/
+        return postCount;
+    }
+
+    // 정규화 점수
+    private static double calculatePostScore(Map<String, Integer> postCounts,
+                                             Map<String, Integer[]> wordMinMaxCounts) {
+        double score = 0.0;
+
+        for (Map.Entry<String, Integer> entry : postCounts.entrySet()) {
+            String word = entry.getKey();
+            Integer count = entry.getValue();
+            Integer[] minMax = wordMinMaxCounts.get(word);
+            if (minMax != null) {
+                double normalized = normalize(count, minMax[0], minMax[1]);
+                score += normalized;
+            }
+        }
+
+        return score;
+    }
+
+    // 선형 정규화 공식
+    private static double normalize(int value, int min, int max) {
+        if (max==0) {
+            return 0;
+        }
+        return (double) (value - min) / (max - min);
     }
 }

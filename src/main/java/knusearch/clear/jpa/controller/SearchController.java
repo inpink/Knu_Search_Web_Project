@@ -64,7 +64,7 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
     public String searchResult(@Valid SearchForm searchForm,
                                BindingResult result,
                                @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
+                               @RequestParam(defaultValue = "20") int size,
                                Model model,
                                HttpServletRequest request) {
         //에러 처리
