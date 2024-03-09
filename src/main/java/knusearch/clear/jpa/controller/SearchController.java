@@ -97,7 +97,9 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
 
         // 검색하기
         Pageable pageable = PageRequest.of(page, size);
-        Page<BasePost> searchResult = searchResults(searchForm, refinedPredictedClass, page, size, model);
+        Page<BasePost> searchResult = searchResults(
+                searchForm, refinedPredictedClass,
+                page, size, model);
         model.addAttribute("searchResult", searchResult);
 
         //객체 자체를 담아 보내줌! 타임리프에서 꺼내쓸 수 있다
@@ -113,39 +115,35 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         // 분류값을 모델에 추가
         model.addAttribute("predictedClass", predictedClass);
 
-        // 페이지네이션을 위해 현재 URL 전달
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentRequestUri()
-                .queryParam("page", "{page}") // 페이지 파라미터를 동적으로 설정
-                .build()
-                .toUriString();
-        model.addAttribute("baseUrl", baseUrl);
-
-
         // 끝까지 왔을 때 검색 가능
         model.addAttribute("isSearchEnabled", true);
         return "searchResult"; //redirect 말고 바로 page로 이동시킴. 이유는 아래에
     }
 
     private Page<BasePost> searchResults(SearchForm searchForm,
-                                             String refinedPredictedClass,
-                                             int page,
-                                             int size,
-                                             Model model
+                                         String refinedPredictedClass,
+                                         int page,
+                                         int size,
+                                         Model model
     ) {
-        Map<BasePost, Integer> searchResultWithCount;
+        List<Map.Entry<BasePost, Integer>> searchResultWithCount;
 
-        if (searchForm.getCategoryRecommendChecked() == "categoryRecommendChecked.html") {
+        if (searchForm.getCategoryRecommendChecked() == "categoryRecommendChecked") {
             searchResultWithCount = searchService.searchAndPostWithBoostClassification(
                     searchForm.getSearchQuery(), refinedPredictedClass); //검색어의 분류정보
         } else {
             searchResultWithCount = searchService.searchAndPosts(searchForm.getSearchQuery());
         }
-
         // count개수 담은 basepost map 보내기
-        model.addAttribute("searchResultWithCount",searchResultWithCount);
+        model.addAttribute("searchResultWithCount", searchResultWithCount);
+        System.out.println("searchResultWithCount = " + searchResultWithCount);
 
-        // basepost만 따로 페이지로 보내기
-        return listToPage(searchResultWithCount.keySet().stream().toList(), page, size);
+        // basepost만 따로 리스트로 추출하여 페이지로 보내기
+        List<BasePost> basePosts = searchResultWithCount.stream()
+                .map(Map.Entry::getKey)
+                .toList();
+
+        return listToPage(basePosts, page, size);
     }
 
     private Page<BasePost> listToPage(List<BasePost> list, int page, int size) {

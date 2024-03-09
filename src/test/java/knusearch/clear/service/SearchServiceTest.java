@@ -97,14 +97,16 @@ public class SearchServiceTest {
                 .thenReturn(Arrays.asList(post1, post2));
 
         // When
-        Map<BasePost, Integer> result = searchService.searchAndPosts(searchQuery);
+        List<Map.Entry<BasePost, Integer>> result = searchService.searchAndPosts(searchQuery);
 
         // Then
         assertNotNull(result);
         assertEquals(2, result.size()); // 가정: countQueryOccurrencesInTitles 로직에 따라 결과가 있음
 
         // 검증: 결과가 정렬되어 있어야 함, 가장 최신 post가 먼저 나와야 함
-        BasePost firstEntry = result.keySet().iterator().next();
+        BasePost firstEntry = result.stream()
+                .map(Map.Entry::getKey)
+                .toList().get(0);
         assertEquals(post2, firstEntry); // 가장 최신 post가 맨 처음에 오는지 확인
     }
 

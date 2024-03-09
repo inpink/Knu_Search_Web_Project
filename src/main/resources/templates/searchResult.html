@@ -52,6 +52,7 @@
             </div>
 
             <div th:replace="fragments/searchContainer :: searchContainer"/>
+
         </form>
     </div>
 
@@ -62,7 +63,6 @@
 
     <div th:if="${isSearchEnabled} == true">
         <div class="jumbotron bg-light" style="width: 110%;"> <!-- 회색 박스 -->
-
 
             <!--AI가 추천하는 분류-->
             <div th:if="${searchForm.categoryRecommendChecked} != null">
@@ -82,17 +82,7 @@
                     <div th:replace="fragments/postSearchResult :: postSearchResult"/>
                 </div>
 
-                <!-- 페이지네이션-->
-                <div>
-                    <ul class="pagination">
-                        <li th:each="i : ${#numbers.sequence(0, 9)}">
-                            <a th:href="@{${baseUrl}(page=${i})}" th:text="${i + 1}"></a>
-                        </li>
-                    </ul>
-                </div>
             </div>
-
-
 
 
         </div>
