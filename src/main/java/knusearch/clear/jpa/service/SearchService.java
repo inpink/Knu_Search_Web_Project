@@ -49,7 +49,7 @@ public class SearchService {
     }
 
     public List<Map.Entry<BasePostRequest, Integer>> searchAndPostWithBoostClassification(String searchQuery,
-                                                                                   String classification) {
+                                                                                          String classification) {
         List<BasePostRequest> allPosts = basePostRepository.findByTitleOrTextQuery(searchQuery, searchQuery);
         Map<BasePostRequest, Integer> postWithCount = countQueryOccurrencesInTitles(allPosts, searchQuery);
         Map<BasePostRequest, Integer> postWithCountAndClass = countClassificationWeight(
@@ -59,13 +59,16 @@ public class SearchService {
         return sortPosts(postWithCountAndClass);
     }
 
-    private Map<BasePostRequest, Integer> countClassificationWeight(Map<BasePostRequest, Integer> postWithCount,
-                                                             String classification) {
-        final int weight=10;
+    private Map<BasePostRequest, Integer> countClassificationWeight(
+            Map<BasePostRequest, Integer> postWithCount,
+            String classification) {
+        final int weight = 10;
         Map<BasePostRequest, Integer> withClass = new HashMap<>();
         postWithCount.forEach((post, count) -> {
             if (classification.equals(post.classification())) {
                 withClass.put(post, count + weight);
+            } else {
+                withClass.put(post, count);
             }
         });
 
@@ -82,6 +85,7 @@ public class SearchService {
     private List<Map.Entry<BasePostRequest, Integer>> sortPosts(Map<BasePostRequest, Integer> postWithCount) {
         return postWithCount.entrySet().stream()
                 .sorted(Map.Entry.<BasePostRequest, Integer>comparingByValue(Comparator.reverseOrder())
+                        .thenComparing(entry -> entry.getKey().dateTime(), Comparator.naturalOrder())
                         .thenComparing(entry -> entry.getKey().id()))
                 .toList();
     }
@@ -91,7 +95,7 @@ public class SearchService {
                                                                        String searchQuery) {
         final Map<BasePostRequest, Integer> postWithCount = new HashMap<>();
 
-        if (searchQuery.length()==0) {
+        if (searchQuery.length() == 0) {
             return postWithCount;
         }
 

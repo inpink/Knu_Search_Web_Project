@@ -1,12 +1,36 @@
 from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import MultiHeadAttention, LayerNormalization, Dense, Dropout
+import tensorflow as tf
 from gensim.models import Word2Vec
 from flask import Flask, request, jsonify
 import numpy as np
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
+class TransformerEncoderLayer(tf.keras.layers.Layer):
+    def __init__(self, embed_dim, num_heads, ff_dim, rate=0.1):
+        super(TransformerEncoderLayer, self).__init__()
+        self.att = MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim)
+        self.ffn = tf.keras.Sequential([
+            Dense(ff_dim, activation="relu"),
+            Dense(embed_dim),
+        ])
+        self.layernorm1 = LayerNormalization(epsilon=1e-6)
+        self.layernorm2 = LayerNormalization(epsilon=1e-6)
+        self.dropout1 = Dropout(rate)
+        self.dropout2 = Dropout(rate)
+
+    def call(self, inputs, training=False):
+        attn_output = self.att(inputs, inputs)
+        attn_output = self.dropout1(attn_output, training=training)
+        out1 = self.layernorm1(inputs + attn_output)
+        ffn_output = self.ffn(out1)
+        ffn_output = self.dropout2(ffn_output, training=training)
+        return self.layernorm2(out1 + ffn_output)
+
+
 # TensorFlow/Keras 모델과 Word2Vec 모델 불러오기
-model = load_model('my_model.h5')
-word2vec_model = Word2Vec.load('word2vec_model.model')
+model =load_model("h5File_cnn_transformer_okt.h5", custom_objects={"TransformerEncoderLayer": TransformerEncoderLayer}, compile=False)
+word2vec_model = Word2Vec.load('modelFile.model')
 
 app = Flask(__name__)
 
@@ -16,7 +40,7 @@ def input_model_test(input_text, word2vec_model, model):
 
     # Word2Vec 모델을 사용하여 단어를 벡터로 변환
     input_vectors = [word2vec_model.wv[word] for word in input_words if word in word2vec_model.wv]
-    
+
     # 벡터가 비어 있으면, 영벡터로 처리
     if not input_vectors:
         input_vectors = [np.zeros(word2vec_model.vector_size)]

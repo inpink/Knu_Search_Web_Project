@@ -21,8 +21,8 @@ public interface BasePostRepository extends JpaRepository<BasePost, Long> {
 
     List<BasePost> findAllByTextContaining(String query);
 
-    @Query("SELECT new knusearch.clear.jpa.domain.dto.BasePostRequest(bp.id, bp.url, SUBSTRING(bp.title, 1, 100)," +
-            " SUBSTRING(bp.text, 1, 100),  bp.image, bp.dateTime, bp.classification) " +
+    @Query("SELECT new knusearch.clear.jpa.domain.dto.BasePostRequest(bp.id, bp.url, bp.title," +
+            "bp.text, bp.image, bp.dateTime, bp.classification) " +
             "FROM BasePost bp WHERE bp.title LIKE %:titleQuery% OR bp.text LIKE %:textQuery%")
     List<BasePostRequest> findByTitleOrTextQuery(@Param("titleQuery") String titleQuery, @Param("textQuery") String textQuery);
 
