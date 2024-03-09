@@ -1,13 +1,13 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://3.36.59.110:3306/knusearch?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://15.164.246.49:3306/knusearch?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: guestsearch
     password: ghdwn1009G@
 
   jpa:
     hibernate:
-      ddl-auto: update #프로젝트 재시작할떄마다 DB 초기화(create)되는것이 아닌 업데이트
+      ddl-auto: validate #프로젝트 재시작할떄마다 DB 초기화(create)되는것이 아닌 업데이트(코드의 변경사항를 DB에 업데이트) => validate(현재 코드가 DB 스키마와 일치하는지 검증해서 일치하면 시작)
     properties:
       hibernate:
         #dialect: org.hibernate.dialect.MySQLDialect
