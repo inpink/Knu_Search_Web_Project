@@ -1,22 +1,33 @@
 package knusearch.clear.service;
 
 import knusearch.clear.jpa.domain.post.BasePost;
+import knusearch.clear.jpa.repository.post.BasePostRepository;
 import knusearch.clear.jpa.service.SearchService;
+import org.junit.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class SearchServiceTest {
+
+    @Mock
+    private BasePostRepository basePostRepository;
 
     @Autowired
     private SearchService searchService;
@@ -68,6 +79,33 @@ public class SearchServiceTest {
                 )
 
         );
+    }
+
+    @Test
+    public void searchAndPostsReturnsSortedMap() {
+        // Given
+        String searchQuery = "test";
+        BasePost post1 = new BasePost();
+        post1.setDateTime(LocalDate.now().minusDays(1));
+        post1.setTitle("test");
+
+        BasePost post2 = new BasePost();
+        post2.setDateTime(LocalDate.now());  // 더 최신
+        post2.setTitle("test test");
+
+        when(basePostRepository.findByTitleOrTextQuery(searchQuery, searchQuery))
+                .thenReturn(Arrays.asList(post1, post2));
+
+        // When
+        Map<BasePost, Integer> result = searchService.searchAndPosts(searchQuery);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(2, result.size()); // 가정: countQueryOccurrencesInTitles 로직에 따라 결과가 있음
+
+        // 검증: 결과가 정렬되어 있어야 함, 가장 최신 post가 먼저 나와야 함
+        BasePost firstEntry = result.keySet().iterator().next();
+        assertEquals(post2, firstEntry); // 가장 최신 post가 맨 처음에 오는지 확인
     }
 
 }

@@ -5,13 +5,9 @@ readOnly 속성은 해당 메서드에서 데이터베이스의 읽기 작업만
 이렇게 설정된 메서드는 트랜잭션 커밋 시에 롤백되는 것을 방지하고, 데이터베이스에 대한 읽기 작업을 최적화할 수 있습니다.
  */
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import knusearch.clear.jpa.domain.dto.BasePostMapper;
-import knusearch.clear.jpa.domain.dto.SearchResult;
 import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.repository.SearchRepository;
 import knusearch.clear.jpa.repository.post.BasePostRepository;
@@ -51,18 +47,30 @@ public class SearchService {
         return sites;
     }
 
-    public List<SearchResult> searchAndPostWithBoostClassification(String searchQuery, String refinedPredictedClass) {
-
+    public Map<BasePost, Integer> searchAndPostWithBoostClassification(String searchQuery, String refinedPredictedClass) {
+        return new HashMap<>(); //TODO:
     }
 
-    public List<SearchResult> searchAndPosts(String searchQuery) {
+    public Map<BasePost, Integer> searchAndPosts(String searchQuery) {
         List<BasePost> allPosts = basePostRepository.findByTitleOrTextQuery(searchQuery, searchQuery);
         Map<BasePost, Integer> postWithCount = countQueryOccurrencesInTitles(allPosts, searchQuery);
 
-        
+        sortPosts(postWithCount);
 
-        List<SearchResult> searchResults = BasePostMapper.toSearchResult();
-        return searchResults;
+        return postWithCount;
+    }
+
+    private Map<BasePost, Integer> sortPosts(Map<BasePost, Integer> postWithCount) {
+        return postWithCount.entrySet()
+                .stream()
+                .sorted(Map.Entry.<BasePost, Integer>comparingByValue(Comparator.reverseOrder()) // Count에 따라 내림차순
+                        .thenComparing(e -> e.getKey().getDateTime(), Comparator.reverseOrder()) // dateTime에 따라 내림차순
+                        .thenComparing(e -> e.getKey().getId())) // ID에 따라 오름차순
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new)); // 순서를 유지하는 Map으로 수집
     }
 
     // RDB에는 일치하는 단어 개수 세어주는 기능 제공하지 않아서 직접 구현해야 함

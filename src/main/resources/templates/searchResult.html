@@ -81,21 +81,19 @@
                 <div class="d-flex bg-skyblue p-3 border rounded">
                     <div th:replace="fragments/postSearchResult :: postSearchResult"/>
                 </div>
-                <a href="/contentResult?page=1">
-                    <button class="btn-outline-secondary">이동</button>
-                </a>
 
+                <!-- 페이지네이션-->
+                <div>
+                    <ul class="pagination">
+                        <li th:each="i : ${#numbers.sequence(0, 9)}">
+                            <a th:href="@{${baseUrl}(page=${i})}" th:text="${i + 1}"></a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
 
-            <!-- 페이지네이션-->
-            <div>
-                <ul class="pagination">
-                    <li th:each="i : ${#numbers.sequence(0, 9)}">
-                        <a th:href="${baseUrl}(page=${i})" th:text="${i + 1}"></a>
-                    </li>
-                </ul>
-            </div>
+
 
         </div>
 

@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header">
+<head th:replace="~{fragments/header :: header}">
     <title>강남대학교 웹 검색 도우미</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
@@ -31,28 +31,27 @@
             <div class="collapse" id="collapseDiv">
                 <div class="card card-body"> <!-- 모든 옵션들 박스에 담기-->
 
-                    <div th:replace="fragments/allSearchSites :: allSearchSites"/>
+                    <div th:replace="~{fragments/allSearchSites :: allSearchSites}"/>
 
                     <hr class="my-4"> <!-- 구분선-->
 
-                    <div th:replace="fragments/inOrderOrLatest :: inOrderOrLatest"/>
+                    <div th:replace="~{fragments/inOrderOrLatest :: inOrderOrLatest}"/>
 
                     <hr class="my-4"> <!-- 구분선-->
 
-                    <div th:replace="fragments/periodRadioButtons :: periodRadioButtons"/>
+                    <div th:replace="~{fragments/periodRadioButtons :: periodRadioButtons}"/>
 
                     <hr class="my-4"> <!-- 구분선-->
 
-                    <div th:replace="fragments/categoryRecommendChecked :: categoryRecommendChecked"/>
+                    <div th:replace="~{fragments/categoryRecommendChecked :: categoryRecommendChecked}"/>
 
                 </div>
             </div>
 
-            <div th:replace="fragments/searchContainer :: searchContainer"/>
+            <div th:replace="~{fragments/searchContainer :: searchContainer}"/>
         </form>
     </div>
 
-    <div th:replace="fragments/footer :: footer"/>
 
 </div> <!-- /container -->
 
