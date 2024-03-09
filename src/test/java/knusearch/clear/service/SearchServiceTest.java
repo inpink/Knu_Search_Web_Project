@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,22 +32,24 @@ public class SearchServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideTestData")
-    void countQueryOccurrencesInTitles(String query, String title1, String text1,
+    void countQueryOccurrencesInTitles(List<String> words, String title1, String text1,
                                        String title2, String text2,
                                        int expectedCount1, int expectedCount2) {
         // Given
-        BasePostRequest post1 = new BasePostRequest(1L, "", title1,text1, "",
+        BasePostRequest post1 = new BasePostRequest(1L, "", title1, text1, "",
                 LocalDate.now(), "");
 
-        BasePostRequest post2 = new BasePostRequest(1L, "", title2,text2, "",
+        BasePostRequest post2 = new BasePostRequest(1L, "", title2, text2, "",
                 LocalDate.now(), "");
 
-        List<BasePostRequest> posts = new ArrayList<>();
+        Set<BasePostRequest> posts = new HashSet<>();
         posts.add(post1);
         posts.add(post2);
 
         // When
-        Map<BasePostRequest, Integer> result = searchService.countQueryOccurrencesInTitles(posts, query);
+        Map<BasePostRequest, Integer> result = searchService.countQueryOccurrencesInTitles(
+                posts,
+                words);
 
         // Then
         assertThat(result.size()).isEqualTo(2);
@@ -61,7 +60,7 @@ public class SearchServiceTest {
     private static Stream<Arguments> provideTestData() {
         return Stream.of(
                 Arguments.of(
-                        "검색 단어",
+                        List.of("검색 단어"),
                         "ㅎㅎ 검색 단어가 이 문장에 몇 개 있을까요? 검색단어는 띄어쓰기가 달라서 안 됩니다. 검색 단어만 됩니다.",
                         "Nope",
                         "단어 검색 단어 단어단어 ㅋㅋ 단어 단어",
@@ -70,7 +69,7 @@ public class SearchServiceTest {
                         3  // post2에서 기대되는 검색 단어의 출현 횟수
                 ),
                 Arguments.of(
-                        "단어",
+                        List.of("단어"),
                         "ㅎㅎ 검색 단어가 이 문장에 몇 개 있을까요? 검색단어는 띄어쓰기가 달라서 안 됩니다. 검색 단어만 됩니다.",
                         "단어단어단어단어",
                         "단어 검색 단어 단어단어 ㅋㅋ 단어 단어",
@@ -86,17 +85,18 @@ public class SearchServiceTest {
     public void searchAndPostsReturnsSortedMap() {
         // Given
         String searchQuery = "test";
-        BasePostRequest post1 = new BasePostRequest(1L, "", "test","", "",
+        BasePostRequest post1 = new BasePostRequest(1L, "", "test", "", "",
                 LocalDate.now().minusDays(1), "");
 
-        BasePostRequest post2 =  new BasePostRequest(1L, "", "test test","", "",
+        BasePostRequest post2 = new BasePostRequest(1L, "", "test test", "", "",
                 LocalDate.now().minusDays(1), "");
 
         when(basePostRepository.findByTitleOrTextQuery(searchQuery, searchQuery))
                 .thenReturn(Arrays.asList(post1, post2));
 
         // When
-        List<Map.Entry<BasePostRequest, Integer>> result = searchService.searchAndPosts(searchQuery);
+        List<Map.Entry<BasePostRequest, Integer>> result = searchService.searchAndPosts(
+                List.of(searchQuery));
 
         // Then
         assertNotNull(result);

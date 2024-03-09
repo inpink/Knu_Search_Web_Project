@@ -4,11 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import knusearch.clear.jpa.domain.dto.BasePostRequest;
-import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.service.ClassificationService;
 import knusearch.clear.jpa.service.DateService;
 import knusearch.clear.jpa.service.SearchService;
@@ -23,7 +24,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
 @RequiredArgsConstructor
@@ -94,21 +94,30 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         System.out.println("검색 기간 시작:" + searchForm.getSearchPeriod_start());
         System.out.println("검색 기간 끝:" + searchForm.getSearchPeriod_end());
         System.out.println("분류 추천 사용 여부:" + searchForm.getCategoryRecommendChecked());
+        //객체 자체를 담아 보내줌! 타임리프에서 꺼내쓸 수 있다
+        model.addAttribute("searchForm", searchForm);
+
         // 분류 메뉴 모델로부터 받아오기
-        String predictedClass = classificationService.predictClassification(searchForm.getSearchQuery());
+        Map<String, Object> predictedAndTokens = classificationService.predictClassification(searchForm.getSearchQuery());
+        String predictedClass = (String) predictedAndTokens.get("predictedClass");
+        List<String> words = (List<String>) predictedAndTokens.get("words");
         String refinedPredictedClass = StringUtil.deleteLineSeparator(predictedClass);
         System.out.println("predictedClass = " + predictedClass);
         System.out.println("refinedPredictedClass = " + refinedPredictedClass);
+        System.out.println("words = " + words);
+
+        // 분류값을 모델에 추가
+        model.addAttribute("predictedClass", predictedClass);
 
         // 검색하기
         Pageable pageable = PageRequest.of(page, size);
         Page<BasePostRequest> searchResult = searchResults(
-                searchForm, refinedPredictedClass,
+                searchForm.getCategoryRecommendChecked(),
+                words,
+                refinedPredictedClass,
                 page, size, model);
         model.addAttribute("searchResult", searchResult);
 
-        //객체 자체를 담아 보내줌! 타임리프에서 꺼내쓸 수 있다
-        model.addAttribute("searchForm", searchForm);
 
         if (result.hasErrors()) {
             System.out.println("searchForm 검증 과정에서 에러 발생" + result.getAllErrors());
@@ -117,29 +126,32 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
             //에러 뜨든 안뜨든 searchResult로 보냄. 거기서 다시 검색 옵션 선택하게 함.
         }
 
-        // 분류값을 모델에 추가
-        model.addAttribute("predictedClass", predictedClass);
 
         // 끝까지 왔을 때 검색 가능
         model.addAttribute("isSearchEnabled", true);
         return "searchResult"; //redirect 말고 바로 page로 이동시킴. 이유는 아래에
     }
 
-    private Page<BasePostRequest> searchResults(SearchForm searchForm,
+    private Page<BasePostRequest> searchResults(String categoryRecommendChecked,
+                                         List<String> words,
                                          String refinedPredictedClass,
                                          int page,
                                          int size,
                                          Model model
     ) {
+        if (words.isEmpty()) { // words가 없는 경우 연산 안하고 빈 페이지 반환
+            return  listToPage(new ArrayList<>(), page, size);
+        }
+
         List<Map.Entry<BasePostRequest, Integer>> searchResultWithCount;
 
-        if (searchForm.getCategoryRecommendChecked()==null) {
+        if (categoryRecommendChecked==null) {
             System.out.println("분류 사용 X");
-            searchResultWithCount = searchService.searchAndPosts(searchForm.getSearchQuery());
+            searchResultWithCount = searchService.searchAndPosts(words);
         } else {
             System.out.println("분류 사용 O");
             searchResultWithCount = searchService.searchAndPostWithBoostClassification(
-                    searchForm.getSearchQuery(), refinedPredictedClass); //검색어의 분류정보
+                    words, refinedPredictedClass); //검색어의 분류정보
         }
         // count개수 담은 basepost map 보내기
         model.addAttribute("searchResultWithCount", searchResultWithCount);
@@ -152,7 +164,10 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
             Long id = basePostRequest.id(); // record의 경우 직접 필드에 접근할 수 있습니다.
 
             // title과 weight만 출력
-            System.out.println("Id: " + id + ", Weight: " + weight);
+            System.out.println("Id: " + id
+                    + ", Weight: " + weight
+                    + ", class: " + basePostRequest.classification()
+                    + ", 일치 개수: "+ entry.getValue());
         });
 
         // basepost만 따로 리스트로 추출하여 페이지로 보내기

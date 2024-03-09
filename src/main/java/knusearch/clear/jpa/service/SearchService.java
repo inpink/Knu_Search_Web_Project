@@ -48,10 +48,10 @@ public class SearchService {
         return sites;
     }
 
-    public List<Map.Entry<BasePostRequest, Integer>> searchAndPostWithBoostClassification(String searchQuery,
+    public List<Map.Entry<BasePostRequest, Integer>> searchAndPostWithBoostClassification(List<String> words,
                                                                                           String classification) {
-        List<BasePostRequest> allPosts = basePostRepository.findByTitleOrTextQuery(searchQuery, searchQuery);
-        Map<BasePostRequest, Integer> postWithCount = countQueryOccurrencesInTitles(allPosts, searchQuery);
+        Map<BasePostRequest, Integer> postWithCount = calculateCount(words);
+
         Map<BasePostRequest, Integer> postWithCountAndClass = countClassificationWeight(
                 postWithCount,
                 classification);
@@ -62,8 +62,12 @@ public class SearchService {
     private Map<BasePostRequest, Integer> countClassificationWeight(
             Map<BasePostRequest, Integer> postWithCount,
             String classification) {
-        final int weight = 10;
         Map<BasePostRequest, Integer> withClass = new HashMap<>();
+
+        /*final int weight = postWithCount.values().stream()
+                .max(Integer::compare).get() / 2;*/
+        final int weight = 10;
+
         postWithCount.forEach((post, count) -> {
             if (classification.equals(post.classification())) {
                 withClass.put(post, count + weight);
@@ -75,11 +79,27 @@ public class SearchService {
         return withClass;
     }
 
-    public List<Map.Entry<BasePostRequest, Integer>> searchAndPosts(String searchQuery) {
-        List<BasePostRequest> allPosts = basePostRepository.findByTitleOrTextQuery(searchQuery, searchQuery);
-        Map<BasePostRequest, Integer> postWithCount = countQueryOccurrencesInTitles(allPosts, searchQuery);
+    public List<Map.Entry<BasePostRequest, Integer>> searchAndPosts(List<String> words) {
+
+        Map<BasePostRequest, Integer> postWithCount = calculateCount(words);
 
         return sortPosts(postWithCount);
+    }
+
+    private Map<BasePostRequest, Integer> calculateCount(List<String> words) {
+        Set<BasePostRequest> allPosts = new HashSet<>();
+        for (String word : words) {
+            List<BasePostRequest> posts = basePostRepository.findByTitleOrTextQuery(
+                    word,
+                    word);
+
+            for (BasePostRequest post : posts) {
+                allPosts.add(post);
+            }
+        }
+
+        Map<BasePostRequest, Integer> postWithCount = countQueryOccurrencesInTitles(allPosts, words);
+        return postWithCount;
     }
 
     private List<Map.Entry<BasePostRequest, Integer>> sortPosts(Map<BasePostRequest, Integer> postWithCount) {
@@ -91,20 +111,20 @@ public class SearchService {
     }
 
     // RDB에는 일치하는 단어 개수 세어주는 기능 제공하지 않아서 직접 구현해야 함
-    public Map<BasePostRequest, Integer> countQueryOccurrencesInTitles(List<BasePostRequest> allPosts,
-                                                                       String searchQuery) {
+    public Map<BasePostRequest, Integer> countQueryOccurrencesInTitles(Set<BasePostRequest> allPosts,
+                                                                       List<String> words) {
         final Map<BasePostRequest, Integer> postWithCount = new HashMap<>();
-
-        if (searchQuery.length() == 0) {
-            return postWithCount;
-        }
 
         for (BasePostRequest post : allPosts) {
             final String title = post.title();
             final String text = post.text();
-            final int titleCount = (title.length() - title.replace(searchQuery, "").length()) / searchQuery.length();
-            final int textCount = (text.length() - text.replace(searchQuery, "").length()) / searchQuery.length();
-            final int totalCount = titleCount + textCount;
+
+            int totalCount = 0;
+            for (String word : words) {
+                final int titleCount = (title.length() - title.replace(word, "").length()) / word.length();
+                final int textCount = (text.length() - text.replace(word, "").length()) / word.length();
+                totalCount += (titleCount + textCount);
+            }
 
             postWithCount.put(post, totalCount);
         }

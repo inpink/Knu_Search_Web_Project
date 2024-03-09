@@ -5,6 +5,7 @@ from gensim.models import Word2Vec
 from flask import Flask, request, jsonify
 import numpy as np
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from konlpy.tag import Okt # 형태소 분석기로 Okt를 사용합니다
 
 class TransformerEncoderLayer(tf.keras.layers.Layer):
     def __init__(self, embed_dim, num_heads, ff_dim, rate=0.1):
@@ -34,38 +35,51 @@ word2vec_model = Word2Vec.load('modelFile.model')
 
 app = Flask(__name__)
 
-def input_model_test(input_text, word2vec_model, model):
-    # 입력 텍스트를 단어 리스트로 변환
-    input_words = input_text.split()
+ban_words = ["강남", "대학교", "까지", "기타","이내","학교"]
+okt = Okt()
 
-    # Word2Vec 모델을 사용하여 단어를 벡터로 변환
-    input_vectors = [word2vec_model.wv[word] for word in input_words if word in word2vec_model.wv]
+def input_model_test(input_text, word2vec_model, model): #.model  .h5
+    filtered=wordsFilter(input_text)
+    input_vectors = []
+    words=[]
 
-    # 벡터가 비어 있으면, 영벡터로 처리
-    if not input_vectors:
-        input_vectors = [np.zeros(word2vec_model.vector_size)]
+    for word in filtered:
+        if word in word2vec_model.wv:
+            words.append(word)
+            vector = word2vec_model.wv[word]
+            input_vectors.append(vector)
+        else:
+            input_vectors.append(np.zeros(word2vec_model.vector_size))
 
-    # 패딩 처리
-    max_sequence_length = 100  # 이전에 설정한 최대 시퀀스 길이
-    input_vectors_pad = pad_sequences([input_vectors], maxlen=max_sequence_length, dtype='float32')
+    input_vectors = pad_sequences([input_vectors], maxlen=100, dtype='float32')
 
     # 모델 예측
-    predictions = model.predict(input_vectors_pad)
-    class_prediction = np.argmax(predictions, axis=-1)[0]
+    predictions = model.predict(input_vectors)
+    class_prediction = np.argmax(predictions, axis=-1)
 
-    return class_prediction
+    return (words,class_prediction[0])
+
+def wordsFilter(text):
+    tokens = okt.pos(text)
+
+    return [token[0] for token in tokens
+            if token[1] == 'Noun'
+            and len(token[0]) > 1
+            and token[0] not in ban_words
+            and not any(char in "!@#$%^&*()_+{}[]|\\:;<>,.?/~" for char in token[0])]
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json(force=True)
     input_text = data['text']
-    class_prediction = input_model_test(input_text, word2vec_model, model)
+    words,class_prediction = input_model_test(input_text, word2vec_model, model)
 
     # Convert numpy.int64 to native Python int
     if isinstance(class_prediction, np.int64):
         class_prediction = int(class_prediction)
 
-    return jsonify({'predicted_class': class_prediction})
+    return jsonify({'predicted_class': str(class_prediction), 'words':words})
 
 if __name__ == '__main__':
     app.run(debug=True)
