@@ -104,7 +104,6 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         String refinedPredictedClass = StringUtil.deleteLineSeparator(predictedClass);
         System.out.println("predictedClass = " + predictedClass);
         System.out.println("refinedPredictedClass = " + refinedPredictedClass);
-        System.out.println("words = " + words);
 
         // 분류값을 모델에 추가
         model.addAttribute("predictedClass", predictedClass);
@@ -114,6 +113,7 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         Page<BasePostRequest> searchResult = searchResults(
                 searchForm.getCategoryRecommendChecked(),
                 words,
+                searchForm.getSearchQuery(),
                 refinedPredictedClass,
                 page, size, model);
         model.addAttribute("searchResult", searchResult);
@@ -134,14 +134,25 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
 
     private Page<BasePostRequest> searchResults(String categoryRecommendChecked,
                                          List<String> words,
+                                         String query,
                                          String refinedPredictedClass,
                                          int page,
                                          int size,
                                          Model model
     ) {
-        if (words.isEmpty()) { // words가 없는 경우 연산 안하고 빈 페이지 반환
+        if (query.isBlank()) { // 쿼리 없는 경우 연산 안하고 빈 페이지 반환
             return  listToPage(new ArrayList<>(), page, size);
         }
+
+        words.add(query);
+        for (String word : query.split(" ")){
+            if (!word.isBlank()) {
+                words.add(word);
+            }
+        }
+
+        words.add(query.replace(" ",""));
+        System.out.println("words = " + words);
 
         List<Map.Entry<BasePostRequest, Integer>> searchResultWithCount;
 

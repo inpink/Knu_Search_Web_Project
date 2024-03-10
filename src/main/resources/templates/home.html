@@ -7,7 +7,9 @@
 
 <body>
 <div class="col text-center mb-5">
-    <img th:src="@{/images/mainLogo.jpg}" alt="Main Logo" style="width: 500px; height: auto;">
+    <a href="/">
+        <img th:src="@{/images/mainLogo.jpg}" alt="Main Logo" style="width: 500px; height: auto;">
+    </a>
 </div>
 
 <!--<p th:text="*{searchForm.searchPeriod_start}"/> 잘 됨-->
@@ -22,7 +24,8 @@
         이 memberForm 객체는 컨트롤러에서 만들어 옴.
         -->
         <div th:replace="~{fragments/parentOptions :: parentOptions}"/>
-        <form id="searchForm" method="GET" action="/searchResult" th:object="${searchForm}" > <!--검색 결과 URL을 공유 가능하도록 POST가 아닌 GET 이용-->
+        <form id="searchForm" method="GET" action="/searchResult" th:object="${searchForm}">
+            <!--검색 결과 URL을 공유 가능하도록 POST가 아닌 GET 이용-->
 
             <!-- 펼치기/접기할 대상.  -->
             <div class="collapse" id="collapseDiv">

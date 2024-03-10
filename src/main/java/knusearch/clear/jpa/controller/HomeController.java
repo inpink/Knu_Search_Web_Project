@@ -27,12 +27,12 @@ public class HomeController {
     }
 
 
-    @GetMapping("/test")
+    //@GetMapping("/test")
     public String test() {
         return "recommendSearchQuery";
     }
 
-    @PostMapping("/searchRecommend")
+    //@PostMapping("/searchRecommend")
     @ResponseBody
     public List<String> search(@RequestBody String query) {
 

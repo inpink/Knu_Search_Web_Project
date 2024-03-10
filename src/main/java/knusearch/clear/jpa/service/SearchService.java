@@ -5,6 +5,8 @@ readOnly 속성은 해당 메서드에서 데이터베이스의 읽기 작업만
 이렇게 설정된 메서드는 트랜잭션 커밋 시에 롤백되는 것을 방지하고, 데이터베이스에 대한 읽기 작업을 최적화할 수 있습니다.
  */
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,11 +68,11 @@ public class SearchService {
 
         /*final int weight = postWithCount.values().stream()
                 .max(Integer::compare).get() / 2;*/
-        final int weight = 100;
+        final int weight = 11;
 
         postWithCount.forEach((post, count) -> {
             if (classification.equals(post.classification())) {
-                withClass.put(post, count + weight);
+                withClass.put(post, count * weight / 10);
             } else {
                 withClass.put(post, count);
             }
@@ -104,7 +106,7 @@ public class SearchService {
     private List<Map.Entry<BasePostRequest, Integer>> sortPosts(Map<BasePostRequest, Integer> postWithCount) {
         return postWithCount.entrySet().stream()
                 .sorted(Map.Entry.<BasePostRequest, Integer>comparingByValue(Comparator.reverseOrder())
-                        .thenComparing(entry -> entry.getKey().dateTime(), Comparator.naturalOrder())
+                        .thenComparing(entry -> entry.getKey().dateTime(), Comparator.reverseOrder())
                         .thenComparing(entry -> entry.getKey().id()))
                 .toList();
     }
@@ -149,6 +151,13 @@ public class SearchService {
             BasePostRequest post = entry.getKey();
             Map<String, Integer> wordCounts = entry.getValue();
             double score = calculatePostScore(wordCounts,wordMinMaxCounts);
+
+            // 시간 가중치 계산
+            long daysAgo = ChronoUnit.DAYS.between(post.dateTime(), LocalDateTime.now());
+            double timeWeight = 1.0 / (Math.log(1.0 + daysAgo) + 1); // 로그 함수 사용하여 가중치 조절
+
+            // 최종 점수에 시간 가중치 반영
+            score *= timeWeight;
 
             postCount.put(post, Integer.valueOf((int) (score*100))); // 소수점 둘째자리까지 100곱해서 사용
         }
