@@ -68,7 +68,7 @@ public class SearchService {
 
         /*final int weight = postWithCount.values().stream()
                 .max(Integer::compare).get() / 2;*/
-        final int weight = 11;
+        final int weight = 12;
 
         postWithCount.forEach((post, count) -> {
             if (classification.equals(post.classification())) {
