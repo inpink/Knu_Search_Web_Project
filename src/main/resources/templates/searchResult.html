@@ -68,8 +68,8 @@
             <div th:if="${searchForm.categoryRecommendChecked} != null">
                 <p>AI가 추천하는 분류</p>
                 <div class="d-flex bg-skyblue p-3 border rounded">
-                    <span th:text="${predictedClass} ">분류</span>
-                    <span>학사:0, 장학:1, 학습,상담:2, 취창업:3</span>
+                    <p th:text="${predictedClass} ">분류</p>
+                    <p><br>학사:0, 장학:1, 학습,상담:2, 취창업:3</p>
                 </div>
             </div>
 

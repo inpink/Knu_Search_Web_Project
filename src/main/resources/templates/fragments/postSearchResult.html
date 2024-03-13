@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<div class="postSearchResult" th:fragment="postSearchResult" style="text-align: left; max-width: 100%;">
-    <!-- 검색 결과 목록 출력 -->
-    <p>검색 개수 : <span th:text="${searchResult.totalElements}"></span></p>
-    <ul>
-        <li th:each="post, stat : ${searchResult}">
-            <p>번호: <span
-                    th:text="${stat.index + 1 + (searchResult.pageable.pageNumber * searchResult.pageable.pageSize)}"></span>
-            </p> <!-- 게시글 번호 출력 -->
-            <p>ID: <span th:text="${post.id}"></span></p>
-            <p>제목: <a th:href="${post.url}" th:text="${post.title}" target="_blank"></a></p>
-            <p>내용: <span th:text="${post.text}"></span></p>
-            <p>등록 날짜: <span th:text="${post.dateTime}"></span></p>
-            <p>분류: <span th:text="${post.classification}"></span></p>
-            <!-- 다른 필드들도 필요에 따라 출력하세요. -->
 
-            <hr>
-        </li>
-    </ul>
+<div class="postSearchResult" th:fragment="postSearchResult" style="text-align: left; max-width: 100%;">
+    <div class="d-flex bg-skyblue p-3 border rounded">
+        <!-- 검색 결과 목록 출력 -->
+        <p>검색 개수 : <span th:text="${searchResult.totalElements}"></span><br></p>
+        <hr>
+        <ul>
+            <li th:each="post, stat : ${searchResult}">
+                <p>번호: <span
+                        th:text="${stat.index + 1 + (searchResult.pageable.pageNumber * searchResult.pageable.pageSize)}"></span>
+                </p> <!-- 게시글 번호 출력 -->
+                <p>ID: <span th:text="${post.id}"></span></p>
+                <p>제목: <a th:href="${post.url}" th:text="${post.title}" target="_blank"></a></p>
+                <p>내용: <span th:text="${post.text}"></span></p>
+                <p>등록 날짜: <span th:text="${post.dateTime}"></span></p>
+                <p>분류: <span th:text="${post.classification}"></span></p>
+                <!-- 다른 필드들도 필요에 따라 출력하세요. -->
+
+                <hr>
+            </li>
+        </ul>
+    </div>
 </div>
 </html>
