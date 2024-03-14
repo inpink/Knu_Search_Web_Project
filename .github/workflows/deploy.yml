@@ -13,6 +13,12 @@ on:
   pull_request:
     branches: [ "mysqlSort" ]
 
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_NAME: knusearch
+  CODE_DEPLOY_APPLICATION_NAME: knusearchCICD
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: knusearchcodedeploy
+
 jobs:
   build:
 
@@ -39,16 +45,30 @@ jobs:
       - name: Build with Gradle Wrapper
         run: ./gradlew build
 
-      - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@v0.1.10
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.PRIVATE_KEY }}
-          port: 22
-          script: |
-            whoami
-            ls -al
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # (7) 빌드 결과물을 S3 버킷에 업로드
+      - name: Upload to AWS S3
+        run: |
+          aws deploy push \
+            --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+            --ignore-hidden-files \
+            --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+            --source .
+
+      # (8) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+      - name: Deploy to AWS EC2 from S3
+        run: |
+          aws deploy create-deployment \
+            --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+            --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
