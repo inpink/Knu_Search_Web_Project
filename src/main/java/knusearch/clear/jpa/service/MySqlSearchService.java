@@ -8,20 +8,21 @@ readOnly 속성은 해당 메서드에서 데이터베이스의 읽기 작업만
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import knusearch.clear.jpa.domain.dto.BasePostRequest;
-import knusearch.clear.jpa.domain.post.BasePost;
 import knusearch.clear.jpa.repository.SearchRepository;
 import knusearch.clear.jpa.repository.post.BasePostRepository;
+import knusearch.clear.mvc.service.SearchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Primary
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class SearchService {
+public class MySqlSearchService implements SearchService {
 
     private final SearchRepository searchRepository;
     private final BasePostRepository basePostRepository;

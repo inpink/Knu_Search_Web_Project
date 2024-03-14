@@ -5,14 +5,13 @@ import jakarta.validation.Valid;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import knusearch.clear.jpa.domain.dto.BasePostRequest;
 import knusearch.clear.jpa.service.ClassificationService;
 import knusearch.clear.jpa.service.DateService;
-import knusearch.clear.jpa.service.SearchService;
+import knusearch.clear.jpa.service.MySqlSearchService;
 import knusearch.clear.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용한 툴 모두 적고 모든 툴 사용한 이유 정리하여 작성, 발표
 
     private final DateService dateService;
-    private final SearchService searchService;
+    private final MySqlSearchService mySqlSearchService;
     private final ClassificationService classificationService;
 
     @GetMapping("/search")
@@ -40,11 +39,11 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
         SearchForm searchForm = new SearchForm();
 
         // YAML 파일에서 모든 site명을 가져와서 ArrayList에 담기
-        List<String> selectedSites = searchService.findSites();
-        String searchScopeRadio = searchService.findOrder();
+        List<String> selectedSites = mySqlSearchService.findSites();
+        String searchScopeRadio = mySqlSearchService.findOrder();
 
         //기간 값 추가
-        String searchPeriodRadio = searchService.findPeriod();
+        String searchPeriodRadio = mySqlSearchService.findPeriod();
         LocalDate searchPeriod_start = dateService.minDate();
         LocalDate searchPeriod_end = dateService.currentDate();
 
@@ -158,10 +157,10 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
 
         if (categoryRecommendChecked==null) {
             System.out.println("분류 사용 X");
-            searchResultWithCount = searchService.searchAndPosts(words);
+            searchResultWithCount = mySqlSearchService.searchAndPosts(words);
         } else {
             System.out.println("분류 사용 O");
-            searchResultWithCount = searchService.searchAndPostWithBoostClassification(
+            searchResultWithCount = mySqlSearchService.searchAndPostWithBoostClassification(
                     words, refinedPredictedClass); //검색어의 분류정보
         }
         // count개수 담은 basepost map 보내기

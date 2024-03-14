@@ -62,14 +62,14 @@
     <br>
 
     <div th:if="${isSearchEnabled} == true">
-        <div class="jumbotron bg-light" style="width: 110%;"> <!-- 회색 박스 -->
+        <div class="jumbotron bg-light" style="width: 100%;"> <!-- 회색 박스 -->
 
             <!--AI가 추천하는 분류-->
             <div th:if="${searchForm.categoryRecommendChecked} != null">
                 <p>AI가 추천하는 분류</p>
                 <div class="d-flex bg-skyblue p-3 border rounded">
-                    <p th:text="${predictedClass} ">분류</p>
-                    <p><br>학사:0, 장학:1, 학습,상담:2, 취창업:3</p>
+                    <p>분류: <span th:text="${predictedClass}"></span></p>
+                    <p>  (학사:0, 장학:1, 학습,상담:2, 취창업:3)</p>
                 </div>
             </div>
 
