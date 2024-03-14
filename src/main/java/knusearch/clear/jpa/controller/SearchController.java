@@ -185,7 +185,20 @@ public class SearchController { //TODO:프론트, 백, AI 전반적으로 사용
                 .map(Map.Entry::getKey)
                 .toList();
 
-        return listToPage(basePosts, page, size);
+        // front에서 쉽게 읽을 수 있도록 class 한글로 변환 (record는 불변)
+        List<BasePostRequest> updatedBasePosts = basePosts.stream()
+                .map(basePost -> new BasePostRequest(
+                        basePost.id(),
+                        basePost.url(),
+                        basePost.title(),
+                        basePost.text(),
+                        basePost.image(),
+                        basePost.dateTime(),
+                        classificationService.findClassification(basePost.classification()) // 새 classification 값
+                ))
+                .toList();
+
+        return listToPage(updatedBasePosts, page, size);
     }
 
     private Page<BasePostRequest> listToPage(List<BasePostRequest> list, int page, int size) {

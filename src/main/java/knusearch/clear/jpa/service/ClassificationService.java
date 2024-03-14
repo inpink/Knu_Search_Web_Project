@@ -21,6 +21,12 @@ import org.springframework.web.client.RestTemplate;
 public class ClassificationService {
 
     private final RestTemplate restTemplate;
+    private final Map<String, String> classificationTransform = new HashMap<>() {{
+        put("0","학사");
+        put("1","장학");
+        put("2","학습/상담");
+        put("3","취창업");
+    }};
 
     @Transactional
     public Map<String, Object> predictClassification(final String searchQuery) {
@@ -51,4 +57,8 @@ public class ClassificationService {
         return result;
     }
 
+
+    public String findClassification(String classification) {
+        return classificationTransform.get(classification);
+    }
 }
