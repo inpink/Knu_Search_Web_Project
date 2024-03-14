@@ -21,7 +21,7 @@
 　   
 > 사용 기술과 버전
 
-![knusearch_architecture.png](..%2F..%2Fknusearch_architecture.png)
+![img.png](architecture.png)
 
 Spring boot: 3.1.3 　   
 JPA: 3.1.3 　   
